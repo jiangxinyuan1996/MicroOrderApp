@@ -1,14 +1,12 @@
 <template>
-  <div class="home">
-    <header class="header">
-      <span>收货人信息</span>
-    </header>
-    <body>
-    </body>
-  </div>
+  <DataForm/>
 </template>
 <script>
+import DataForm from './components/consumerInfoForm.vue'
 export default {
+  components: {
+    DataForm
+  },
   data () {
     return {
     }
