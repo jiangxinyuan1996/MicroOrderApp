@@ -1,8 +1,8 @@
 <template>
   <div class="home">
     <header class="header">
-      <div>总收入：元</div>
-      <div>共卖出：件商品</div>
+      <div>总收入: 10500 元</div>
+      <div>共卖出: 150 件商品</div>
       <div id="line_echarts"></div>
     </header>
   </div>
@@ -13,25 +13,21 @@ export default {
   data () {
     return {
       lineChartsData: {
-        title: {
-          text: 'ECharts 入门示例'
-        },
-        tooltip: {},
         xAxis: {
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+          type: 'category',
+          data: ['1月', '2月', '3月', '4月', '5月', '7月', '8月']
         },
-        yAxis: {},
-        series: [
-          {
-            name: '销量',
-            type: 'bar',
-            data: [5, 20, 36, 10, 10, 20]
-          }
-        ]
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: [1200, 1400, 1500, 1700, 1900, 2000, 2800],
+          type: 'line'
+        }]
       }
     }
   },
-  created () {
+  mounted () {
     var myChart = echarts.init(document.getElementById('line_echarts'))
     myChart.setOption(this.lineChartsData)
   }
