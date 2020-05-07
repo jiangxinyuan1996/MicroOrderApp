@@ -8,7 +8,7 @@
             <ul class="list">
                 <li class="list_item">
                     <div class="item_image">
-                        <img src="" alt="" />
+                        <img src="images/3.jpg" alt="" />
                     </div>
                     <div class="item_opera">
                         <p>编辑</p>
@@ -74,6 +74,7 @@ export default {
         width:100%;
         height: .45rem;
         line-height: .45rem;
+        text-align: center;
         display:flex;
         .footer_info{
             flex:1;
