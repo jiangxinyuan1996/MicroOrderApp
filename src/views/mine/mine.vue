@@ -17,7 +17,7 @@
       <div class="center_service">
         <h4 class="service_title">通联服务</h4>
         <div class="service_list">
-          <div :class="'list_item'+' ' + (index===2||index===5||index===8?'item_end':'')+' '+(index<6?'item_pre':'')" 
+          <div :class="'list_item'+' ' + (index===2||index===5||index===8?'item_end':'')+' '+(index<6?'item_pre':'')"
           v-for="(item,index) in centerList" :key="index" @click="handleClick(item)">
             <svg class="icon" aria-hidden="true">
               <use :xlink:href="item.icon"></use>
@@ -31,47 +31,47 @@
 </template>
 <script>
 export default {
-  data(){
+  data () {
     return {
-      centerList:[
+      centerList: [
         {
-          text:'会员',
-          icon:'#icon-filedicon_memberco'
+          text: '会员',
+          icon: '#icon-filedicon_memberco'
         },
         {
-          text:'商品',
-          icon:'#icon-shangpin'
+          text: '商品',
+          icon: '#icon-shangpin'
         },
         {
-          text:'店铺',
-          icon:'#icon-huabanfuben'
+          text: '店铺',
+          icon: '#icon-huabanfuben'
         },
         {
-          text:'模板',
-          icon:'#icon-mobanxiazai-01'
+          text: '模板',
+          icon: '#icon-mobanxiazai-01'
         },
         {
-          text:'销售',
-          icon:'#icon-xiaoshou'
+          text: '销售',
+          icon: '#icon-xiaoshou'
         },
         {
-          text:'物流',
-          icon:'#icon-wuliu'
+          text: '物流',
+          icon: '#icon-wuliu'
         },
         {
-          text:'代理',
-          icon:'#icon-dailishang'
+          text: '代理',
+          icon: '#icon-dailishang'
         },
         {
-          text:'更多',
-          icon:'#icon-gengduo'
+          text: '更多',
+          icon: '#icon-gengduo'
         }]
     }
   },
-  methods:{
-    handleClick(item){
+  methods: {
+    handleClick (item) {
       console.log(item.text)
-      switch(item.text){
+      switch (item.text) {
         case '模板':
           this.$router.push('/template')
       }
@@ -132,7 +132,7 @@ export default {
       .list_item{
         border-right: .001rem solid #c0c0c0;
         box-sizing: border-box;
-        float: left; 
+        float: left;
         width:33.33333333%;
         display:flex;
         flex-direction: column;

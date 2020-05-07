@@ -14,13 +14,13 @@
 <script>
 import goodsList from '@/components/list'
 export default {
-  components:{
-    goodsList,
+  components: {
+    goodsList
 
   },
-  data(){
+  data () {
     return {
-      active:1
+      active: 1
     }
   }
 }

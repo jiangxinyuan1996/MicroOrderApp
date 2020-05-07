@@ -38,7 +38,7 @@
             </div>
           </li>
         </ul>
-        <p slot="top" class="mint-loadmore-top"></p> 
+        <p slot="top" class="mint-loadmore-top"></p>
       </mt-loadmore>
       </div>
     </div>
@@ -46,84 +46,84 @@
   </div>
 </template>
 <script>
-import BScroll from "better-scroll";
+import BScroll from 'better-scroll'
 export default {
 
-  data() {
+  data () {
     return {
-      categoryList:[{
-        id:1,
-        list:'食品'
+      categoryList: [{
+        id: 1,
+        list: '食品'
       },
       {
-        id:2,
-        list:'化妆品'
+        id: 2,
+        list: '化妆品'
       },
       {
-        id:3,
-        list:'母婴'
+        id: 3,
+        list: '母婴'
       },
       {
-        id:4,
-        list:'农产品'
+        id: 4,
+        list: '农产品'
       }
       ],
-      detailList: [ //分类数据
-            {src:require('@/assets/images/logo.png'),text:'薯片'},
-            {src:require('@/assets/images/logo.png'),text:'奶糖'},
-            {src:require('@/assets/images/logo.png'),text:'旺旺仙贝'},
-            {src:require('@/assets/images/logo.png'),text:'面包'},
-            {src:require('@/assets/images/logo.png'),text:'巧克力'},
-            {src:require('@/assets/images/logo.png'),text:'益达'},
+      detailList: [ // 分类数据
+        { src: require('@/assets/images/logo.png'), text: '薯片' },
+        { src: require('@/assets/images/logo.png'), text: '奶糖' },
+        { src: require('@/assets/images/logo.png'), text: '旺旺仙贝' },
+        { src: require('@/assets/images/logo.png'), text: '面包' },
+        { src: require('@/assets/images/logo.png'), text: '巧克力' },
+        { src: require('@/assets/images/logo.png'), text: '益达' }
       ],
-      active:0,
-      detailtext:'食品',
-      backTopShow:false,
-      loading:false
-    };
+      active: 0,
+      detailtext: '食品',
+      backTopShow: false,
+      loading: false
+    }
   },
   methods: {
-    listClick(index,val){ //显示隐藏分类详情
-    if(this.active!==index){
-      document.documentElement.scrollTop=0
-    }
-      this.active=index;
-      this.detailtext=val;
+    listClick (index, val) { // 显示隐藏分类详情
+      if (this.active !== index) {
+        document.documentElement.scrollTop = 0
+      }
+      this.active = index
+      this.detailtext = val
     },
-    handleAddCategory(){
+    handleAddCategory () {
       console.log('新增分类')
     },
-    backtoTop(){
-      document.documentElement.scrollTop=0
+    backtoTop () {
+      document.documentElement.scrollTop = 0
     },
-    loadBottom(){
+    loadBottom () {
       console.log('到底了')
       setTimeout(() => {
-        this.detailList=[...this.detailList,...[{src:require('@/assets/images/logo.png'),text:'薯片'},
-            {src:require('@/assets/images/logo.png'),text:'奶糖'},
-            {src:require('@/assets/images/logo.png'),text:'旺旺仙贝'},
-            {src:require('@/assets/images/logo.png'),text:'面包'},
-            {src:require('@/assets/images/logo.png'),text:'巧克力'},
-            {src:require('@/assets/images/logo.png'),text:'益达'}]]
-        this.$refs.loadmore.onBottomLoaded();
-      }, 2000);
+        this.detailList = [...this.detailList, ...[{ src: require('@/assets/images/logo.png'), text: '薯片' },
+          { src: require('@/assets/images/logo.png'), text: '奶糖' },
+          { src: require('@/assets/images/logo.png'), text: '旺旺仙贝' },
+          { src: require('@/assets/images/logo.png'), text: '面包' },
+          { src: require('@/assets/images/logo.png'), text: '巧克力' },
+          { src: require('@/assets/images/logo.png'), text: '益达' }]]
+        this.$refs.loadmore.onBottomLoaded()
+      }, 2000)
     }
   },
-  created() {
+  created () {
     // mockjs模拟数据
     // this.$http.get("/detail").then(res => {
     //   this.detailList=res.data.details
     // });
   },
-  mounted() {
+  mounted () {
     this.$nextTick(() => {
-      this.scroll = new BScroll(this.$refs.wrapper, { //better-scroll初始化
-        scrollY,  //竖向滚动
-        click:true  //滚动区域可触发点击事件
-      });
-    });
+      this.scroll = new BScroll(this.$refs.wrapper, { // better-scroll初始化
+        scrollY, // 竖向滚动
+        click: true // 滚动区域可触发点击事件
+      })
+    })
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 #class {

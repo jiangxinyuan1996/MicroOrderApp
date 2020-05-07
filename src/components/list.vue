@@ -7,13 +7,13 @@
 </template>
 <script>
 export default {
-    
+
 }
 </script>
 <style lang="scss" scoped>
 #list{
     width:100%;
-    margin-bottom:0.45rem; 
+    margin-bottom:0.45rem;
     .navlist{
         li{
             display: flex;

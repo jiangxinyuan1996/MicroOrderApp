@@ -5,9 +5,9 @@
   </div>
 </template>
 <script>
-import orderList from '@/components/list' 
+import orderList from '@/components/list'
 export default {
-  components:{
+  components: {
     orderList
   }
 }

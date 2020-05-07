@@ -25,17 +25,17 @@
 </template>
 <script>
 export default {
-    created(){
-        this.$store.state.showTab=false
-    },
-    beforeDestroy(){
-        this.$store.state.showTab=true
-    },
-    methods:{
-        handleBack(){
-            history.go(-1)
-        }
+  created () {
+    this.$store.state.showTab = false
+  },
+  beforeDestroy () {
+    this.$store.state.showTab = true
+  },
+  methods: {
+    handleBack () {
+      history.go(-1)
     }
+  }
 }
 </script>
 <style lang="scss" scoped>
