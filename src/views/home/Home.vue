@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div id="home">
     <header class="header">
       <div>总收入: 10500 元</div>
       <div>共卖出: 150 件商品</div>
