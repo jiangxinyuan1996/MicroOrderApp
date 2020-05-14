@@ -1,14 +1,25 @@
 <template>
   <div id="order">
     <!-- <h1>订单</h1> -->
-    <orderList></orderList>
+    <navbar></navbar>
+    <router-view/>
   </div>
 </template>
 <script>
-import orderList from '@/components/list'
+import navbar from '@/components/navbar'
+import { HomeData } from '@/api'
 export default {
   components: {
-    orderList
+    navbar
+  },
+  beforeCreate(){
+     HomeData().then(res=>{
+      if(res.data.success===1){
+        localStorage.setItem('merchantid',res.data.data.merchant_id)
+      }else{
+        this.$router.push('/register')
+      }
+    })
   }
 }
 </script>

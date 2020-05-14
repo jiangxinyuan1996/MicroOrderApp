@@ -1,42 +1,35 @@
 <template>
     <div id="navbar">
-        <router-link to="/" tag="li" exactActiveClass="active"><i class="iconfont icon-wxbzhuye"/><span>首页</span></router-link>
-        <router-link to="/order" tag="li" exactActiveClass="active"><i class="iconfont icon-cart"/><span>订单</span></router-link>
-        <router-link to="/goods" tag="li" exactActiveClass="active"><i class="iconfont icon-wxbmingxingdianpu"/><span>商品</span></router-link>
-        <router-link to="/mine" tag="li" exactActiveClass="active"><i class="iconfont icon-account"/><span>我的</span></router-link>
+      <router-link to="/order/waitshipped" tag="li"  exactActiveClass="active">待付款</router-link>
+      <router-link to="/order/shipped" tag="li"  exactActiveClass="active">已付款</router-link>
+      <!-- <router-link to="/order/success" tag="li"  exactActiveClass="active">交易成功</router-link>
+      <router-link to="/order/closed" tag="li"  exactActiveClass="active">交易关闭</router-link> -->
     </div>
 </template>
 <script>
 export default {
-
+    data(){
+      return{
+        selected:''
+      }
+    }
 }
 </script>
 <style lang="scss" scoped>
 #navbar{
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 200;
-    box-sizing: border-box;
-    display:flex;
-    height: 0.45rem;
-    font-size: 0.10rem;
-    color: #ccc;
-    font-weight: 550;
-    font-family: '微软雅黑';
-    background:#fff;
-    // border-top: 1px solid #fff;
-    li{
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        .iconfont{
-            font-size:.25rem;
-        }
-    }
-    .active{
-        color: black;
-    }
+  height:.4rem;
+  width: 100%;
+  line-height: .4rem;   
+  display: flex;
+  background: #fff;
+  li{
+    flex:1;
+    text-align: center;
+    font-size: .12rem;
+  }
+  .active{
+    color: red;
+  }
 }
-</style>
+</style>>
+

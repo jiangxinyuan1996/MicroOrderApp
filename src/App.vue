@@ -1,15 +1,15 @@
 <template>
   <div id="app">
-    <navbar v-if="$store.state.showTab"/>
+    <tabbar v-if="$store.state.showTab"/>
     <router-view/>
   </div>
 </template>
 <script>
-import navbar from '@/components/navbar.vue'
+import tabbar from '@/components/tabbar.vue'
 export default {
   name: 'Home',
   components: {
-    navbar
+    tabbar
   }
 }
 </script>

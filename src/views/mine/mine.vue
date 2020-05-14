@@ -2,18 +2,25 @@
   <div id="center">
     <h2 class="center_header">个人中心</h2>
     <div class="center_container">
-      <div class="container_info">
+      <!-- <div class="container_userinfo" @click="handleLogin">
+        <div class="userinfo_image">
+          <img src="images/3.jpg" alt="" />
+        </div>
+        <p v-if="false" class="username">小明</p>
+        <p v-else class="username">未登录</p>
+      </div> -->
+      <!-- <div class="container_info">
         <div class="myOrder">
           <i class="iconfont icon-tuanduicankaoxian-"/>
-          <p>订单</p>
+          <p @click="handleOrder">明细</p>
           <p class="purse_money" style="height:0.19rem"></p>
           </div>
-        <div class="purse">
+        <div class="purse" @click="handleWallet">
           <i class="iconfont icon-qianbao"/>
-          <p class="purse_title">钱包</p>
-          <p class="purse_money">￥6.66</p>
+          <p class="purse_title">收款</p>
+          <p class="purse_money"></p>
         </div>
-      </div>
+      </div> -->
       <div class="center_service">
         <h4 class="service_title">通联服务</h4>
         <div class="service_list">
@@ -30,18 +37,21 @@
   </div>
 </template>
 <script>
+import { HomeData } from '@/api'
+
 export default {
   data () {
     return {
+      money:6.66,
       centerList: [
         {
           text: '会员',
           icon: '#icon-filedicon_memberco'
         },
-        {
-          text: '商品',
-          icon: '#icon-shangpin'
-        },
+        // {
+        //   text: '商品',
+        //   icon: '#icon-shangpin'
+        // },
         {
           text: '店铺',
           icon: '#icon-huabanfuben'
@@ -68,18 +78,56 @@ export default {
         }]
     }
   },
+  beforeCreate(){
+    HomeData().then(res=>{
+      if(res.data.success===1){
+        localStorage.setItem('merchantid',res.data.data.merchant_id)
+      }else{
+        this.$router.push('/register')
+      }
+    })
+  },
   methods: {
+
+    handleLogin(){
+     window.location='http://dlallinpay.sinaapp.com/tlwdd/index.php?controller/index/index'
+    },
+    handleOrder(){
+          this.$router.push('/order')
+    },
     handleClick (item) {
-      console.log(item.text)
       switch (item.text) {
         case '模板':
-          this.$router.push('/template')
+          this.$router.push('/goods')
+          break
+        case '商品':
+          this.$router.push('/goods')
+          break
+        case '店铺':
+          if(localStorage.getItem('merchantid')!=''&&localStorage.getItem('merchantid')){
+            this.$toast('已绑定店铺')
+            break
+          }else{
+            this.$router.push('/register')
+            break
+          }
       }
+    },
+    handleWallet(){
+      this.$router.push({
+        name:'wallet',
+        params:{
+          money:this.money
+        }
+      })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
+*{
+  text-align: center;
+}
 .iconfont{
   font-size: .26rem;
 }
@@ -96,6 +144,29 @@ export default {
 .center_container{
   display: flex;
   flex-direction: column;
+  .container_userinfo{
+    display: flex;
+    flex-direction: column;
+    height: 1rem;
+    background: #fff;
+    margin:0.1rem .08rem 0;
+    border-radius: 0.05rem;
+    padding-top:0.1rem;
+    .userinfo_image{
+      margin:0 1.46rem;
+      border-radius: 50%;
+      flex: 2;
+     overflow: hidden;
+     img{
+       width: 100%;
+       height: 100%;
+     }
+    }
+    .username{
+      flex:1;
+      font-size: .14rem;
+    }
+  }
   .container_info{
     height: 1rem;
     display:flex;

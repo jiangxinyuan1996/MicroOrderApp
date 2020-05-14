@@ -1,159 +1,276 @@
 <template>
   <div id="class">
-    <div class="head">
-      <!-- <i class="iconfont"></i> -->
-      <span>分类</span>
-    </div>
+     <div class="create_header">
+            <div class="back" @click="handleBack">
+            <i class="iconfont icon-huitui" />
+            <p class="header_info">返回</p>
+            </div>
+            <div class="header_title">收款单列表</div>
+            <div style="padding-right:.08rem" @click="handleAddGoods">新建</div>
+        </div>
     <div class="main">
       <div class="wrapper" ref="wrapper">
-        <ul class="content">
+        
+        <ul class="content"
+        v-infinite-scroll="cateloadMore"
+        infinite-scroll-disabled="loading"
+        infinite-scroll-distance="10"
+        infinite-scroll-immediate-check="false">
           <!-- 分类列表 -->
-          <li v-for="(item,index) in categoryList" :key="item.id" @click="listClick(index,item.list)" :class="index===active?'active':''">{{item.list}}</li>
-          <!-- <li style="fontSize:.4rem;color:#ccc;lineHeight" @click="handleAddCategory">+分类</li> -->
-          <li style="fontSize:.14rem;color:#ccc;lineHeight:.4rem" @click="handleAddCategory">新增分类<span style="fontSize:.2rem">+</span></li>
-
+          <li v-for="(item,index) in categoryList" :key="item.category_id" @click="listClick(index,item)" :class="index===active?'active':''">{{item.category_name}}</li>
+          <li style="fontSize:.14rem;color:#ccc;lineHeight:.4rem" @click="handleAddCategory">编辑标签<span style="fontSize:.2rem">+</span></li>
         </ul>
       </div>
       <div class="detailList_box">
-        <mt-loadmore :bottom-method="loadBottom" ref="loadmore" :auto-fill="false">
+        <mt-loadmore :bottom-method="loadMore" ref="loadmore" :auto-fill="false">
         <!-- 分类详情列表 -->
-        <ul class="detailList clearfix"
-        v-infinite-scroll="loadBottom"
+        <ul class="detailList"
+        v-infinite-scroll="loadMore"
         infinite-scroll-disabled="loading"
         infinite-scroll-distance="10"
+        infinite-scroll-immediate-check="false"
         >
           <li class="detail_title"><h4 style="fontSize:.14rem;color:#333">{{detailtext}}</h4></li>
-          <li style="fontSize:.16rem;color:#ccc;lineHeight:.4rem" @click="handleAddCategory">{{'添加'+ detailtext}}<span style="fontSize:.2rem">+</span></li>
-
-          <li class="detail_item" v-for="(item,index) in detailList" :key="index">
-            <div class="item_image">
-              <img :src="item.src" alt="">
+          <!-- <li style="fontSize:.16rem;color:#ccc;lineHeight:.4rem;margin-bottom:0.1rem" @click="handleAddGoods">{{'添加'+ detailtext}}<span style="fontSize:.2rem">+</span></li> -->
+          
+          <li class="detail_item" v-for="(item,index) in detailList" :key="index" @click="handleDetail(item,'修改')">
+        <mt-cell-swipe   
+            :right='rightDelete(item,index)'
+          >
+				 <div slot="icon" class="item_wrap">
+           <div class="item_image" >
+              <img :src="item.image[0]" alt="">
+           </div>
+               <div class="item_info">
+              <p>{{item.product_name}}</p>
+              <p>{{item.price}}元</p>
             </div>
-            <div class="item_info">
-              <p>{{item.text}}</p>
-            </div>
-            <div class="item_handle">
-              <p>编辑</p>
-              <p>海报</p>
-            </div>
+				 </div>
+           
+			</mt-cell-swipe>
+     
+           
+            <!-- <div class="item_handle">
+              <p @click="handleDetail(item,'修改')">编辑</p>
+              <p @click="handlePhoto(item)">海报</p>
+              <p @click="handleDel(index)">删除</p>
+            </div> -->
           </li>
         </ul>
         <p slot="top" class="mint-loadmore-top"></p>
       </mt-loadmore>
       </div>
     </div>
-    <div v-show="backTopShow" class="backtoTop" @click="backtoTop">回到顶部</div>
+    <!-- <div v-show="backTopShow" class="backtoTop" @click="backtoTop">回到顶部</div> -->
   </div>
 </template>
 <script>
 import BScroll from 'better-scroll'
+import { HomeData } from '@/api'
+import { Indicator,MessageBox } from 'mint-ui'
+import { getProductCategoryInfo,getProductList,delProductList } from '@/api'
+  let a
 export default {
-
   data () {
     return {
-      categoryList: [{
-        id: 1,
-        list: '食品'
-      },
-      {
-        id: 2,
-        list: '化妆品'
-      },
-      {
-        id: 3,
-        list: '母婴'
-      },
-      {
-        id: 4,
-        list: '农产品'
-      }
-      ],
-      detailList: [ // 分类数据
-        { src: require('@/assets/images/logo.png'), text: '薯片' },
-        { src: require('@/assets/images/logo.png'), text: '奶糖' },
-        { src: require('@/assets/images/logo.png'), text: '旺旺仙贝' },
-        { src: require('@/assets/images/logo.png'), text: '面包' },
-        { src: require('@/assets/images/logo.png'), text: '巧克力' },
-        { src: require('@/assets/images/logo.png'), text: '益达' }
-      ],
-      active: 0,
-      detailtext: '食品',
-      backTopShow: false,
+      currentId:1,
+      categoryList: [],
+      detailList: [],
+      active: this.$store.state.active,
+      page:1,
+      limit:10,
+      detailtext: '',
+      backTopShow: true,
       loading: false
     }
   },
   methods: {
-    listClick (index, val) { // 显示隐藏分类详情
+    listClick (index, item) { // 显示隐藏分类详情
+    Indicator.open({
+      text: '加载中...',
+      spinnerType: 'fading-circle'
+    });
+      this.page=1
       if (this.active !== index) {
-        document.documentElement.scrollTop = 0
-      }
+        if(document.documentElement.scrollTop){
+          document.documentElement.scrollTop = 0
+          }else{
+            document.body.scrollTop=0
+          }
+        }
+        this.$store.state.active=index
+        this.currentId=item.category_id
+        getProductList({page:this.page,limit:this.limit,category_id:item.category_id}).then(res=>{
+        this.detailList=res.data.data
+        Indicator.close()
+        // JSON.parse(res.data.data[0].image)
+        console.log(res.data.data)
+    })
       this.active = index
-      this.detailtext = val
+      this.detailtext = item.category_name
+    },
+
+    rightDelete(item,index){
+			return [{
+					content: '删除',
+					style: { background: 'red', color: '#fff','align-items':'center','display': 'flex'},
+					handler: () => this.handleDel(item,index) 
+      }]
+      },
+    handleDetail(item,val){
+      this.$router.push({name:'createGoods',params:{item,val}})
+    },
+    handlePhoto(item){
+      this.$router.push({name:'createqr',params:{
+        item
+      }})
     },
     handleAddCategory () {
-      console.log('新增分类')
+      this.$router.push({
+        name:'createCategory',
+        })
+    },
+    handleAddGoods () {
+      console.log('新增商品')
+      this.$router.push({name:'createGoods',params:{
+        list:this.categoryList,
+        val:'新增'
+      }})
+    },
+    handleDel(item,index){
+      MessageBox.confirm('确定删除此模板?').then(action => {
+      let datalist=[]
+        datalist.push(item.product_id)
+        delProductList(datalist).then(res=>{
+          console.log(res)
+          if(res.data.success===1){
+            this.$toast('删除模板成功')
+          }else{
+            this.$toast('删除失败')
+          }
+        })
+        this.detailList.splice(index,1)
+    })
+    },
+    handleBack(){
+    this.$store.state.showTab = true
+    this.$router.push('/')
     },
     backtoTop () {
-      document.documentElement.scrollTop = 0
+      if(document.documentElement.scrollTop){
+        document.documentElement.scrollTop = 0
+          }else{
+            document.body.scrollTop=0
+          }
+      },
+    loadMore () {
+      getProductCategoryInfo().then(res=>{
+      if(res.data.success===1){
+        this.categoryList=res.data.data
+        this.detailtext=res.data.data[this.$store.state.active].category_name
+        getProductList({page:this.page,limit:this.limit,category_id:currentId}).then(res=>{
+        this.detailList=res.data.data
+        this.page++
+      })
+        }else{
+          console.log('获取分类失败')
+        }
+      })
+       
     },
-    loadBottom () {
-      console.log('到底了')
-      setTimeout(() => {
-        this.detailList = [...this.detailList, ...[{ src: require('@/assets/images/logo.png'), text: '薯片' },
-          { src: require('@/assets/images/logo.png'), text: '奶糖' },
-          { src: require('@/assets/images/logo.png'), text: '旺旺仙贝' },
-          { src: require('@/assets/images/logo.png'), text: '面包' },
-          { src: require('@/assets/images/logo.png'), text: '巧克力' },
-          { src: require('@/assets/images/logo.png'), text: '益达' }]]
-        this.$refs.loadmore.onBottomLoaded()
-      }, 2000)
+    cateloadMore(){
+      console.log('1111')
     }
   },
-  created () {
-    // mockjs模拟数据
-    // this.$http.get("/detail").then(res => {
-    //   this.detailList=res.data.details
-    // });
-  },
-  mounted () {
-    this.$nextTick(() => {
-      this.scroll = new BScroll(this.$refs.wrapper, { // better-scroll初始化
-        scrollY, // 竖向滚动
-        click: true // 滚动区域可触发点击事件
-      })
+  beforeCreate(){
+    HomeData().then(res=>{
+      if(res.data.success===1){
+        localStorage.setItem('merchantid',res.data.data.merchant_id)
+      }else{
+        this.$router.push('/register')
+      }
     })
+  },
+   beforeMount () {
+    this.$store.state.showTab = false
+    },
+  mounted () {
+    Indicator.open({
+      text: '加载中...',
+      spinnerType: 'fading-circle'
+    });
+     getProductCategoryInfo().then(res=>{
+        Indicator.close()
+      if(res.data.success===1){
+        this.categoryList=res.data.data
+        this.detailtext=res.data.data[this.$store.state.active].category_name
+        this.currentId=res.data.data[this.$store.state.active].category_id
+        console.log(this.$store.state.active,this.active)
+        getProductList({page:this.page,limit:this.limit,category_id:res.data.data[this.$store.state.active].category_id}).then(res=>{
+        this.detailList=res.data.data
+        this.page++
+    })
+      }else{
+        this.$toast('获取标签失败')
+      }
+    }).catch(err=>{
+        Indicator.close()
+        this.$toast('无数据')
+      
+    })
+    // this.$nextTick(() => {
+    //   this.scroll = new BScroll(this.$refs.wrapper, { // better-scroll初始化
+    //     scrollY, // 竖向滚动
+    //     click: true // 滚动区域可触发点击事件
+    //   })
+    // })
   }
 }
 </script>
 <style lang="scss" scoped>
 #class {
   // height: 100%;
+  text-align: center;
   font-family: '微软雅黑';
-  .head {
-    position: fixed;
-    z-index: 999;
-    top: 0;
-    left: 0;
-    height: .44rem;
-    width: 100%;
-    line-height: .44rem;
-    text-align: center;
-    color: #fff;
-    background-color: #ff8c3c;
-    i {
-      position: absolute;
-      left: .1rem;
-    }
-  }
+  .create_header{
+            width:100%;
+            height: .45rem;
+            line-height: .45rem;
+            background:#fff;
+            color:black;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            text-align: center;
+            display:flex;
+            .back{
+                float: left;
+                .icon-huitui{
+                    float: left;
+                    font-size: .16rem;
+                }
+            }
+            .header_info{
+                font-size: .14rem;
+                padding-right: .1rem;
+                padding-left: .2rem;
+                text-align: left;
+            }
+            .header_title{
+                flex: 1;
+                // padding-right: .58rem;
+            }
+        }
   .main {
     display: flex;
-    // height: 100%;
+    height: 100%;
     .wrapper {
       position: fixed;
       z-index: 100;
       top:.44rem;
       left: 0;
-      overflow: hidden;
+      overflow: auto;
       width: 0.8rem;
       height: 100%;
       background-color: #fff;
@@ -162,7 +279,7 @@ export default {
         padding-bottom: .8rem;
         li {
           height: .4rem;
-          width: .8rem;
+          width:100%;
           line-height: .4rem;
           padding-left: .1rem;
           text-align: left;
@@ -180,11 +297,12 @@ export default {
       flex: 1;
       overflow: auto;
       // margin: 0 0.08rem;
-      margin-left: .88rem;
+      margin-left: .82rem;
       background-color: #fff;
-      margin-bottom:.45rem;
+      // margin-bottom:.45rem;
       .detailList {
         display: flex;
+        height: 100%;
         flex-direction: column;
         background: #f1f1f1;
         li {
@@ -192,9 +310,8 @@ export default {
           background: #fff;
           flex: 1;
           width: 100%;
-          img {
-            width: 100%;
           }
+          
         }
         .detail_title{
         height: .4rem;
@@ -205,32 +322,46 @@ export default {
         }
         .detail_item{
           display: flex;
-          flex: 1;
           margin-bottom: .1rem;
+          .mint-cell{
+            display: flex;
+            width: 100%;
+          }
+          .item_wrap{
+              display: flex;
           .item_image{
             flex: 2;
             width:.6rem;
             height: .8rem;
-            border:1px solid red;
+            display:flex;
+            align-items: center;
             border-radius: 0.06rem;
             img{
               width: 100%;
-              height: 100%;
+              height: 90%;
             }
-          }
-          .item_info{
-            flex: 5;
-          }
+           }
+           .item_info{
+             display: flex;
+             flex-direction: column;
+             line-height: .4rem;
+             flex: 5;
+             p{
+               flex: 1;
+             }
+            }
+        }
+          
           .item_handle{
             display:flex;
             flex-direction: column;
             flex:1.5;
             p{
               flex: 1;
-              line-height: .4rem;
+              line-height: .266rem;
             }
           }
-        }
+        
       }
       .padding_color {
         background-color: #fff;

@@ -11,8 +11,17 @@
                         <img src="images/3.jpg" alt="" />
                     </div>
                     <div class="item_opera">
-                        <p>编辑</p>
-                        <p>删除</p>
+                        <p class="item_info edit">编辑</p>
+                        <p class="item_info del">删除</p>
+                    </div>
+                </li>
+                <li class="list_item">
+                    <div class="item_image">
+                        <img src="images/3.jpg" alt="" />
+                    </div>
+                    <div class="item_opera">
+                        <p class="item_info edit">编辑</p>
+                        <p class="item_info del">删除</p>
                     </div>
                 </li>
             </ul>
@@ -63,7 +72,44 @@ export default {
         margin:.45rem 0 .45rem;
         flex:1;
         .list{
-            display: flex;
+            width:100%;
+            clear: both;
+            .list_item{
+                width:40%;
+                margin:.2rem .15rem;
+                float:left;
+                display: flex;
+                flex-direction: column;
+                border-radius: 0.1rem;
+                overflow: hidden;
+                box-shadow: 10px 10px 5px #888888;
+                .item_image{
+                    flex:1;
+                    img{
+                        width:100%;
+                        height: 100%;
+                    }
+                }
+                .item_opera{
+                    height:.25rem;
+                    text-align: center;
+                    line-height: .25rem;
+                    margin-top:-0.035rem;
+                    display: flex;
+                    .item_info{
+                        font-size: 0.12rem;
+                        // color: cadetblue;
+                        color: #fff;
+                        flex:1;
+                    }
+                    .edit{
+                        background: rgb(104, 233, 104);
+                    }
+                    .del{
+                        background: red;
+                    }
+                }
+            }
         }
     }
     .template_footer{

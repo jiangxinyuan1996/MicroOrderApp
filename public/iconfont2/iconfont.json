@@ -13,11 +13,39 @@
       "unicode_decimal": 58981
     },
     {
+      "icon_id": "2861507",
+      "name": "前进",
+      "font_class": "qianjin",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "3751330",
+      "name": "硬币",
+      "font_class": "yingbi",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "3944661",
+      "name": "银行卡",
+      "font_class": "icon-test",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
       "icon_id": "4378586",
       "name": "会员",
       "font_class": "filedicon_memberco",
       "unicode": "e623",
       "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "4608568",
+      "name": "赞助商,钻石",
+      "font_class": "iconzhengli-",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
     },
     {
       "icon_id": "5325315",
