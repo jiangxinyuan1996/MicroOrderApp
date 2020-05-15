@@ -21,6 +21,7 @@
 </div>
 </template>
 <script>
+import { Indicator } from 'mint-ui'
 export default {
     data(){
         return{
@@ -37,12 +38,13 @@ export default {
         this.$store.state.showTab = false
     },
     mounted(){
+     Indicator.close()
         console.log(this.$route.params.item)
         if(this.$route.params.item){
         this.detailData=this.$route.params.item
         switch(this.detailData.state){
             case '1':
-                this.state='未付款'
+                this.state='待付款'
                 break
             case '2':
                 this.state='已付款'

@@ -93,7 +93,7 @@ export function bindMerchant(data){
 //生成海报
 export function createqr(data){
     return request({
-        url:'/tlwdd/index.php?controller/product/createQR',
+        url:'/tlwdd/index.php?controller/product/createTempQR',
         method:'POST',
         data
     })

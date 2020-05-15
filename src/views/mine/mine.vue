@@ -79,6 +79,7 @@ export default {
     }
   },
   beforeCreate(){
+     Indicator.close()
     HomeData().then(res=>{
       if(res.data.success===1){
         localStorage.setItem('merchantid',res.data.data.merchant_id)

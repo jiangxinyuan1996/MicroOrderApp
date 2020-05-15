@@ -1,24 +1,73 @@
 <template>
   <div id="home">
       <div class="header_title">
-        <div class="header_info" @click="handleClick">收款</div>
-        <div class="header_info">商品</div>
+        <div class="header_info" @click="handleCreate">收款</div>
+        <div class="header_info" @click="handleClick">货架</div>
       </div>
-      <div>总收入: 10500 元</div>
-      <div>共卖出: 150 件商品</div>
+      <div class="money">总收入: 10500 元</div>
+      <div class="count">共卖出: 150 件商品</div>
       <div id="line_echarts"></div>
+      <div id="pie_echarts"></div>
   </div>
 </template>
 <script>
 import { HomeData } from '@/api'
+import { Indicator } from 'mint-ui'
+
 var echarts = require('echarts')
 export default {
   data () {
     return {
+      pieChartsData : {
+    title: {
+        text: '收入统计饼形图',
+        // subtext: '虚构数据',
+        left: 'center'
+    },
+    tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b} : {c} ({d}%)'
+    },
+    legend: {
+        
+        bottom: 10,
+        left: 'center',
+        data: ['西凉', '益州', '兖州', '荆州', '幽州']
+    },
+    series: [
+        {
+            type: 'pie',
+            radius: '65%',
+            center: ['50%', '50%'],
+            selectedMode: 'single',
+            data: [
+                {value: 1200, name: '1月'},
+                {value: 1400, name: '2月'},
+                {value: 1500, name: '3月'},
+                {value: 1700, name: '4月'},
+                {value: 1900, name: '5月'},
+                {value: 2000, name: '6月'},
+                {value: 2800, name: '7月'}
+            ],
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }
+    ]
+},
       lineChartsData: {
+        title: {
+        text: '收入统计',
+        // subtext: '虚构数据',
+        left: 'center'
+        },
         xAxis: {
           type: 'category',
-          data: ['1月', '2月', '3月', '4月', '5月', '7月', '8月']
+          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月']
         },
         yAxis: {
           type: 'value'
@@ -36,6 +85,9 @@ export default {
   methods:{
     handleClick(){
       this.$router.push('/goods')
+    },
+    handleCreate(){
+      this.$router.push('/createGoods')
     }
   },
   beforeCreate(){
@@ -49,8 +101,11 @@ export default {
     })
   },
   mounted () {
+     Indicator.close()
     var myChart = echarts.init(document.getElementById('line_echarts'))
     myChart.setOption(this.lineChartsData)
+    var pieChart = echarts.init(document.getElementById('pie_echarts'))
+    pieChart.setOption(this.pieChartsData)
     //  if(localStorage.getItem('merchantid')!=''&&localStorage.getItem('merchantid')){
     //         // this.$toast('已绑定店铺')
     //       }else{
@@ -76,7 +131,23 @@ export default {
       background: #04BE02;
     }
   }
+  .money{
+    position: absolute;
+    left:.28rem;
+    top:1.2rem;
+  }
+  .count{
+    position: absolute;
+    left:.28rem;
+    top:1.5rem;
+  }
 #line_echarts {
+  margin-top: 1rem;
+  height:300px;
+}
+#pie_echarts {
   height: 300px;
+  z-index: 20;
+  margin-bottom: .45rem;
 }
 </style>

@@ -7,6 +7,8 @@
 </template>
 <script>
 import navbar from '@/components/navbar'
+import { Indicator } from 'mint-ui'
+
 import { HomeData } from '@/api'
 export default {
   components: {
@@ -20,6 +22,9 @@ export default {
         this.$router.push('/register')
       }
     })
+  },
+  mounted(){
+     Indicator.close()
   }
 }
 </script>

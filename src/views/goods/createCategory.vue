@@ -9,17 +9,18 @@
         </div>
         <div class="add">
              <div class="search">
-                    <input type="text" placeholder="请输入标签" v-model.trim="addtext" @keypress.13="handleAdd" autofocus="autofocus">
-                    <div class="cancel" @click="handleAdd">添加</div>
+                    <input type="text" placeholder="请输入标签" v-model.trim="addtext" @keypress.13="handleAdd" >
+                    <div class="cancel" @click="handleAdd">添加 +</div>
             </div>
         </div>
         <div class="createFrom">
             <ul class="categoryList" v-if="categoryList.length">
-                <li v-for="(item,index) in categoryList" :key="item.category_id" class="list_item">
+                <li v-for="(item,index) in categoryList" :key="item.category_id" class="list_item" >
                     <span>{{item.category_name}}</span>
                     <div class="btnGroup">
                     <!-- <div class="edit">修改</div> -->
-                    <div class="del" @click="handleDel(index,item)">删除</div>
+                    <div class="edit" @click="handleEdit(index,item)"><i class="iconfont icon-xiugai"/></div>
+                    <div class="del" @click="handleDel(index,item)"><i class="iconfont icon-lajitong"/></div>
                     </div>
                 </li>
             </ul>
@@ -33,6 +34,7 @@ import { MessageBox } from 'mint-ui'
 export default {
     data(){
         return{   
+        show:true,
         addtext:'',
         categoryList:[]
         }
@@ -41,6 +43,7 @@ export default {
     this.$store.state.showTab = false
   },
   mounted(){
+      console.log(this.$route.params)
       if(this.$route.params.categoryList){
           this.categoryList=this.$route.params.categoryList
       }
@@ -54,16 +57,23 @@ export default {
       },
       handleAdd(){
           if(this.addtext!=''){
+            if(this.categoryList.length+1>5){
+                this.$toast('您最多可以拥有五个标签')
+                this.addtext=''
+            }else{
             addCategoryList({category_name:this.addtext}).then(res=>{
               console.log(res)
               if(res.data.success===1){
-                  this.$toast('新增标签成功')
+                  this.$toast('新增标签成功,还可以添加'+(5-this.categoryList.length)+'个')
               }
             })
               this.categoryList.push({
                   category_name:this.addtext
           })
           this.addtext=''
+            }
+          }else{
+              this.$toast('请输入标签名')
           }
       },
       handleDel(index,item){
@@ -149,29 +159,32 @@ overflow: auto;
         .createFrom{
             .categoryList{
                 .list_item{
-                margin:0 .08rem;
-                padding-left: .08rem;
+                margin:0 .3rem;
+                // margin-right: .7rem;
+                padding-left: .18rem;
                 border-radius: 5px;
-                    height: .3rem;
-                    line-height: .3rem;
+                    height: .4rem;
+                    line-height: .4rem;
                     background: #fff;
+                    // float: left;
+                    // width:40%;
                     display: flex;
                     justify-content: space-between;
                     margin-bottom: .05rem;
                     .btnGroup{
                         display: flex;
                         color: #fff;
-                       .edit{
+                        .edit{
                            flex: 1;
-                           margin-right: 0.05rem;
-                            background: skyblue;
                             border-radius: 5px;
-                            padding: 0 .05rem;
+                            // padding: 0 .05rem;
+                            color: skyblue;
                             }
                         .del{
                             padding: 0 .05rem;
                             flex: 1;
-                            background: red;
+                            background: #fff;
+                            color: red;
                             border-radius: 5px;
 
                         }

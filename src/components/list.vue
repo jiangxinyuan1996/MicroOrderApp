@@ -7,8 +7,13 @@
                     <div class="cancel" @click="handleSearch">搜索</div>
             </div>
         </div>
-        <ul class="navlist">
-            <li v-for="item in orderList" :key="item.order_id" class="list_item" @click="handleClick(item)">
+        <mt-loadmore :bottom-method="loadMore" ref="loadmore" :auto-fill="false">
+
+        <ul class="navlist"  v-infinite-scroll="loadMore"
+        infinite-scroll-disabled="loading"
+        infinite-scroll-distance="50"
+        infinite-scroll-immediate-check="false">
+            <li v-for="(item,index) in orderList" :key="index" :class="'list_item '+(currentStatus==='待付款'?'red':'green')" @click="handleClick(item)">
                 <p>订单号:{{item.req_sn}}</p>
                 <p>日期:{{item.create_time}}</p>
                 <p>总价:{{item.total}}</p>
@@ -16,6 +21,9 @@
                 <p>状态:{{currentStatus}}</p>
             </li>
         </ul>
+        <p slot="top" class="mint-loadmore-top"></p>
+
+        </mt-loadmore>
     </div>
 </template>
 <script>
@@ -26,6 +34,8 @@ export default {
     props:['status'],
     data(){
         return{
+            page:1,
+            limit:10,
             mytext:'',
             currentStatus:'',
             orderList:[]
@@ -45,6 +55,7 @@ export default {
         }
         getOrderList({status:this.status}).then(res=>{
             if(res.data.success===1){
+                this.page++
             Indicator.close()
                 this.orderList=res.data.data
             }else{
@@ -61,6 +72,17 @@ export default {
             this.$router.push({name:'orderDetail',params:{
                 item
             }})
+        },
+        loadMore(){
+             getOrderList({status:this.status,page:this.page,limit:this.limit}).then(res=>{
+            if(res.data.success===1){
+                this.page++
+                this.orderList=[...this.orderList,...res.data.data]
+                
+            }else{
+                this.$toast('无数据')
+            }
+        })
         }
     }
 }
@@ -111,7 +133,6 @@ export default {
         .list_item{
             display: flex;
             flex-direction: column;
-            border-bottom: 1px solid red;
             // height: 0.5rem;
             background:#fff;
             margin:.06rem 0.08rem;
@@ -121,6 +142,12 @@ export default {
             p{
                 flex: 1;
             }
+        }
+        .red{
+            border-bottom: 1px solid red;
+        }
+        .green{
+            border-bottom: 1px solid #04BE02;
         }
     }
 }

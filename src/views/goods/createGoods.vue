@@ -8,16 +8,9 @@
             <div class="header_title">收款单</div>
         </div>
         <div class="createFrom">
-            <mt-field label="名称*" placeholder="请输入名称" :state="formData.product_name?'success':'error'" type="text" v-model="formData.product_name"></mt-field>
-            <mt-field label="金额*" placeholder="请输入金额" :state="formData.price?'success':'error'" type="text" v-model="formData.price" ></mt-field>
-            <mt-field label="描述*" placeholder="商品描述" :state="formData.introduction?'success':'error'" type="textarea" rows="4" v-model="formData.introduction" ></mt-field> 
-            <!-- <div class="weui-cell weui-cell_active weui-cell_select">
-                <div class="weui-cell__bd">
-                    <select class="weui-select" name="select1" >
-                        <option v-for="(item,index) in categorylist" :key="index" :option="item.category_id">{{item.category_name}}</option>
-                    </select>
-                </div>
-            </div>    -->
+            <mt-field label="名称" placeholder="请输入名称" :state="(formData.product_name?'success':error)" type="text" v-model="formData.product_name"></mt-field>
+            <mt-field :label="'金额'" placeholder="请输入金额" :state="formData.price?'success':error" type="text" v-model="formData.price" ></mt-field>           
+            <mt-field label="描述" placeholder="商品描述" :state="formData.introduction?'success':error" type="textarea" rows="4" v-model="formData.introduction" ></mt-field> 
             <el-dialog
             title="请选择标签"
             :visible.sync="dialogVisible"
@@ -57,16 +50,6 @@
                         <div class="weui-uploader__bd">
                             <ul class="weui-uploader__files" id="uploaderFiles" v-if="formData.image.length">
                                 <li  v-for="(item,index) in images" :key="index" class="weui-uploader__file" :style="'background-image: url('+ item+');'" @click="handleShow(item,index)"></li>
-                                <!-- <li class="weui-uploader__file" style="background-image: url(images/3.jpg);"></li>
-                                <li class="weui-uploader__file" style="background-image: url(images/3.jpg);"></li> -->
-                                <!-- <li class="weui-uploader__file weui-uploader__file_status" style="background-image: url(./images/pic_160.png);">
-                                    <div class="weui-uploader__file-content">
-                                        <i class="weui-icon-warn"></i>
-                                    </div>
-                                </li>
-                                <li class="weui-uploader__file weui-uploader__file_status" style="background-image: url(./images/pic_160.png);">
-                                    <div class="weui-uploader__file-content">50%</div>
-                                </li> -->
                             </ul>
                             <div class="weui-uploader__input-box" v-if="showAdd">
                                 <input   id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple="" @change="uploadPhoto">
@@ -99,16 +82,12 @@
             </label>
         </div>
       </div>
-    </div>
-            <!-- <mt-switch v-model="formData.flag" style="margin-top:.1rem">收货人地址<span v-if="formData.flag">(买家是否需要填写收货地址)</span></mt-switch>
-            <mt-switch v-model="formData.flag1" style="margin-top:.1rem">请求数量<span v-if="formData.flag1">(买家是否需要选择数量)</span></mt-switch> -->
-            
+    </div>            
         </div>
         <div class="wallet_footer">
-            <div class="footer_left footer_info" @click="handlePhoto">海报</div>
-            <div class="footer_right footer_info" @click="handleSave">保存</div>
+            <div class="footer_left footer_info" @click="handlePhoto">生成海报</div>
+            <div class="footer_right footer_info" @click="handleSave">保存模板</div>
         </div>
-        <!-- <mt-button type="primary" style="width:100%;position:fixed;bottom:0;left:0" @click="submit">提交</mt-button> -->
      </div>
 </template>
 <script>
@@ -121,6 +100,7 @@ export default {
             isShow:false,
             showAdd:true,
             dialogVisible:false,
+            error:'',
             limit:0,
             index:-1,
             src:'',
@@ -131,7 +111,7 @@ export default {
             categorylist:[],
             formData:{
                 product_name:'',
-                price:'',
+                price:'0.00',
                 address_flag:false,
                 introduction:'',
                 image:[],
@@ -141,8 +121,28 @@ export default {
     },
     beforeMount () {
     this.$store.state.showTab = false
-    },
+        },
   mounted(){
+       let a =document.querySelectorAll('.mint-cell-title')
+       for(let i=0;i<a.length;i++){
+        let para = document.createElement("span");
+        let node = document.createTextNode("*");
+        para.appendChild(node);
+        para.style.color='red'
+        if(i==1){
+           let key = document.createElement("span");
+            let node = document.createTextNode("￥");
+            key.appendChild(node);
+            key.style.float='right'
+            a[i].appendChild(key)
+
+            console.log(i)
+        }
+        a[i].appendChild(para)
+       }
+    
+    console.log(a.length)
+    // a.appendChild(para)
       getProductCategoryInfo().then(res=>{
           this.categorylist=res.data.data
           this.category_id=this.categorylist[0].category_id
@@ -150,7 +150,7 @@ export default {
       if(this.$route.params.item){
           this.formData=this.$route.params.item
           this.category_id=this.formData.category_id
-          this.images=[...this.$route.params.item.image]
+          this.images=[...this.$route.params.image]
                     if(this.$route.params.val==='修改'){
             switch(this.$route.params.item.address_flag){
             case '0':
@@ -177,7 +177,7 @@ export default {
                  this.formData.address_flag=true
                 break
         }
-        switch(this.formData.item.num_flag){
+        switch(this.formData.num_flag){
             case '0':
                  this.formData.num_flag=false
                 break
@@ -194,6 +194,7 @@ export default {
           if(this.formData.product_name!=''&&this.formData.price!=''&&this.formData.introduction!=''){
               this.dialogVisible=true
           }else{
+              this.error='error'
               this.$toast('请填写必要信息')
         }
       },
@@ -220,9 +221,17 @@ export default {
           this.isShow=false
       },
       handlePhoto(){
-      this.$router.push({name:'createqr',params:{
-        item:this.formData
+          if(this.formData.product_name!=''&&this.formData.price!=''&&this.formData.introduction!=''){
+              this.$router.push({name:'createqr',params:{
+                item:this.formData,
+                image:this.images,
+                val:this.$route.params.val
       }})
+          }else{
+              this.error='error'
+              this.$toast('请填写必要信息')
+        }
+      
     },
       submit(){
           if(this.$route.params.val==='修改'){
@@ -378,8 +387,14 @@ overflow: auto;
                 padding-right: .58rem;
             }
         }
+
         .createFrom{
             margin: .45rem 0;
+            .mint-cell-title{
+                &:after{
+                    content:'*';
+                }
+            }
             .weui-cell{
                 background: #fff;
             }

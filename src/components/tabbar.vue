@@ -17,7 +17,7 @@ export default {
     position: fixed;
     bottom: 0;
     width: 100%;
-    z-index: 200;
+    z-index: 999;
     box-sizing: border-box;
     display:flex;
     height: 0.45rem;

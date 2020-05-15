@@ -5,8 +5,8 @@
             <i class="iconfont icon-huitui" />
             <p class="header_info">返回</p>
             </div>
-            <div class="header_title">收款单列表</div>
-            <div style="padding-right:.08rem" @click="handleAddGoods">新建</div>
+            <div class="header_title">货架</div>
+            <div style="padding-right:.08rem;font-size:.3rem;color:green;font-weight:300" @click="handleAddGoods" >+</div>
         </div>
     <div class="main">
       <div class="wrapper" ref="wrapper">
@@ -118,7 +118,7 @@ export default {
       }]
       },
     handleDetail(item,val){
-      this.$router.push({name:'createGoods',params:{item,val}})
+      this.$router.push({name:'createGoods',params:{item,val,image:item.image}})
     },
     handlePhoto(item){
       this.$router.push({name:'createqr',params:{
@@ -128,6 +128,9 @@ export default {
     handleAddCategory () {
       this.$router.push({
         name:'createCategory',
+        params:{
+          categoryList:this.categoryList
+        }
         })
     },
     handleAddGoods () {

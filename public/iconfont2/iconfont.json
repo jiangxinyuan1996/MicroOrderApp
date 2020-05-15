@@ -97,6 +97,13 @@
       "unicode_decimal": 59620
     },
     {
+      "icon_id": "11481162",
+      "name": "垃圾桶",
+      "font_class": "lajitong",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
       "icon_id": "11992115",
       "name": "更多",
       "font_class": "gengduo",
@@ -109,6 +116,13 @@
       "font_class": "mobanxiazai-01",
       "unicode": "e62c",
       "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "14463315",
+      "name": "修改",
+      "font_class": "xiugai",
+      "unicode": "e765",
+      "unicode_decimal": 59237
     }
   ]
 }
