@@ -8,5 +8,16 @@ module.exports = {
         changeOrigin:true
       }
     }
-  }
+  },
+  configureWebpack:()=>{
+      return {
+          externals: {
+            'vue': 'Vue',
+            'vue-router': 'VueRouter',
+            'vuex': 'Vuex',
+            'axios': 'axios',
+            'element-ui': 'ELEMENT'
+           }
+      }
+    }
 }
