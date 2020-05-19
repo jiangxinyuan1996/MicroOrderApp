@@ -2,9 +2,11 @@
     <div id="list">
         <div class="header">
             <div class="search">
-                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAMAAADX9CSSAAAAM1BMVEUAAAC8vLy8vLy9vb27u7u8vLy/v7+9vb2/v7+8vLy8vLy8vLy7u7u9vb27u7u7u7u7u7uNEF5lAAAAEHRSTlMA89tTpH4wHwy9iprlyYdxyi6iUQAAAIZJREFUKM91kVkOwyAMBbFZszSd+5+2SHEVt8D7imbCA0y4E5OKaIrBYlSxqDc7LvsPllxaK1mciMBW7++6AValHT+dXej3d6kPr2ILEuTgkiFZTfG8WJFA87yBrPiqZ7Xv8pzjvV6gkzl0TJzPjWM2ZxPjuyQTwzua+IuJayYOOMMs1/n+ALRtCdMh8+jaAAAAAElFTkSuQmCC" alt="">
+                    <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAMAAADX9CSSAAAAM1BMVEUAAAC8vLy8vLy9vb27u7u8vLy/v7+9vb2/v7+8vLy8vLy8vLy7u7u9vb27u7u7u7u7u7uNEF5lAAAAEHRSTlMA89tTpH4wHwy9iprlyYdxyi6iUQAAAIZJREFUKM91kVkOwyAMBbFZszSd+5+2SHEVt8D7imbCA0y4E5OKaIrBYlSxqDc7LvsPllxaK1mciMBW7++6AValHT+dXej3d6kPr2ILEuTgkiFZTfG8WJFA87yBrPiqZ7Xv8pzjvV6gkzl0TJzPjWM2ZxPjuyQTwzua+IuJayYOOMMs1/n+ALRtCdMh8+jaAAAAAElFTkSuQmCC" alt=""> -->
                     <input type="text" placeholder="姓名/运单号" v-model.trim="mytext" @keypress.13="handleSearch">
-                    <div class="cancel" @click="handleSearch">搜索</div>
+                    <div class="cancel" @click="handleSearch">                  
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAMAAADX9CSSAAAAM1BMVEUAAAC8vLy8vLy9vb27u7u8vLy/v7+9vb2/v7+8vLy8vLy8vLy7u7u9vb27u7u7u7u7u7uNEF5lAAAAEHRSTlMA89tTpH4wHwy9iprlyYdxyi6iUQAAAIZJREFUKM91kVkOwyAMBbFZszSd+5+2SHEVt8D7imbCA0y4E5OKaIrBYlSxqDc7LvsPllxaK1mciMBW7++6AValHT+dXej3d6kPr2ILEuTgkiFZTfG8WJFA87yBrPiqZ7Xv8pzjvV6gkzl0TJzPjWM2ZxPjuyQTwzua+IuJayYOOMMs1/n+ALRtCdMh8+jaAAAAAElFTkSuQmCC" alt="">
+                    </div>
             </div>
         </div>
         <mt-loadmore :bottom-method="loadMore" ref="loadmore" :auto-fill="false">
@@ -15,6 +17,7 @@
         infinite-scroll-immediate-check="false">
             <li v-for="(item,index) in orderList" :key="index" :class="'list_item '+(currentStatus==='待付款'?'red':'green')" @click="handleClick(item)">
                 <p>订单号:{{item.req_sn}}</p>
+                <p>收款单名称:{{item.product_name}}</p>
                 <p>日期:{{item.create_time}}</p>
                 <p>总价:{{item.total}}</p>
                 <p>买家:{{item.receiver_name}}</p>
@@ -100,6 +103,7 @@ export default {
         border-bottom:.5px solid #ebebeb;
         background: #fff;
         .cancel{
+            background: #f1f1f1;
             font-size: .16rem;
             width: .7rem;
             height:.3rem;
@@ -124,6 +128,7 @@ export default {
                 input{
                     outline: none;
                     border: none;
+                    padding-left: .2rem;
                     flex: 1;
                     background: #f8f8f8;
                 }

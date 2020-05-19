@@ -67,6 +67,14 @@ export function addCategoryList(data){
         data
     })
 }
+//修改分类
+export function updateCategoryList(data){
+    return request({
+        url:'/tlwdd/index.php?controller/category/updateProductCategory',
+        method:'POST',
+        data
+    })
+}
 //删除分类
 export function delCategoryList(data){
     return request({

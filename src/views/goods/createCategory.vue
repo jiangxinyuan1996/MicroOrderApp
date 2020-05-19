@@ -10,7 +10,7 @@
         <div class="add">
              <div class="search">
                     <input type="text" placeholder="请输入标签" v-model.trim="addtext" @keypress.13="handleAdd" >
-                    <div class="cancel" @click="handleAdd">添加 +</div>
+                    <div class="cancel" @click="handleAdd" style="fontSize:.3rem;fontWeight:300;color:green">+</div>
             </div>
         </div>
         <div class="createFrom">
@@ -19,7 +19,7 @@
                     <span>{{item.category_name}}</span>
                     <div class="btnGroup">
                     <!-- <div class="edit">修改</div> -->
-                    <div class="edit" @click="handleEdit(index,item)"><i class="iconfont icon-xiugai"/></div>
+                    <div class="edit" @click="isshow(index,item)"><i class="iconfont icon-xiugai"/></div>
                     <div class="del" @click="handleDel(index,item)"><i class="iconfont icon-lajitong"/></div>
                     </div>
                 </li>
@@ -29,11 +29,16 @@
      </div>
 </template>
 <script>
-import { addCategoryList,delCategoryList } from '@/api'
+import { getProductCategoryInfo,addCategoryList,delCategoryList,updateCategoryList} from '@/api'
 import { MessageBox } from 'mint-ui'
 export default {
     data(){
-        return{   
+        return{  
+        clicked:1,
+        clickedTime:{
+            timeA:'',
+            timeB:''
+        }, 
         show:true,
         addtext:'',
         categoryList:[]
@@ -46,12 +51,63 @@ export default {
       console.log(this.$route.params)
       if(this.$route.params.categoryList){
           this.categoryList=this.$route.params.categoryList
+      }else{
+          this.getlist()
       }
   },
   beforeDestroy () {
-    this.$store.state.showTab = true
+    // this.$store.state.showTab = true
   },
   methods:{
+      getlist(){
+          getProductCategoryInfo().then(res=>{
+              this.categoryList=res.data.data
+          })
+      },
+    //   clicking () {
+    //   if (this.clicked === 1) {
+    //     this.clickedTime.timeA = new Date()
+    //     this.clicked++
+    //   } else if (this.clicked === 2) {
+    //     this.clickedTime.timeB = new Date()
+    //     if (Math.abs(this.clickedTime.timeA - this.clickedTime.timeB) < 300) {
+    //       //  双击
+    //       this.isshow()
+    //       this.clicked = 1
+    //     } else {
+    //       this.clickedTime.timeA = new Date()
+    //     }
+    //   }
+    // },
+    isshow(index,item){
+        // MessageBox.prompt({
+        //     message:'请输入标签名'
+        //     }).then(({ value, action }) => {
+        //     console.log(value)
+        // })
+        MessageBox({
+        title: '提示',
+        message: '请输入标签名',
+        showCancelButton: true,
+        showInput:true,
+        closeOnClickModal:false,
+        inputValue:item.category_name
+        }).then(res=>{
+           let name=document.querySelectorAll('.mint-msgbox-input')[0].children[0].value.trim()
+           if(name.length<=4){
+               updateCategoryList({category_id:item.category_id,category_name:name}).then(res=>{
+                if(res.data.success===1){
+                    this.$toast('修改标签成功')
+                    this.getlist()
+                }
+            }).catch(err=>{
+                console.log(err)
+            })
+           }else{
+               this.$toast('修改失败,标签名长度不可超过4个字')
+           }    
+        })
+    },
       handleBack(){
           history.go(-1)
       },
@@ -78,7 +134,7 @@ export default {
       },
       handleDel(index,item){
           console.log(item)
-           MessageBox.confirm('删除标签此标签下模板会一并删除').then(action => {
+           MessageBox.confirm('是否删除此标签与此标签下所有收款单').then(action => {
                delCategoryList([item.category_id]).then(res=>{
                    console.log(res)
                    if(res.data.success===1){
@@ -127,12 +183,10 @@ overflow: auto;
         .add{
             margin: .55rem .08rem .1rem;
             .cancel{
-                font-size: .16rem;
                 width: .7rem;
                 height:.3rem;
                 text-align: center;
                 line-height: .3rem;
-                font-size: .14rem;
             }
             .search{
                 display: flex;

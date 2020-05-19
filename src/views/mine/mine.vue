@@ -38,7 +38,7 @@
 </template>
 <script>
 import { HomeData } from '@/api'
-
+import { Indicator } from 'mint-ui'
 export default {
   data () {
     return {

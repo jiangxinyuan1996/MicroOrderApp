@@ -18,7 +18,7 @@
         infinite-scroll-immediate-check="false">
           <!-- 分类列表 -->
           <li v-for="(item,index) in categoryList" :key="item.category_id" @click="listClick(index,item)" :class="index===active?'active':''">{{item.category_name}}</li>
-          <li style="fontSize:.14rem;color:#ccc;lineHeight:.4rem" @click="handleAddCategory">编辑标签<span style="fontSize:.2rem">+</span></li>
+          <li style="fontSize:.14rem;color:#ccc;lineHeight:.4rem" @click="handleAddCategory"><span style="fontSize:.3rem;font-weight:300;line-height:.35rem;color:green">+</span></li>
         </ul>
       </div>
       <div class="detailList_box">
@@ -134,20 +134,19 @@ export default {
         })
     },
     handleAddGoods () {
-      console.log('新增商品')
       this.$router.push({name:'createGoods',params:{
         list:this.categoryList,
         val:'新增'
       }})
     },
     handleDel(item,index){
-      MessageBox.confirm('确定删除此模板?').then(action => {
+      MessageBox.confirm('确定删除此收款单?').then(action => {
       let datalist=[]
         datalist.push(item.product_id)
         delProductList(datalist).then(res=>{
           console.log(res)
           if(res.data.success===1){
-            this.$toast('删除模板成功')
+            this.$toast('删除收款单成功')
           }else{
             this.$toast('删除失败')
           }

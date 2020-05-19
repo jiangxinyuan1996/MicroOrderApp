@@ -8,7 +8,7 @@
             <div class="header_title">订单详情</div>
         </div>
         <div class="order_content" v-if="detailData">
-            <mt-cell title="商品名称" :label="detailData.product_name"></mt-cell>
+            <mt-cell title="收款单名称" :label="detailData.product_name"></mt-cell>
             <mt-cell title="订单号" :label="detailData.req_sn"></mt-cell>
             <mt-cell title="收货人姓名" :label="detailData.receiver_name"></mt-cell>
             <mt-cell title="联系电话" :label="detailData.receiver_telephone"></mt-cell>
@@ -90,5 +90,8 @@ export default {
                 flex: 1;
                 padding-right: .58rem;
             }
+}
+.order_content{
+    margin-top:.45rem;
 }
 </style>

@@ -4,8 +4,14 @@
         <div class="header_info" @click="handleCreate">收款</div>
         <div class="header_info" @click="handleClick">货架</div>
       </div>
-      <div class="money">总收入: 10500 元</div>
-      <div class="count">共卖出: 150 件商品</div>
+      <ul class="chooseDate">
+        <router-link to="/" tag="li" exactActiveClass="active">今天</router-link>
+        <router-link to="/x" tag="li" exactActiveClass="active">近一周</router-link>
+        <router-link to="/xx" tag="li" exactActiveClass="active">近一月</router-link>
+        <router-link to="/xxx" tag="li" exactActiveClass="active">近一年</router-link>
+      </ul>
+      <div class="money">总收款: 10500 元</div>
+      <!-- <div class="count">共卖出: 150 件商品</div> -->
       <div id="line_echarts"></div>
       <div id="pie_echarts"></div>
   </div>
@@ -29,13 +35,13 @@ export default {
         formatter: '{a} <br/>{b} : {c} ({d}%)'
     },
     legend: {
-        
         bottom: 10,
         left: 'center',
-        data: ['西凉', '益州', '兖州', '荆州', '幽州']
+        data: ['1月', '2月', '3月', '4月', '5月','6月','7月']
     },
     series: [
         {
+            name:'收款(百分比)',
             type: 'pie',
             radius: '65%',
             center: ['50%', '50%'],
@@ -131,23 +137,39 @@ export default {
       background: #04BE02;
     }
   }
+  .chooseDate{
+    height: .25rem;
+    line-height: .25rem;
+    li{
+      
+      height: 100%;
+      width:.6rem;
+      border-radius: 5px;
+      margin-left: .2rem;
+      float: left;
+    }
+    .active{
+      background: #04BE02;
+      color: #fff;
+    }
+  }
   .money{
     position: absolute;
     left:.28rem;
-    top:1.2rem;
+    top:1.5rem;
   }
   .count{
     position: absolute;
     left:.28rem;
-    top:1.5rem;
+    top:1.8rem;
   }
 #line_echarts {
   margin-top: 1rem;
   height:300px;
 }
 #pie_echarts {
-  height: 300px;
+  height: 500px;
   z-index: 20;
-  margin-bottom: .45rem;
+  margin-bottom: .55rem;
 }
 </style>

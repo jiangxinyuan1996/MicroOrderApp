@@ -91,6 +91,11 @@ const routes = [
   templateRouter,
   walletRouter,
   {
+    path:'/cropper',
+    component:()=>import('@/components/cropper'),
+    name:'cropper'
+  },
+  {
     path:'/404',
     name:'404',
     component:()=>import('@/views/error')

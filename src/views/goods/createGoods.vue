@@ -8,22 +8,32 @@
             <div class="header_title">收款单</div>
         </div>
         <div class="createFrom">
-            <mt-field label="名称" placeholder="请输入名称" :state="(formData.product_name?'success':error)" type="text" v-model="formData.product_name"></mt-field>
-            <mt-field :label="'金额'" placeholder="请输入金额" :state="formData.price?'success':error" type="text" v-model="formData.price" ></mt-field>           
-            <mt-field label="描述" placeholder="商品描述" :state="formData.introduction?'success':error" type="textarea" rows="4" v-model="formData.introduction" ></mt-field> 
+            <mt-field label="名称" placeholder="请输入名称" :state="(formData.product_name?'success':error)" type="text" v-model="formData.product_name" @change="saveData(formData)"></mt-field>
+            <mt-field :label="'金额'" placeholder="请输入金额" :state="formData.price?'success':error" type="text" v-model="formData.price" @change="saveData(formData)"></mt-field>           
+            <mt-checklist
+            align="right"
+            v-model="formData.num_flag"
+            :options="['数量']"
+            @change="saveData(formData)">
+            </mt-checklist>
+            <mt-field label="描述" placeholder="请输入描述" :state="formData.introduction?'success':error" type="textarea" rows="4" v-model="formData.introduction" @change="saveData(formData)" ></mt-field> 
             <el-dialog
             title="请选择标签"
             :visible.sync="dialogVisible"
             width="80%"
             :before-close="handleClose">
-                <el-select v-model="category_id" placeholder="请选择" style="width:100%">
+                <el-select filterable
+                    allow-create v-model="category_id" placeholder="请选择" style="width:100%">
                     <el-option
-                    v-for="(item,index) in categorylist"
-                    :key="index"
+                    v-for="item in categorylist"
+                    :key="item.category_id"
                     :label="item.category_name"
                     :value="item.category_id">
                     </el-option>
                 </el-select>
+                <!-- <el-input placeholder="请输入内容" v-model="addtext" class="input-with-select">
+                    <el-button slot="append" icon="el-icon-plus" @click="handleAdd"></el-button>
+                </el-input> -->
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogVisible = false">取 消</el-button>
                     <el-button type="primary" @click="submit">确 定</el-button>
@@ -43,7 +53,7 @@
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">配图</p>
+                            <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2"/></p>
                             <div class="weui-uploader__info">{{formData.image.length}}/9</div>
 
                         </div>
@@ -52,7 +62,8 @@
                                 <li  v-for="(item,index) in images" :key="index" class="weui-uploader__file" :style="'background-image: url('+ item+');'" @click="handleShow(item,index)"></li>
                             </ul>
                             <div class="weui-uploader__input-box" v-if="showAdd">
-                                <input   id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple="" @change="uploadPhoto">
+                                <input   id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple @change="uploadPhoto">
+                                <!-- <h5-cropper :option="option" @getbase64Data="getbase64Data" @getblobData="getblobData" @getFile="getFile" @change="uploadPhoto"></h5-cropper> -->
                             </div>
                         </div>
                     </div>
@@ -68,7 +79,7 @@
                     <i class="weui-icon-checked"></i>
                 </div>
                 <div class="weui-cell__bd">
-                    <p>收货人地址<span v-if="formData.address_flag" >(买家是否需要填写收货地址)</span></p>
+                    <p>需真实发货<span v-if="formData.address_flag" >(勾选后买家需要填写收货地址)</span></p>
                 </div>
             </label>
             <label class="weui-cell weui-cell_active weui-check__label" for="s12">
@@ -77,26 +88,36 @@
                     <i class="weui-icon-checked"></i>
                 </div>
                 <div class="weui-cell__bd">
-                    <p>请求数量<span v-if="formData.num_flag">(买家是否需要选择数量)</span></p>
+                    <p>可购买多件<span v-if="formData.num_flag">(不勾选则买家默认只能购买一件)</span></p>
                 </div>
             </label>
         </div>
       </div>
     </div>            
         </div>
+        <!-- <H5Cropper></H5Cropper> -->
         <div class="wallet_footer">
             <div class="footer_left footer_info" @click="handlePhoto">生成海报</div>
-            <div class="footer_right footer_info" @click="handleSave">保存模板</div>
+            <div class="footer_right footer_info" @click="handleSave">保存收款单</div>
         </div>
      </div>
 </template>
 <script>
-import { addProduct,updateProduct,getProductCategoryInfo} from '@/api'
+import { addProduct,updateProduct,getProductCategoryInfo,addCategoryList} from '@/api'
 import { fileURLToPath } from 'url'
 import categoryVue from './category.vue'
+import { Indicator } from 'mint-ui'
+
+// import H5Cropper from '@/components/cropper'
+import H5Cropper from "vue-cropper-h5";
+
 export default {
+    components:{
+        H5Cropper
+    },
     data(){
         return{
+            addtext:'',
             isShow:false,
             showAdd:true,
             dialogVisible:false,
@@ -121,24 +142,43 @@ export default {
     },
     beforeMount () {
     this.$store.state.showTab = false
+    if(this.$route.params.val==='新增'){
+        this.formData=this.$store.state.formData
+    }
         },
   mounted(){
+      let title = document.querySelector('.mint-checklist-title')
+      title.parentNode.removeChild(title)
+      let wrap =document.querySelectorAll('.mint-cell-wrapper')
+      wrap[2].style.backgroundOrigin='content-box'
        let a =document.querySelectorAll('.mint-cell-title')
+       console.log(a)
        for(let i=0;i<a.length;i++){
+        let des= document.createElement("i")
+        des.className="iconfont icon-weibiaoti2"
+           if(i!==2){
+        des.onclick=function showtip(){
+            console.log(i)
+        }
         let para = document.createElement("span");
-        let node = document.createTextNode("*");
+        let node = document.createElement("span");
+        let nodetext = document.createTextNode("*");
+        node.appendChild(nodetext)
         para.appendChild(node);
-        para.style.color='red'
+        para.appendChild(des)
+        para.children[0].style.color='red'
         if(i==1){
            let key = document.createElement("span");
             let node = document.createTextNode("￥");
             key.appendChild(node);
             key.style.float='right'
             a[i].appendChild(key)
-
-            console.log(i)
         }
         a[i].appendChild(para)
+       }else{
+        a[i].children[0].style.padding=0
+        a[i].children[0].children[1].style.margin=0
+       }
        }
     
     console.log(a.length)
@@ -148,6 +188,7 @@ export default {
           this.category_id=this.categorylist[0].category_id
       })
       if(this.$route.params.item){
+          Indicator.close()
           this.formData=this.$route.params.item
           this.category_id=this.formData.category_id
           this.images=[...this.$route.params.image]
@@ -190,7 +231,43 @@ export default {
       }
   },
   methods:{
+      getlist(){
+          getProductCategoryInfo().then(res=>{
+              console.log(res)
+              this.categoryList=res.data.data
+          })
+      },
+      handleAdd(){
+          if(this.category_id!=''){
+            if(this.categoryList.length+1>5){
+                this.$toast('您最多可以拥有五个标签')
+                this.category_id=''
+            }else{
+            addCategoryList({category_name:this.category_id}).then(res=>{
+              console.log(res)
+              if(res.data.success===1){
+                  this.$toast('新增标签成功,还可以添加'+(5-this.categoryList.length)+'个')
+              }
+            })
+              this.categoryList.push({
+                  category_name:this.addtext
+          })
+          this.addtext=''
+            }
+          }else{
+              this.$toast('请输入标签名')
+          }
+      },
+      saveData(item){
+            console.log(item)
+        //   this.$store.state.formData=this.formData
+      },
+      changemoney(){
+          this.formData.price.toFixed(2)
+          console.log(1)
+      },
       handleSave(){
+          this.getlist()
           if(this.formData.product_name!=''&&this.formData.price!=''&&this.formData.introduction!=''){
               this.dialogVisible=true
           }else{
@@ -234,6 +311,7 @@ export default {
       
     },
       submit(){
+          this.handleAdd()
           if(this.$route.params.val==='修改'){
           switch(this.$route.params.item.address_flag){
             case true:
@@ -326,6 +404,9 @@ export default {
            let URLClass = window.URL || window.webkitURL || window.mozURL
            let  src,files = e.target.files
            this.limit+=e.target.files.length
+           if(e.target.files.length===1){
+
+           }
            let sum = this.formData.image.length+e.target.files.length
            if(sum>9){
                console.log('最多选九张')
@@ -345,6 +426,7 @@ export default {
             file.src = src
             this.formData.image.push(file)
             this.images.push(photo.originalUrl)
+            this.saveData(this.formData)
       }
             if(this.formData.image.length>8){
                         this.showAdd=false  
@@ -355,6 +437,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.mint-field-core{
+    resize:none!important;
+}
 #create{
 height: 100%;
 overflow: auto;
@@ -394,6 +479,9 @@ overflow: auto;
                 &:after{
                     content:'*';
                 }
+            }
+            .mint-checklist-label{
+                padding:0;
             }
             .weui-cell{
                 background: #fff;
