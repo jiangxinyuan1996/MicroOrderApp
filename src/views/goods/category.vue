@@ -6,11 +6,10 @@
             <p class="header_info">返回</p>
             </div>
             <div class="header_title">货架</div>
-            <div style="padding-right:.08rem;font-size:.3rem;color:green;font-weight:300" @click="handleAddGoods" >+</div>
+            <div style="padding-right:.08rem;font-size:.3rem;color:rgb(238,120,0);font-weight:300" @click="handleAddGoods" >+</div>
         </div>
     <div class="main">
       <div class="wrapper" ref="wrapper">
-        
         <ul class="content"
         v-infinite-scroll="cateloadMore"
         infinite-scroll-disabled="loading"
@@ -18,7 +17,7 @@
         infinite-scroll-immediate-check="false">
           <!-- 分类列表 -->
           <li v-for="(item,index) in categoryList" :key="item.category_id" @click="listClick(index,item)" :class="index===active?'active':''">{{item.category_name}}</li>
-          <li style="fontSize:.14rem;color:#ccc;lineHeight:.4rem" @click="handleAddCategory"><span style="fontSize:.3rem;font-weight:300;line-height:.35rem;color:green">+</span></li>
+          <li style="fontSize:.14rem;color:#ccc;lineHeight:.4rem;text-align:center" @click="handleAddCategory"><span style="fontSize:.3rem;font-weight:300;line-height:.35rem;color:rgb(238,120,0);padding-right:.2rem">+</span></li>
         </ul>
       </div>
       <div class="detailList_box">
@@ -103,8 +102,6 @@ export default {
         getProductList({page:this.page,limit:this.limit,category_id:item.category_id}).then(res=>{
         this.detailList=res.data.data
         Indicator.close()
-        // JSON.parse(res.data.data[0].image)
-        console.log(res.data.data)
     })
       this.active = index
       this.detailtext = item.category_name
@@ -238,7 +235,7 @@ export default {
             width:100%;
             height: .45rem;
             line-height: .45rem;
-            background:#fff;
+            background:rgb(135, 176, 221);
             color:black;
             position: fixed;
             top: 0;
@@ -289,9 +286,9 @@ export default {
           border: 1px solid #efeff4;
         }
         .active {
-          color:#e93b3d;
+          color:rgb(250, 190, 0);
           background-color: #efeff4;
-          border-left: 2px solid #ff0000;
+          border-left: 2px solid rgb(248, 189, 131);
         }
       }
     }

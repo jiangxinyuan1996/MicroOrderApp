@@ -44,10 +44,10 @@ export default {
     return {
       money:6.66,
       centerList: [
-        {
-          text: '会员',
-          icon: '#icon-filedicon_memberco'
-        },
+        // {
+        //   text: '会员',
+        //   icon: '#icon-filedicon_memberco'
+        // },
         // {
         //   text: '商品',
         //   icon: '#icon-shangpin'
@@ -57,7 +57,7 @@ export default {
           icon: '#icon-huabanfuben'
         },
         {
-          text: '模板',
+          text: '货架',
           icon: '#icon-mobanxiazai-01'
         },
         {
@@ -75,7 +75,8 @@ export default {
         {
           text: '更多',
           icon: '#icon-gengduo'
-        }]
+        }
+      ]
     }
   },
   beforeCreate(){
@@ -98,7 +99,7 @@ export default {
     },
     handleClick (item) {
       switch (item.text) {
-        case '模板':
+        case '货架':
           this.$router.push('/goods')
           break
         case '商品':
@@ -214,6 +215,7 @@ export default {
       }
       .item_pre{
         border-bottom: .001rem solid #c0c0c0;
+        // border: none;
       }
       .item_end{
         border-right: .001rem solid #fff;

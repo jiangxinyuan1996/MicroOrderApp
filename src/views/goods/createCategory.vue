@@ -10,7 +10,7 @@
         <div class="add">
              <div class="search">
                     <input type="text" placeholder="请输入标签" v-model.trim="addtext" @keypress.13="handleAdd" >
-                    <div class="cancel" @click="handleAdd" style="fontSize:.3rem;fontWeight:300;color:green">+</div>
+                    <div class="cancel" @click="handleAdd" style="fontSize:.3rem;fontWeight:300;color:rgb(238,120,0)">+</div>
             </div>
         </div>
         <div class="createFrom">

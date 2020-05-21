@@ -8,32 +8,54 @@
             <div class="header_title">收款单</div>
         </div>
         <div class="createFrom">
-            <mt-field label="名称" placeholder="请输入名称" :state="(formData.product_name?'success':error)" type="text" v-model="formData.product_name" @change="saveData(formData)"></mt-field>
-            <mt-field :label="'金额'" placeholder="请输入金额" :state="formData.price?'success':error" type="text" v-model="formData.price" @change="saveData(formData)"></mt-field>           
+            <mt-field label="名称" placeholder="请输入名称" :state="(formData.product_name?'':error)" type="text" v-model="formData.product_name" ></mt-field>
+            <mt-field :label="'单价'" placeholder="0.00" :state="formData.price?'':error" type="text" v-model="formData.price" @change="changemoney(formData)"></mt-field>           
+            <a data-v-4a389152="" class="mint-cell mint-field"><!----> <div class="mint-cell-left"></div> <div class="mint-cell-wrapper" style="background-origin: content-box;"><div class="mint-cell-title"><!----> <span class="mint-cell-text" style="marginRight:.05rem">数量</span> <!----></div> <div class="mint-cell-value"><input placeholder="0.0折" type="text" class="mint-field-core"> <div class="mint-field-clear" style="display: none;"><i class="mintui mintui-field-error"></i></div> <!----> <div class="mint-field-other"></div></div> <!----></div> <div class="mint-cell-right"></div></a>
+            <!-- <mt-field  label="数量" :disabled="formData.num_flag" :state="formData.num?'':num_error" placeholder="请输入数字" type="number" v-model="formData.num" @input="changemoney(formData)"></mt-field> -->
+            <mt-field :label="'折扣'" :disabled="formData.num_flag" placeholder="0.0折" :state="formData.cal?'':num_error" type="text" v-model="formData.cal" @input="changemoney(formData)"></mt-field>           
+            <mt-field :label="'总价'" placeholder="0.00"  type="number" v-model="formData.total" @input="changemoney(formData)"></mt-field>           
             <mt-checklist
             align="right"
             v-model="formData.num_flag"
-            :options="['数量']"
+            :options="option"
             @change="saveData(formData)">
             </mt-checklist>
-            <mt-field label="描述" placeholder="请输入描述" :state="formData.introduction?'success':error" type="textarea" rows="4" v-model="formData.introduction" @change="saveData(formData)" ></mt-field> 
+            <mt-field label="描述" placeholder="请输入描述" :state="formData.introduction?'':error" type="textarea" rows="4" v-model="formData.introduction" ></mt-field> 
             <el-dialog
-            title="请选择标签"
+            title="请选择"
             :visible.sync="dialogVisible"
             width="80%"
+            :close-on-click-modal="false"
             :before-close="handleClose">
-                <el-select filterable
-                    allow-create v-model="category_id" placeholder="请选择" style="width:100%">
+            <el-dialog
+            width="80%"
+            title="新增"
+            :visible.sync="innerVisible"
+            append-to-body>
+                <el-input placeholder="请输入内容" v-model="addtext" class="input-with-select">
+                    <el-button slot="append" icon="el-icon-plus" @click="handleAdd"></el-button>
+                </el-input>
+            </el-dialog>
+                <el-select
+                    v-model="category_id"
+                    filterable
+                    remote
+                    reserve-keyword
+                    placeholder="请输入关键词"
+                    :remote-method="getlist"
+                    >
                     <el-option
                     v-for="item in categorylist"
                     :key="item.category_id"
                     :label="item.category_name"
                     :value="item.category_id">
                     </el-option>
+                    <el-option value="新增">
+                        新增收款标签
+                    </el-option>
                 </el-select>
-                <!-- <el-input placeholder="请输入内容" v-model="addtext" class="input-with-select">
-                    <el-button slot="append" icon="el-icon-plus" @click="handleAdd"></el-button>
-                </el-input> -->
+                
+                
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogVisible = false">取 消</el-button>
                     <el-button type="primary" @click="submit">确 定</el-button>
@@ -53,16 +75,19 @@
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2"/></p>
+                            <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2" @click="handleTips" style="fontSize:.25rem;position:relative;bottom:-0.06rem" /></p>
                             <div class="weui-uploader__info">{{formData.image.length}}/9</div>
 
                         </div>
                         <div class="weui-uploader__bd">
                             <ul class="weui-uploader__files" id="uploaderFiles" v-if="formData.image.length">
-                                <li  v-for="(item,index) in images" :key="index" class="weui-uploader__file" :style="'background-image: url('+ item+');'" @click="handleShow(item,index)"></li>
+                                <li  v-for="(item,index) in images" :key="index" class="weui-uploader__file"  @click="handleShow(item,index)">
+                                    <img :src="item" style="width: 100%; height: 100%; object-fit: cover; padding: 5%; box-sizing: border-box;">
+                                </li>
                             </ul>
                             <div class="weui-uploader__input-box" v-if="showAdd">
-                                <input   id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple @change="uploadPhoto">
+                                <div @click="chooseImage(upload)" style="width:100%;height:100%"></div>
+                                <!-- <input   id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple @change="chooseImage"> -->
                                 <!-- <h5-cropper :option="option" @getbase64Data="getbase64Data" @getblobData="getblobData" @getFile="getFile" @change="uploadPhoto"></h5-cropper> -->
                             </div>
                         </div>
@@ -82,7 +107,7 @@
                     <p>需真实发货<span v-if="formData.address_flag" >(勾选后买家需要填写收货地址)</span></p>
                 </div>
             </label>
-            <label class="weui-cell weui-cell_active weui-check__label" for="s12">
+            <!-- <label class="weui-cell weui-cell_active weui-check__label" for="s12">
                 <div class="weui-cell__hd">
                     <input type="checkbox" name="checkbox1" class="weui-check" id="s12" v-model="formData.num_flag"> 
                     <i class="weui-icon-checked"></i>
@@ -90,7 +115,7 @@
                 <div class="weui-cell__bd">
                     <p>可购买多件<span v-if="formData.num_flag">(不勾选则买家默认只能购买一件)</span></p>
                 </div>
-            </label>
+            </label> -->
         </div>
       </div>
     </div>            
@@ -103,11 +128,11 @@
      </div>
 </template>
 <script>
-import { addProduct,updateProduct,getProductCategoryInfo,addCategoryList} from '@/api'
+import { addProduct,updateProduct,getProductCategoryInfo,addCategoryList,getConfig} from '@/api'
 import { fileURLToPath } from 'url'
 import categoryVue from './category.vue'
-import { Indicator } from 'mint-ui'
-
+import { Indicator,MessageBox } from 'mint-ui'
+import { initWxconfig,getImage } from '@/utils/initWxConfig.js'
 // import H5Cropper from '@/components/cropper'
 import H5Cropper from "vue-cropper-h5";
 
@@ -117,36 +142,70 @@ export default {
     },
     data(){
         return{
+            value:false,
             addtext:'',
             isShow:false,
             showAdd:true,
             dialogVisible:false,
+            innerVisible:false,
+            change:'0',
             error:'',
+            num_error:'',
             limit:0,
             index:-1,
             src:'',
             address_flag:'',
             num_flag:'',
+            option:['买家选择数量(不勾选此项由卖家选数量)'],
             images:[],
             category_id:'',
             categorylist:[],
             formData:{
                 product_name:'',
-                price:'0.00',
+                price:undefined,
+                num:undefined,
                 address_flag:false,
                 introduction:'',
                 image:[],
                 num_flag:false,
+                total:0,
+                cal:undefined
+            }
+        }
+    },
+    watch:{
+        category_id(val,oldval){
+            if(val==='新增'){
+                this.innerVisible=true
             }
         }
     },
     beforeMount () {
     this.$store.state.showTab = false
-    if(this.$route.params.val==='新增'){
-        this.formData=this.$store.state.formData
-    }
-        },
+        if(this.$route.params.val==='新增'){
+            this.formData=this.$store.state.formData
+        }
+    },
   mounted(){
+      let url = location.href.split('#')[0]
+      console.log('url---:',url);
+      getConfig({url:url}).then(res=>{
+        let wxConfig = res.data.data.config
+        initWxconfig(wxConfig)
+      })
+      let button = document.querySelector('.mint-checkbox-core')
+      let btnwrap = document.querySelector('.mint-checkbox')
+      let list =  document.querySelector('.mint-checklist')
+      list.onclick=()=>{
+          if(this.change==='0'){
+              button.style.backgroundColor="#4caf50"
+                button.style.borderColor="#4caf50"
+                this.change='1'
+          }else{
+              this.change='0'
+              button.style.backgroundColor="#fff"
+          }
+      }
       let title = document.querySelector('.mint-checklist-title')
       title.parentNode.removeChild(title)
       let wrap =document.querySelectorAll('.mint-cell-wrapper')
@@ -156,9 +215,22 @@ export default {
        for(let i=0;i<a.length;i++){
         let des= document.createElement("i")
         des.className="iconfont icon-weibiaoti2"
-           if(i!==2){
+        des.style.fontSize='.25rem'
+        des.style.position="absolute"
+        des.style.bottom='-0.08rem'
+           if(i!==5){
         des.onclick=function showtip(){
-            console.log(i)
+            switch(i){
+                case 0:
+                    MessageBox.alert('名称', '提示')
+                    break
+                case 1:
+                    MessageBox.alert('金额', '提示')
+                    break
+                case 3:
+                    MessageBox.alert('描述', '提示')
+                    break
+            }
         }
         let para = document.createElement("span");
         let node = document.createElement("span");
@@ -167,11 +239,13 @@ export default {
         para.appendChild(node);
         para.appendChild(des)
         para.children[0].style.color='red'
-        if(i==1){
+        para.style.position="relative"
+        if(i==1||i==4){
            let key = document.createElement("span");
             let node = document.createTextNode("￥");
             key.appendChild(node);
             key.style.float='right'
+            key.style.lineHeight='.25rem'
             a[i].appendChild(key)
         }
         a[i].appendChild(para)
@@ -181,8 +255,6 @@ export default {
        }
        }
     
-    console.log(a.length)
-    // a.appendChild(para)
       getProductCategoryInfo().then(res=>{
           this.categorylist=res.data.data
           this.category_id=this.categorylist[0].category_id
@@ -192,7 +264,7 @@ export default {
           this.formData=this.$route.params.item
           this.category_id=this.formData.category_id
           this.images=[...this.$route.params.image]
-                    if(this.$route.params.val==='修改'){
+    if(this.$route.params.val==='修改'){
             switch(this.$route.params.item.address_flag){
             case '0':
                  this.formData.address_flag=false
@@ -231,64 +303,127 @@ export default {
       }
   },
   methods:{
+      dataURLtoFile(dataurl) {
+            var filename='weixin'
+            var arr = dataurl.split(','),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+            while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, { type: mime });
+        },
+      upload(res){
+          alert('3')
+        let camera = this.dataURLtoFile(res.localData)
+           let URLClass = window.URL || window.webkitURL || window.mozURL
+          this.formData.introduction=URLClass.createObjectURL(camera)
+          console.log(camera)
+                    this.images.push(URLClass.createObjectURL(camera))
+                    this.formData.image.push(camera)
+                    if(this.formData.image.length>8){
+                        this.showAdd=false  
+                    }
+        // console.log(res.localData)// localData是图片的base64数据，可以用img标签显示
+      },
+    chooseImage(cb){
+        let that=this
+       wx.chooseImage({
+        count: 9, // 默认9
+        sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+        sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+        success : function (res){
+            alert('1')
+            if(res.localIds.length+that.images.length<=9){
+                alert('2')
+                let i
+                for(i=0;i<res.localIds.length;i++){
+                    wx.getLocalImgData({
+                        localId: res.localIds[i], // 图片的localID
+                        success: cb
+                    })
+                }
+            }else{
+                that.$toast('最多选9张')
+            }
+        },
+        })
+    },
+    handleTips(){
+        MessageBox.alert('配图', '提示')
+    },
       getlist(){
           getProductCategoryInfo().then(res=>{
-              console.log(res)
-              this.categoryList=res.data.data
+              this.categorylist=res.data.data
           })
       },
       handleAdd(){
-          if(this.category_id!=''){
-            if(this.categoryList.length+1>5){
+          if(this.addtext!=''){
+            if(this.categorylist.length+1>5){
                 this.$toast('您最多可以拥有五个标签')
                 this.category_id=''
             }else{
-            addCategoryList({category_name:this.category_id}).then(res=>{
-              console.log(res)
+            addCategoryList({category_name:this.addtext}).then(res=>{
               if(res.data.success===1){
-                  this.$toast('新增标签成功,还可以添加'+(5-this.categoryList.length)+'个')
+                  this.$toast('新增标签成功,还可以添加'+(5-this.categorylist.length)+'个')
+                    this.addtext=''
+                    this.getlist()
+                    this.innerVisible=false
               }
             })
-              this.categoryList.push({
-                  category_name:this.addtext
-          })
-          this.addtext=''
             }
           }else{
               this.$toast('请输入标签名')
           }
       },
       saveData(item){
-            console.log(item)
+      let button = document.querySelector('.mint-checkbox-core')
+            if(item.num_flag===false){
+                button.style.backgroundColor="#4caf50"
+                button.style.borderColor="#4caf50"  
+                this.num_error=''
+            }else{
+                button.style.backgroundColor="#fff"
+                this.formData.num=undefined
+            }
         //   this.$store.state.formData=this.formData
       },
-      changemoney(){
-          this.formData.price.toFixed(2)
-          console.log(1)
+      changemoney(item){
+          if(item.price.indexOf('.')===-1){
+              item.price=item.price+'.00'
+          }
+          this.formData.total=this.formData.price*this.formData.num*this.formData.cal/10
       },
+      //保存收款单
       handleSave(){
-          this.getlist()
+        //   this.getlist()
           if(this.formData.product_name!=''&&this.formData.price!=''&&this.formData.introduction!=''){
               this.dialogVisible=true
           }else{
               this.error='error'
+              if(this.formData.num_flag===false){
+                  this.num_error='error'
+              }
               this.$toast('请填写必要信息')
         }
       },
+      //关闭dialog
       handleClose(){
             this.dialogVisible = false
       },
-      handleChange(val){
-          console.log(val)
-      },
+      //返回
       handleBack(){
           this.$router.push('/goods')
       },
+      //显示图片
       handleShow(src,index){
           this.isShow=true
           this.src=src
           this.index=index
       },
+      //删除图片
       handleDel(){
           this.formData.image.splice(this.index,1)
           this.images.splice(this.index,1)
@@ -297,6 +432,7 @@ export default {
           }
           this.isShow=false
       },
+      //生成海报
       handlePhoto(){
           if(this.formData.product_name!=''&&this.formData.price!=''&&this.formData.introduction!=''){
               this.$router.push({name:'createqr',params:{
@@ -306,12 +442,16 @@ export default {
       }})
           }else{
               this.error='error'
+              if(this.formData.num_flag===false){
+                  this.num_error='error'
+              }
               this.$toast('请填写必要信息')
         }
       
     },
+    //提交
       submit(){
-          this.handleAdd()
+        //   this.handleAdd()
           if(this.$route.params.val==='修改'){
           switch(this.$route.params.item.address_flag){
             case true:
@@ -400,6 +540,7 @@ export default {
         }
           
       },
+      //图片上传
       uploadPhoto(e){
            let URLClass = window.URL || window.webkitURL || window.mozURL
            let  src,files = e.target.files
@@ -425,7 +566,7 @@ export default {
             }
             file.src = src
             this.formData.image.push(file)
-            this.images.push(photo.originalUrl)
+            // this.images.push(photo.originalUrl)
             this.saveData(this.formData)
       }
             if(this.formData.image.length>8){
@@ -475,11 +616,6 @@ overflow: auto;
 
         .createFrom{
             margin: .45rem 0;
-            .mint-cell-title{
-                &:after{
-                    content:'*';
-                }
-            }
             .mint-checklist-label{
                 padding:0;
             }

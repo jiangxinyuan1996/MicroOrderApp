@@ -9,7 +9,7 @@ export default new Vuex.Store({
     active:0,
     formData:{
       product_name:'',
-      price:'0.00',
+      price:'',
       address_flag:false,
       introduction:'',
       image:[],

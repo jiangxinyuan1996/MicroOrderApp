@@ -1,8 +1,15 @@
 import  request  from '@/utils/request'
-//首页数据
+//本地存储数据
 export function HomeData(){
     return request({
         url:'/tlwdd/index.php?controller/index/getMerchantInfo',
+    })
+}
+//首页数据
+export function reqData(data){
+    return request({
+        url:'/tlwdd/index.php?controller/index/getDetail',
+        data
     })
 }
 //请求商品分类
@@ -103,6 +110,13 @@ export function createqr(data){
     return request({
         url:'/tlwdd/index.php?controller/product/createTempQR',
         method:'POST',
+        data
+    })
+}
+//获取微信config配置
+export function getConfig(data){
+    return request({
+        url:'/tlwdd/index.php?api/wechat/getConfig',
         data
     })
 }
