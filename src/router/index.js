@@ -49,6 +49,11 @@ const routes = [
     component:()=>import('@/views/order/orderDetail'),
   },
   {
+    path: '/order/delivery',
+    name: 'orderdelivery',
+    component:()=>import('@/views/order/delivery')
+  },
+  {
     path: '/goods',
     name: 'Goods',
     component: Goods,

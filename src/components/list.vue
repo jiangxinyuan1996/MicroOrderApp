@@ -40,7 +40,7 @@
               </div>
             </div>
             <div class="f-flex-1" style="flex:1;width:0">
-              <div class="word-break ellipsis-two" style="-webkit-line-clamp: 1;">花</div>
+              <div class="word-break ellipsis-two" style="-webkit-line-clamp: 1;">{{item.product_name}}</div>
               <div
                 class="word-break ellipsis-one"
                 style="margin-top: 8px; white-space: nowrap;"
@@ -72,9 +72,9 @@
           </div>
         </div>
         <div class="flex-nav cover-flex-nav" style="background-color: rgb(255, 255, 255);">
-          <div class="flex-tab" style="color: rgb(102, 102, 102);">转发</div>
-          <div class="flex-tab" style="color: rgb(102, 102, 102);">退款/挂起</div>
-          <div class="flex-tab" style="color: rgb(60, 197, 31);">发货</div>
+          <div class="flex-tab" style="color: rgb(102, 102, 102);"></div>
+          <div class="flex-tab" style="color: rgb(102, 102, 102);"></div>
+          <div class="flex-tab" style="color: rgb(60, 197, 31);" @click="handleDelivery(item)">发货</div>
         </div>
       </div>
       <!-- <ul class="navlist"  v-infinite-scroll="loadMore"
@@ -134,6 +134,11 @@ export default {
     });
   },
   methods: {
+    handleDelivery(item){
+      this.$router.push({name:'orderdelivery',params:{
+        item
+      }})
+    },
     handleSearch() {
       console.log("搜索");
     },

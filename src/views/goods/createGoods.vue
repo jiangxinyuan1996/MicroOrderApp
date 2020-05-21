@@ -10,17 +10,32 @@
         <div class="createFrom">
             <mt-field label="名称" placeholder="请输入名称" :state="(formData.product_name?'':error)" type="text" v-model="formData.product_name" ></mt-field>
             <mt-field :label="'单价'" placeholder="0.00" :state="formData.price?'':error" type="text" v-model="formData.price" @change="changemoney(formData)"></mt-field>           
-            <a data-v-4a389152="" class="mint-cell mint-field"><!----> <div class="mint-cell-left"></div> <div class="mint-cell-wrapper" style="background-origin: content-box;"><div class="mint-cell-title"><!----> <span class="mint-cell-text" style="marginRight:.05rem">数量</span> <!----></div> <div class="mint-cell-value"><input placeholder="0.0折" type="text" class="mint-field-core"> <div class="mint-field-clear" style="display: none;"><i class="mintui mintui-field-error"></i></div> <!----> <div class="mint-field-other"></div></div> <!----></div> <div class="mint-cell-right"></div></a>
+            <a data-v-4a389152="" class="mint-cell mint-field"> 
+                <div class="mint-cell-left"></div> 
+                <div class="mint-cell-wrapper" style="background-origin: content-box;">
+                    <div class="mint-cell-title"> 
+                        <span class="mint-cell-text" style="marginRight:.05rem">数量</span> 
+                    </div> 
+                    <div class="mint-cell-value">
+                        <el-input-number v-model="formData.num" @change="changemoney(formData)" :min="1" :max="99" label="描述文字" size="mini" :disabled="formData.num_flag"></el-input-number>
+                        <div class="mint-field-clear" style="display: none;"><i class="mintui mintui-field-error"></i></div> 
+                         <div class="mint-field-other"></div>
+                    </div> 
+                </div> 
+                <div class="mint-cell-right">
+                </div>
+            </a>
+            
             <!-- <mt-field  label="数量" :disabled="formData.num_flag" :state="formData.num?'':num_error" placeholder="请输入数字" type="number" v-model="formData.num" @input="changemoney(formData)"></mt-field> -->
-            <mt-field :label="'折扣'" :disabled="formData.num_flag" placeholder="0.0折" :state="formData.cal?'':num_error" type="text" v-model="formData.cal" @input="changemoney(formData)"></mt-field>           
-            <mt-field :label="'总价'" placeholder="0.00"  type="number" v-model="formData.total" @input="changemoney(formData)"></mt-field>           
+            <mt-field :label="'折扣'" :disabled="formData.num_flag" placeholder="0.0折" :state="formData.cal?'':num_error" type="number" v-model="formData.cal" @input="changemoney(formData)"></mt-field>           
+            <mt-field :label="'总价'" placeholder="0.00"  type="text" v-model="formData.total" @input="changemoney(formData)" disabled></mt-field>           
             <mt-checklist
             align="right"
             v-model="formData.num_flag"
             :options="option"
             @change="saveData(formData)">
             </mt-checklist>
-            <mt-field label="描述" placeholder="请输入描述" :state="formData.introduction?'':error" type="textarea" rows="4" v-model="formData.introduction" ></mt-field> 
+            <mt-field label="描述" placeholder="请输入描述" :state="formData.introduction?'':error" type="textarea" rows="2" v-model="formData.introduction" ></mt-field> 
             <el-dialog
             title="请选择"
             :visible.sync="dialogVisible"
@@ -163,13 +178,13 @@ export default {
             formData:{
                 product_name:'',
                 price:undefined,
-                num:undefined,
+                num:1,
                 address_flag:false,
                 introduction:'',
                 image:[],
-                num_flag:false,
+                num_flag:false, 
                 total:0,
-                cal:undefined
+                cal:10
             }
         }
     },
@@ -316,11 +331,15 @@ export default {
             return new File([u8arr], filename, { type: mime });
         },
       upload(res){
-          alert('3')
-        let camera = this.dataURLtoFile(res.localData)
+          var localData = res.localData;
+             if (localData.indexOf('data:image') != 0) {                       
+                     //判断是否有这样的头部                                               
+                     localData = 'data:image/jpeg;base64,' +  localData                    
+             }                    
+             localData = localData.replace(/\r|\n/g, '').replace('data:image/jgp', 'data:image/jpeg');
+        let camera = this.dataURLtoFile(localData)
            let URLClass = window.URL || window.webkitURL || window.mozURL
           this.formData.introduction=URLClass.createObjectURL(camera)
-          console.log(camera)
                     this.images.push(URLClass.createObjectURL(camera))
                     this.formData.image.push(camera)
                     if(this.formData.image.length>8){
@@ -335,9 +354,7 @@ export default {
         sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
         sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
         success : function (res){
-            alert('1')
             if(res.localIds.length+that.images.length<=9){
-                alert('2')
                 let i
                 for(i=0;i<res.localIds.length;i++){
                     wx.getLocalImgData({

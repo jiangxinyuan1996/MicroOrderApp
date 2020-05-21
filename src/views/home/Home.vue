@@ -139,7 +139,7 @@ export default {
         prevLabel: "上一步",
         nextLabel: "下一步",
         skipLabel: "跳过",
-        doneLabel: "结束"
+        doneLabel: "✓"
     }).start()
         localStorage.setItem('num','1')
       }
