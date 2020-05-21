@@ -137,9 +137,9 @@ export default {
       if(localStorage.getItem('num')!=='1'){
         introJs().setOptions({
         prevLabel: "上一步",
-        nextLabel: "下一步",
-        skipLabel: "跳过",
-        doneLabel: "结束"
+        nextLabel: "\ue67b",
+        skipLabel: "\ue6fb",
+        doneLabel: "√"
     }).start()
         localStorage.setItem('num','1')
       }
@@ -153,7 +153,7 @@ export default {
     //       }else{
     //         this.$router.push('/register')
     //     }
-    
+
   }
 }
 </script>
