@@ -3,7 +3,7 @@
     <div class="header">
       <div class="search">
         <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAMAAADX9CSSAAAAM1BMVEUAAAC8vLy8vLy9vb27u7u8vLy/v7+9vb2/v7+8vLy8vLy8vLy7u7u9vb27u7u7u7u7u7uNEF5lAAAAEHRSTlMA89tTpH4wHwy9iprlyYdxyi6iUQAAAIZJREFUKM91kVkOwyAMBbFZszSd+5+2SHEVt8D7imbCA0y4E5OKaIrBYlSxqDc7LvsPllxaK1mciMBW7++6AValHT+dXej3d6kPr2ILEuTgkiFZTfG8WJFA87yBrPiqZ7Xv8pzjvV6gkzl0TJzPjWM2ZxPjuyQTwzua+IuJayYOOMMs1/n+ALRtCdMh8+jaAAAAAElFTkSuQmCC" alt=""> -->
-        <input type="text" placeholder="姓名/运单号" v-model.trim="mytext" @keypress.13="handleSearch" />
+        <input type="text" placeholder="名称/订单号" v-model.trim="mytext" @keypress.13="handleSearch" />
         <div class="cancel" @click="handleSearch">
           <img
             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAMAAADX9CSSAAAAM1BMVEUAAAC8vLy8vLy9vb27u7u8vLy/v7+9vb2/v7+8vLy8vLy8vLy7u7u9vb27u7u7u7u7u7uNEF5lAAAAEHRSTlMA89tTpH4wHwy9iprlyYdxyi6iUQAAAIZJREFUKM91kVkOwyAMBbFZszSd+5+2SHEVt8D7imbCA0y4E5OKaIrBYlSxqDc7LvsPllxaK1mciMBW7++6AValHT+dXej3d6kPr2ILEuTgkiFZTfG8WJFA87yBrPiqZ7Xv8pzjvV6gkzl0TJzPjWM2ZxPjuyQTwzua+IuJayYOOMMs1/n+ALRtCdMh8+jaAAAAAElFTkSuQmCC"
@@ -65,7 +65,7 @@
           <div class="weui_cell f-sub-mr f-sub-mr f14 g8">
             <div class="weui_cell_bd weui_cell_primary">
               <div class="f-flex f-sb">
-                <div>快递/{{item.discount==='0.0'?'原价':item.discount+'折'}}<br><span v-if="currentStatus==='已发货'">快递单号: <span style="color:#1989fa">{{item.express_number}}</span></span></div>
+                <div>快递/{{item.discount==='10.0'?'原价':item.discount+'折'}}<br><span v-if="currentStatus==='已发货'">快递单号: <span style="color:#1989fa">{{item.express_number}}</span></span></div>
                 <div class="text-right">
                   <div>
                     <div style="display: inline-block;">{{item.create_time}}</div>
@@ -231,6 +231,7 @@ body{
       flex: 1;
       height: 0.28rem;
       border: none;
+      margin:0 .15rem;
       background: #f8f8f8;
       border-radius: 0.15rem;
       overflow: hidden;
@@ -315,6 +316,10 @@ body{
   }
   .f-flex{
       display:flex;
+      .avatar{
+        border-radius: 5px;
+        overflow: hidden;
+      }
   }
   .weui_cell_primary {
     -webkit-box-flex: 1;

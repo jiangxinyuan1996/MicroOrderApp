@@ -88,13 +88,12 @@
                     </div>
                 </div>
                 <!-- 上传图片 -->
-               <div class="weui-cell  weui-cell_uploader">
+               <div class="weui-cell  weui-cell_uploader" style="background:#fff">
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
                             <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2" @click="handleTips" style="fontSize:.25rem;position:relative;bottom:-0.06rem" /></p>
                             <div class="weui-uploader__info">{{formData.image.length}}/9</div>
-
                         </div>
                         <div class="weui-uploader__bd">
                             <ul class="weui-uploader__files" id="uploaderFiles" v-if="formData.image.length">

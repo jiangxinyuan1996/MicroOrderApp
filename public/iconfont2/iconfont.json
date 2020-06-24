@@ -69,6 +69,13 @@
       "unicode_decimal": 58982
     },
     {
+      "icon_id": "5183661",
+      "name": "正确",
+      "font_class": "icon-test1",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
       "icon_id": "5325315",
       "name": "商品",
       "font_class": "shangpin",

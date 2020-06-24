@@ -128,3 +128,15 @@ export function send(data){
         data
     })
 }
+//选择海报模板
+export function chooseMould(){
+    return request({
+        url:'/tlwdd/index.php?controller/mould/getMouldList',
+    })
+}
+//获取品类列表
+export function getPackageTypeList(){
+    return request({
+        url:'/tlwdd/index.php?controller/merchant/getPackageTypeList',
+    })
+}

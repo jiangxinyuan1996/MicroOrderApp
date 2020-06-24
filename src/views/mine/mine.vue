@@ -2,13 +2,13 @@
   <div id="center">
     <h2 class="center_header">个人中心</h2>
     <div class="center_container">
-      <!-- <div class="container_userinfo" @click="handleLogin">
+      <div class="container_userinfo" @click="handleLogin">
         <div class="userinfo_image">
           <img src="images/3.jpg" alt="" />
         </div>
-        <p v-if="false" class="username">小明</p>
-        <p v-else class="username">未登录</p>
-      </div> -->
+        <!-- <p v-if="false" class="username">小明</p>
+        <p v-else class="username">未登录</p> -->
+      </div>
       <!-- <div class="container_info">
         <div class="myOrder">
           <i class="iconfont icon-tuanduicankaoxian-"/>
@@ -80,6 +80,7 @@ export default {
     }
   },
   beforeCreate(){
+    this.$store.state.showTab=true
      Indicator.close()
     HomeData().then(res=>{
       if(res.data.success===1){
@@ -104,6 +105,9 @@ export default {
           break
         case '商品':
           this.$router.push('/goods')
+          break
+        case '物流':
+          this.$router.push('/logistics')
           break
         case '店铺':
           if(localStorage.getItem('merchantid')!=''&&localStorage.getItem('merchantid')){
@@ -149,13 +153,14 @@ export default {
   .container_userinfo{
     display: flex;
     flex-direction: column;
-    height: 1rem;
+    align-items: center;
+    height: .8rem;
     background: #fff;
     margin:0.1rem .08rem 0;
     border-radius: 0.05rem;
-    padding-top:0.1rem;
+    padding:0.1rem 0;
     .userinfo_image{
-      margin:0 1.46rem;
+      width:.8rem;
       border-radius: 50%;
       flex: 2;
      overflow: hidden;

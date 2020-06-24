@@ -6,10 +6,25 @@
                 <p class="header_info">返回</p>
                 </div>
                 <div class="header_title"></div>
-                <div style="padding-right:.08rem" @click="handleBack"><i class="iconfont icon-xiugai"/></div>
+                <!-- <div style="padding-right:.08rem" @click="handleBack"><i class="iconfont icon-xiugai"/></div> -->
             </div>
-         <div class="weui-gallery" style="display:block">
-             <div class="image" @click="handleBack">
+            <div class="main" style="height:5rem;margin-top:.45rem;text-align:center" v-if="showInfo">
+                <div class="title">
+                    <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-icon-test1"></use>
+                    </svg>
+                </div>
+                <div class="article">
+                    <p class="info">海报已生成</p>
+                    <p class="info">点击图片预览</p>
+                    <p class="info">长按保存至手机</p>
+                </div>
+                <div class="image" @click="isShow=true">
+                    <img :src="src" alt="">
+                </div>
+            </div>
+         <div class="weui-gallery" style="display:block" v-if="isShow" @click="isShow=false">
+             <div class="image">
                 <img :src="src" alt="">
              </div>
         </div>
@@ -25,7 +40,9 @@ export default {
         return{
             src:'',
             address_flag:'',
-            num_flag:''
+            num_flag:'',
+            isShow:false,
+            showInfo:false
         }
     },
     mounted(){
@@ -63,11 +80,12 @@ export default {
             data.append('total',this.$route.params.item.total)
             data.append('discount',this.$route.params.item.discount)
             data.append('fare',this.$route.params.item.fare)
+            data.append('mould_id',this.$route.params.mould_id)
         createqr(data).then(res=>{
             if(res.data.success===1){
                 Indicator.close()
-                document.getElementsByClassName('weui-gallery')[0].style.zIndex=10
                 this.src=res.data.data.url
+                this.showInfo=true
             }
         }).catch(err=>{
             console.log(err)
@@ -75,9 +93,10 @@ export default {
     },
     methods:{
         handleBack(){
+            console.log(this.$route.params)
             let image=[]
             image=[...this.$route.params.image]
-            this.$router.push({name:'createGoods',params:{item:this.$route.params.item,val:this.$route.params.val,image}})
+            this.$router.push({name:'createGoods',params:{item:this.$route.params.item,val:'修改海报',image}})
         },
        
     }
@@ -85,7 +104,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .weui-gallery{
-    z-index: -1;
     .image{
         position: absolute;
         left:0;
@@ -102,8 +120,8 @@ export default {
             width:100%;
             height: .45rem;
             line-height: .45rem;
-            // background:#fff;
-            color: #fff;
+            background:#fff;
+            // color: #fff;
             position: fixed;
             z-index: 999;
             top: 0;
@@ -128,4 +146,36 @@ export default {
                 // padding-right: .58rem;
             }
         }
+.main{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    .title{
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .icon {
+            width: 1rem;
+            height: 1rem;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden;
+        }
+        .info{
+            flex: 1;
+        }
+    }
+    .article{
+        flex: 2;
+    }
+    .image{
+        height: 3rem;
+        width:3rem;
+        img{
+            width:100%;
+            height: 100%;
+        }
+    }
+}
 </style>

@@ -16,7 +16,7 @@
         infinite-scroll-distance="10"
         infinite-scroll-immediate-check="false">
           <!-- 分类列表 -->
-          <li v-for="(item,index) in categoryList" :key="item.category_id" @click="listClick(index,item)" :class="index===active?'active':''">{{item.category_name}}</li>
+          <li v-for="(item,index) in categoryList" :key="item.category_id" @click="listClick(index,item)" :class="index===active?'active':''" style="fontSize:.14rem">{{item.category_name}}</li>
           <li style="fontSize:.14rem;color:#ccc;lineHeight:.4rem;text-align:center" @click="handleAddCategory"><span style="fontSize:.3rem;font-weight:300;line-height:.35rem;color:rgb(238,120,0);padding-right:.2rem">+</span></li>
         </ul>
       </div>
@@ -40,15 +40,12 @@
            <div class="item_image" >
               <img :src="item.image[0]" alt="">
            </div>
-               <div class="item_info">
-              <p>{{item.product_name}}</p>
-              <p>{{item.price}}元</p>
+               <div class="item_info" style="fontSize:.14rem">
+              <p style="fontWeight:600;textAlign:left;paddingLeft:.05rem" class="info_title">{{item.product_name}}</p>
+              <p style="textAlign:left;paddingLeft:.05rem"><span style="color:red;fontSize:.12rem">￥</span><span style="color:red">{{item.price}}</span></p>
             </div>
 				 </div>
-           
 			</mt-cell-swipe>
-     
-           
             <!-- <div class="item_handle">
               <p @click="handleDetail(item,'修改')">编辑</p>
               <p @click="handlePhoto(item)">海报</p>
@@ -108,12 +105,18 @@ export default {
     },
 
     rightDelete(item,index){
-			return [{
+			return [
+        {
+            content: '下架',
+            style: { background: '#6fba2c', color: '#fff',lineHeight:'.8rem'},
+            handler: () => console.log('下架') 
+        },
+      {
 					content: '删除',
-					style: { background: 'red', color: '#fff','align-items':'center','display': 'flex'},
+					style: { background: 'red', color: '#fff',lineHeight:'.8rem'},
 					handler: () => this.handleDel(item,index) 
-      }]
-      },
+      }
+      ]},
     handleDetail(item,val){
       this.$router.push({name:'createGoods',params:{item,val,image:item.image}})
     },
@@ -313,9 +316,9 @@ export default {
           
         }
         .detail_title{
-        height: .4rem;
+        height: .46rem;
         width: 100%;
-        line-height: .4rem;
+        line-height: .46rem;
         margin-top: .4rem;
         background-color: #fff;
         }
@@ -332,11 +335,12 @@ export default {
             flex: 2;
             width:.6rem;
             height: .8rem;
+            line-height: .8rem;
             display:flex;
             align-items: center;
-            border-radius: 0.06rem;
             img{
-              width: 100%;
+            border-radius: 5px;
+              width: 90%;
               height: 90%;
             }
            }
@@ -347,6 +351,12 @@ export default {
              flex: 5;
              p{
                flex: 1;
+             }
+             .info_title{
+               width: 1.95rem;
+               overflow: hidden;
+               text-overflow: ellipsis;
+               white-space: nowrap;
              }
             }
         }

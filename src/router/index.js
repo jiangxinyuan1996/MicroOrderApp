@@ -65,7 +65,7 @@ const routes = [
   },
   {
     path:'/createGoods',
-    component:()=>import('@/views/goods/createGoods'),
+    component:()=>import('@/views/goods/index'),
     name:'createGoods'
   },
   
@@ -83,6 +83,11 @@ const routes = [
     path:'/register',
     component:()=>import('@/views/login/register'),
     name:'register'
+  },
+  {
+    path:'/logistics',
+    component:()=>import('@/views/logistics'),
+    name:'logistics'
   },
   {
     path: '/mine',

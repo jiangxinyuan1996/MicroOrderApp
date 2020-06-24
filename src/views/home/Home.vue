@@ -1,16 +1,23 @@
 <template>
   <div id="home">
-      <div class="header_title">
-        <div class="header_info" @click="handleCreate" data-intro="点击可创建收款单" data-step="1">收款</div>
-        <div class="header_info" @click="handleClick" data-intro="点击进入货架" data-step="2">货架</div>
-      </div>
       <div class="wrap">
-      <ul class="chooseDate">
+      <!-- <ul class="chooseDate">
         <li v-for="(item,index) in datelist" :class="index===key?'active':''" :key="index" @click="handleChange(item,index)">{{item.title}}</li>
-      </ul>
-      <div class="money">总收款: <span>{{total}}</span> 元</div>
-      <div class="count">收款笔数: <span>{{count}}</span> 笔</div>
+      </ul> -->
+      <van-tabs v-model="active" @click="handleChange"  color="rgb(0,113,190)">
+         <van-tab v-for="(item,index) in datelist" :key="index" :title='item.title'></van-tab>
+      </van-tabs>
+      <div class="money">总收款(元): <span style="color:red;fontSize:.12rem">￥</span><span>{{total}}</span> </div>
+      <div class="count">收款笔数: <span>{{count}}</span> </div>
       </div>
+      <van-cell-group>
+        <van-cell title="收款" is-link to="/createGoods" @click="handleCreate"/>
+        <van-cell title="货架" is-link to="/goods" @click="handleClick"/>
+      </van-cell-group>
+      <!-- <div class="header_title"> -->
+        <!-- <div class="header_info" @click="handleCreate" data-intro="点击可创建收款单" data-step="1">收款</div>
+        <div class="header_info" @click="handleClick" data-intro="点击进入货架" data-step="2">货架</div> -->
+      <!-- </div> -->
       <!-- <div id="line_echarts"></div>
       <div id="pie_echarts"></div> -->
   </div>
@@ -102,10 +109,9 @@ export default {
 
   // },
   methods:{
-    handleChange(item,index){
+    handleChange(index,title){
       this.key=index
       reqData({index}).then(res=>{
-        console.log(res.data.data)
         this.total=res.data.data.total
         this.count=res.data.data.count
       })
@@ -183,9 +189,11 @@ export default {
     position: relative;
     // border: 1px solid red;
     height: 2rem;
-    margin:0 .2rem;
-    border-radius: 5px;
-    background-image: linear-gradient(rgb(163, 183, 196), rgb(218, 219, 215));
+    // margin:0 .2rem;
+    // border-radius: 5px;
+    // background-image: linear-gradient(rgb(163, 183, 196), rgb(218, 219, 215));
+    background: rgb(135,176,221);
+    margin-bottom:.05rem;
   .chooseDate{
     height: .25rem;
     line-height: .25rem;
@@ -203,20 +211,22 @@ export default {
   }
   .money{
     position: absolute;
-    left:1rem;
-    bottom:.8rem;
-    span{
-    color: rgb(111, 186, 44);
+    left:.85rem;
+    bottom:1.2rem;
+    span:first-child{
+    margin-left:.08rem;
+    }
+    span:nth-child(2){
+      color:red
     }
   }
   .count{
     position: absolute;
     left: .85rem;
-    bottom:.3rem;
+    bottom:.8rem;
     span{
-      display: inline-block;
-      width: .5rem;
-      color: rgb(111, 186, 44);
+      margin-left:.18rem;
+      color: #fff;
     }
   }
   }
