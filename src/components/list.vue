@@ -12,13 +12,20 @@
         </div>
       </div>
     </div>
-    <mt-loadmore :bottom-method="loadMore" ref="loadmore" :auto-fill="false">
+    <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="loading" ref="loadmore" :auto-fill="false">
+      <div class="list"
+      style="margin:0 .1rem"
+      v-infinite-scroll="loadMore"
+        infinite-scroll-disabled="loading"
+        infinite-scroll-distance="50"
+        infinite-scroll-immediate-check="false"
+      >
       <div 
         v-for="(item,index) in orderList"
         :key="index"
         share="[object Object]"
         time_stamp="1589958462070"
-        style="background-color:#fff;margin-bottom:.1rem"
+        style="background-color:#fff;margin-bottom:.1rem;box-shadow:.05rem .05rem .05rem #ccc"
       >
         <div>
           <div
@@ -29,13 +36,14 @@
             pricerange="12"
             skusstr="默认"
             class="f-flex f-vc f-sub-mr g8 weui_padding f14 wsxc_purchase_order_details custom_bury"
+            @click="handleClick(item)"
           >
-            <div>
-              <div class="avatar img-rounded" style="width: 72px; height: 72px;">
+            <div v-if="item.image!==''" style="margin-right:.2rem">
+              <div class="avatar img-rounded" style="width: .6rem; height: .6rem;">
                 <img
                 style="width:100%;height:100%"
                   class="img-rounded"
-                  src="https://xcimg.szwego.com/o_1e8oc0l1i1mmv3cl1sla2nr13ab16.jpg?imageMogr2/auto-orient/thumbnail/!310x310r/quality/100/format/jpg"
+                  :src="item.image"
                 />
               </div>
             </div>
@@ -44,11 +52,11 @@
               <div
                 class="word-break ellipsis-one"
                 style="margin-top: 8px; white-space: nowrap;"
-              >货号：{{item.req_sn}}</div>
+              >订单号：<span style="color:#1989fa">{{item.req_sn}}</span></div>
             </div>
             <div class="text-right">
-              <div class="warn-color">¥ 12</div>
-              <div class="f12">x 4</div>
+              <div class="warn-color">¥ {{item.price}}</div>
+              <div class="f12">x {{item.num}}</div>
             </div>
           </div>
         </div>
@@ -57,25 +65,26 @@
           <div class="weui_cell f-sub-mr f-sub-mr f14 g8">
             <div class="weui_cell_bd weui_cell_primary">
               <div class="f-flex f-sb">
-                <div>快递</div>
+                <div>快递/{{item.discount==='0.0'?'原价':item.discount+'折'}}<br><span v-if="currentStatus==='已发货'">快递单号: <span style="color:#1989fa">{{item.express_number}}</span></span></div>
                 <div class="text-right">
                   <div>
-                    <div style="display: inline-block;">05-20 15:07</div>
-                    <span>【卖家开单】</span>
+                    <div style="display: inline-block;">{{item.create_time}}</div>
+                    <!-- <span>【卖家收款】</span> -->
                     <div style="display: inline-block; vertical-align: middle;"></div>
-                  </div>共4件 合计：¥
-                  <span class="f16 g6">49</span>
-                  <span class="g6">(含运费1)</span>
+                  </div>共 <span style="color:red">{{item.num}}</span> 件 合计：¥
+                  <span class="f16 g6" style="color:red">{{item.total}}</span>
+                  <span  v-if="item.fare==='0.00'?false:true" class="g6">(含运费<span style="color:red">{{item.fare}})</span></span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="flex-nav cover-flex-nav" style="background-color: rgb(255, 255, 255);">
+        <div class="flex-nav cover-flex-nav" style="background-color: rgb(255, 255, 255);" v-if="currentStatus==='已付款'">
           <div class="flex-tab" style="color: rgb(102, 102, 102);"></div>
           <div class="flex-tab" style="color: rgb(102, 102, 102);"></div>
           <div class="flex-tab" style="color: rgb(60, 197, 31);" @click="handleDelivery(item)">发货</div>
         </div>
+      </div>
       </div>
       <!-- <ul class="navlist"  v-infinite-scroll="loadMore"
         infinite-scroll-disabled="loading"
@@ -92,16 +101,25 @@
       </ul>-->
       <p slot="top" class="mint-loadmore-top"></p>
     </mt-loadmore>
+  <i @click="backTop" class="iconfont icon-huidaodingbu" style="display:none;background:#fff;opacity:.8;fontSize:.3rem;position:fixed;right:.1rem;bottom:.6rem;zIndex:999;border:1px solid #ccc;borderRadius:50%" />
   </div>
 </template>
 <script>
 import { getOrderList } from "@/api";
 import { Indicator } from "mint-ui";
-
+ window.onscroll=function(){
+    if(document.documentElement.scrollTop>550||document.body.scrollTop>550){
+      document.querySelector('.icon-huidaodingbu').style.display="block"
+    }else{
+      document.querySelector('.icon-huidaodingbu').style.display="none"
+    }
+    console.log(this.backTop)
+ }
 export default {
   props: ["status"],
   data() {
     return {
+      loading:false,
       total: 0,
       page: 1,
       limit: 10,
@@ -121,6 +139,10 @@ export default {
         break;
       case "2":
         this.currentStatus = "已付款";
+        break
+      case "3":
+        this.currentStatus = "已发货";
+        break
     }
     getOrderList({ status: this.status }).then(res => {
       if (res.data.success === 1) {
@@ -134,6 +156,10 @@ export default {
     });
   },
   methods: {
+    backTop(){
+      document.documentElement.scrollTop=0
+      document.body.scrollTop=0
+    },
     handleDelivery(item){
       this.$router.push({name:'orderdelivery',params:{
         item
@@ -152,6 +178,7 @@ export default {
     },
     loadMore() {
       if (this.orderList.length !== this.total) {
+        this.loading=false
         getOrderList({
           status: this.status,
           page: this.page,
@@ -167,6 +194,7 @@ export default {
           }
         });
       } else {
+        this.loading=true
         this.$toast("到底了");
       }
     }

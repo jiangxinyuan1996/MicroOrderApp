@@ -59,6 +59,10 @@ export default {
             data.append("introduction",this.$route.params.item.introduction)
             data.append('address_flag',this.address_flag)
             data.append('num_flag',this.num_flag)
+            data.append('num',this.$route.params.item.num)
+            data.append('total',this.$route.params.item.total)
+            data.append('discount',this.$route.params.item.discount)
+            data.append('fare',this.$route.params.item.fare)
         createqr(data).then(res=>{
             if(res.data.success===1){
                 Indicator.close()

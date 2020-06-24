@@ -6,6 +6,7 @@ import weui from 'weui.js'
 import 'weui'
 import router from './router'
 import store from './store'
+import './assets/icon/iconfont.css'
 // import ElementUI from 'element-ui'
 // import 'element-ui/lib/theme-chalk/index.css'
 

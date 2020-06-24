@@ -9,7 +9,7 @@
         <li v-for="(item,index) in datelist" :class="index===key?'active':''" :key="index" @click="handleChange(item,index)">{{item.title}}</li>
       </ul>
       <div class="money">总收款: <span>{{total}}</span> 元</div>
-      <div class="count">收款笔数: <span>{{count}}</span> 件商品</div>
+      <div class="count">收款笔数: <span>{{count}}</span> 笔</div>
       </div>
       <!-- <div id="line_echarts"></div>
       <div id="pie_echarts"></div> -->
@@ -114,7 +114,13 @@ export default {
       this.$router.push('/goods')
     },
     handleCreate(){
-      this.$router.push('/createGoods')
+      this.$router.push(
+        {
+          name:'createGoods',
+          params:{
+            val:'新增'
+          }
+        })
     }
   },
   beforeCreate(){
@@ -137,9 +143,9 @@ export default {
       if(localStorage.getItem('num')!=='1'){
         introJs().setOptions({
         prevLabel: "上一步",
-        nextLabel: "下一步",
-        skipLabel: "跳过",
-        doneLabel: "✓"
+        nextLabel: "\ue67b",
+        skipLabel: "\ue6fb",
+        doneLabel: "√"
     }).start()
         localStorage.setItem('num','1')
       }
@@ -153,7 +159,7 @@ export default {
     //       }else{
     //         this.$router.push('/register')
     //     }
-    
+
   }
 }
 </script>
@@ -208,7 +214,8 @@ export default {
     left: .85rem;
     bottom:.3rem;
     span{
-      margin-right: .16rem;
+      display: inline-block;
+      width: .5rem;
       color: rgb(111, 186, 44);
     }
   }

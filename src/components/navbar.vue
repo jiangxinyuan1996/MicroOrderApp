@@ -2,8 +2,8 @@
     <div id="navbar">
       <router-link to="/order/waitshipped" tag="li"  exactActiveClass="active">待付款<span v-if="count1!=0">{{count1}}</span></router-link>
       <router-link to="/order/shipped" tag="li"  exactActiveClass="active">已付款<span v-if="count2!=0">{{count2}}</span></router-link>
-      <!-- <router-link to="/order/success" tag="li"  exactActiveClass="active">交易成功</router-link>
-      <router-link to="/order/closed" tag="li"  exactActiveClass="active">交易关闭</router-link> -->
+       <router-link to="/order/success" tag="li"  exactActiveClass="active">已发货</router-link>
+      <!-- <router-link to="/order/closed" tag="li"  exactActiveClass="active">交易关闭</router-link>  -->
     </div>
 </template>
 <script>
@@ -13,6 +13,7 @@ export default {
       return{
         count1:0,
         count2:0,
+        count3:0,
         selected:''
       }
     },
@@ -42,6 +43,18 @@ export default {
                 this.$toast('无数据')
             }
         })
+         getOrderList({status:'3'}).then(res=>{
+            if(res.data.success===1){
+              if(res.data.count){
+                this.count3=res.data.count
+              }else{
+                this.count3=0
+              }
+            }else{
+            Indicator.close()
+                this.$toast('无数据')
+            }
+        })
     }
 }
 </script>
@@ -59,7 +72,7 @@ export default {
     span{
       position: absolute;
       top:0.04rem;
-      right: 0.64rem;
+      right: 0.24rem;
       background: red;
       height: 0.1rem;
       width: 0.1rem;

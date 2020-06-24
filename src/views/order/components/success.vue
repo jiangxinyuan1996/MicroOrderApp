@@ -1,6 +1,6 @@
 <template>
     <div id="success">
-        <orderList status="交易成功"></orderList>   
+        <orderList status="3"></orderList>   
     </div>
 </template>
 <script>

@@ -35,13 +35,13 @@ const routes = [
       path:'success',
       name:'success',
       component:()=>import('@/views/order/components/success')
-    },
-    {
-      path:'closed',
-      name:'closed',
-      component:()=>import('@/views/order/components/closed')
     }
     ]
+  },
+  {
+    path:'/company/:req_sn',
+    name:'closed',
+    component:()=>import('@/views/order/components/closed')
   },
   {
     path: '/order/detail',
@@ -49,7 +49,7 @@ const routes = [
     component:()=>import('@/views/order/orderDetail'),
   },
   {
-    path: '/order/delivery',
+    path: '/order/delivery/:item',
     name: 'orderdelivery',
     component:()=>import('@/views/order/delivery')
   },

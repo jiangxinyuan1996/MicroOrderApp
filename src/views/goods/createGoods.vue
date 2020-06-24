@@ -9,7 +9,7 @@
         </div>
         <div class="createFrom">
             <mt-field label="名称" placeholder="请输入名称" :state="(formData.product_name?'':error)" type="text" v-model="formData.product_name" ></mt-field>
-            <mt-field :label="'单价'" placeholder="0.00" :state="formData.price?'':error" type="text" v-model="formData.price" @change="changemoney(formData)"></mt-field>           
+            <mt-field :label="'单价'" placeholder="0.00" :state="formData.price?'':error" type="number" v-model="formData.price" @change="changemoney(formData)"></mt-field>           
             <a data-v-4a389152="" class="mint-cell mint-field"> 
                 <div class="mint-cell-left"></div> 
                 <div class="mint-cell-wrapper" style="background-origin: content-box;">
@@ -17,7 +17,7 @@
                         <span class="mint-cell-text" style="marginRight:.05rem">数量</span> 
                     </div> 
                     <div class="mint-cell-value">
-                        <el-input-number v-model="formData.num" @change="changemoney(formData)" :min="1" :max="99" label="描述文字" size="mini" :disabled="formData.num_flag"></el-input-number>
+                        <el-input-number v-model="formData.num" @change="changemoney(formData)" :min="1" :max="99" label="描述文字" precision="0" size="mini" :disabled="formData.num_flag"></el-input-number>
                         <div class="mint-field-clear" style="display: none;"><i class="mintui mintui-field-error"></i></div> 
                          <div class="mint-field-other"></div>
                     </div> 
@@ -27,8 +27,10 @@
             </a>
             
             <!-- <mt-field  label="数量" :disabled="formData.num_flag" :state="formData.num?'':num_error" placeholder="请输入数字" type="number" v-model="formData.num" @input="changemoney(formData)"></mt-field> -->
-            <mt-field :label="'折扣'" :disabled="formData.num_flag" placeholder="0.0折" :state="formData.cal?'':num_error" type="number" v-model="formData.cal" @input="changemoney(formData)"></mt-field>           
+            <mt-field :label="'折扣'" :disabled="formData.num_flag" placeholder="0.0折" :state="formData.discount?'':num_error" type="number" v-model="formData.discount" @input="changemoney(formData)"></mt-field>           
             <mt-field :label="'总价'" placeholder="0.00"  type="text" v-model="formData.total" @input="changemoney(formData)" disabled></mt-field>           
+            <mt-field :label="'运费'" placeholder="请输入运费"  type="number" v-model="formData.fare" ></mt-field>           
+
             <mt-checklist
             align="right"
             v-model="formData.num_flag"
@@ -112,7 +114,7 @@
             </div>
             <div class="weui-form__control-area">
       <div class="weui-cells__group weui-cells__group_form">
-        <div class="weui-cells weui-cells_checkbox">
+        <div class="weui-cells weui-cells_checkbox" style="marginTop:0">
             <label class="weui-cell weui-cell_active weui-check__label" for="s11">
                 <div class="weui-cell__hd">
                     <input type="checkbox" class="weui-check" name="checkbox1" id="s11" v-model="formData.address_flag">
@@ -177,14 +179,15 @@ export default {
             categorylist:[],
             formData:{
                 product_name:'',
-                price:undefined,
+                price:'',
                 num:1,
                 address_flag:false,
                 introduction:'',
                 image:[],
                 num_flag:false, 
                 total:0,
-                cal:10
+                discount:10,
+                fare:0
             }
         }
     },
@@ -211,16 +214,6 @@ export default {
       let button = document.querySelector('.mint-checkbox-core')
       let btnwrap = document.querySelector('.mint-checkbox')
       let list =  document.querySelector('.mint-checklist')
-      list.onclick=()=>{
-          if(this.change==='0'){
-              button.style.backgroundColor="#4caf50"
-                button.style.borderColor="#4caf50"
-                this.change='1'
-          }else{
-              this.change='0'
-              button.style.backgroundColor="#fff"
-          }
-      }
       let title = document.querySelector('.mint-checklist-title')
       title.parentNode.removeChild(title)
       let wrap =document.querySelectorAll('.mint-cell-wrapper')
@@ -233,17 +226,29 @@ export default {
         des.style.fontSize='.25rem'
         des.style.position="absolute"
         des.style.bottom='-0.08rem'
-           if(i!==5){
+           if(i!==6){
         des.onclick=function showtip(){
             switch(i){
                 case 0:
-                    MessageBox.alert('名称', '提示')
+                    MessageBox.alert('收款单名称(必填项)', '提示')
                     break
                 case 1:
-                    MessageBox.alert('金额', '提示')
+                    MessageBox.alert('收款单价(必填项)', '提示')
+                    break
+                case 2:
+                    MessageBox.alert('收款数量(选填),选中买家选择按钮此项禁用', '提示')
                     break
                 case 3:
-                    MessageBox.alert('描述', '提示')
+                    MessageBox.alert('折扣(选填),输入格式为x.x,例:8.8', '提示')
+                    break
+                case 4:
+                    MessageBox.alert('总价(数量*总价)', '提示')
+                    break
+                case 5:
+                    MessageBox.alert('运费(最低为0)', '提示')
+                    break
+                case 7:
+                    MessageBox.alert('收款描述(必填项)', '提示')
                     break
             }
         }
@@ -255,7 +260,7 @@ export default {
         para.appendChild(des)
         para.children[0].style.color='red'
         para.style.position="relative"
-        if(i==1||i==4){
+        if(i==1||i==4||i==5){
            let key = document.createElement("span");
             let node = document.createTextNode("￥");
             key.appendChild(node);
@@ -339,11 +344,10 @@ export default {
              localData = localData.replace(/\r|\n/g, '').replace('data:image/jgp', 'data:image/jpeg');
         let camera = this.dataURLtoFile(localData)
            let URLClass = window.URL || window.webkitURL || window.mozURL
-          this.formData.introduction=URLClass.createObjectURL(camera)
                     this.images.push(URLClass.createObjectURL(camera))
                     this.formData.image.push(camera)
                     if(this.formData.image.length>8){
-                        this.showAdd=false  
+                        this.showAdd=false
                     }
         // console.log(res.localData)// localData是图片的base64数据，可以用img标签显示
       },
@@ -398,20 +402,21 @@ export default {
       saveData(item){
       let button = document.querySelector('.mint-checkbox-core')
             if(item.num_flag===false){
-                button.style.backgroundColor="#4caf50"
-                button.style.borderColor="#4caf50"  
                 this.num_error=''
+                this.formData.num=1
+                this.formData.total=this.formData.price*this.formData.num
             }else{
-                button.style.backgroundColor="#fff"
-                this.formData.num=undefined
+                this.formData.num=1
             }
         //   this.$store.state.formData=this.formData
       },
       changemoney(item){
-          if(item.price.indexOf('.')===-1){
-              item.price=item.price+'.00'
+          console.log(item.price)
+          if(item.price===''){
+              item.price=0
           }
-          this.formData.total=this.formData.price*this.formData.num*this.formData.cal/10
+              this.formData.price=parseFloat(this.formData.price).toFixed(2)
+              this.formData.total=parseFloat(this.formData.price*this.formData.num).toFixed(2)
       },
       //保存收款单
       handleSave(){
@@ -433,6 +438,18 @@ export default {
       //返回
       handleBack(){
           this.$router.push('/goods')
+          this.$store.state.formData={
+                product_name:'',
+                price:'',
+                num:1,
+                address_flag:false,
+                introduction:'',
+                image:[],
+                num_flag:false, 
+                total:0,
+                discount:10,
+                fare:0
+            }
       },
       //显示图片
       handleShow(src,index){
@@ -516,7 +533,10 @@ export default {
             data.append("category_id",this.category_id)
             data.append('address_flag',this.address_flag)
             data.append('num_flag',this.num_flag)
-
+            data.append('num',this.formData.num)
+            data.append('total',this.formData.total)
+            data.append('discount',this.formData.discount)
+            data.append('fare',this.formData.fare)
             addProduct(data).then(res=>{
                 if(res.data.success===1){
                     this.$router.push('/goods')
@@ -542,6 +562,11 @@ export default {
             data.append("product_id",this.formData.product_id)
             data.append('address_flag',this.address_flag)
             data.append('num_flag',this.num_flag)
+            data.append('num',this.formData.num)
+            data.append('total',this.formData.total)
+            data.append('discount',this.formData.discount)
+            data.append('fare',this.formData.fare)
+
             updateProduct(data).then(res=>{
                  if(res.data.success===1){
                     this.$router.push('/goods')

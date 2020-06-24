@@ -49,6 +49,9 @@ export default {
             case '2':
                 this.state='已付款'
                 break
+            case '3':
+                this.state='已发货'
+                break
         }
         }
     },

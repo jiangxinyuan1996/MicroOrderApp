@@ -120,3 +120,11 @@ export function getConfig(data){
         data
     })
 }
+//发货
+export function send(data){
+    return request({
+        url:'/tlwdd/index.php?controller/order/send',
+        method:'POST',
+        data
+    })
+}
