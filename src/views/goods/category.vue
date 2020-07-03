@@ -64,11 +64,12 @@
 import BScroll from 'better-scroll'
 import { HomeData } from '@/api'
 import { Indicator,MessageBox } from 'mint-ui'
-import { getProductCategoryInfo,getProductList,delProductList } from '@/api'
+import { getProductCategoryInfo,getProductList,delProductList,startSale,stopSale } from '@/api'
   let a
 export default {
   data () {
     return {
+      title:'下架',
       currentId:1,
       categoryList: [],
       detailList: [],
@@ -107,9 +108,9 @@ export default {
     rightDelete(item,index){
 			return [
         {
-            content: '下架',
+            content: this.title,
             style: { background: '#6fba2c', color: '#fff',lineHeight:'.8rem'},
-            handler: () => console.log('下架') 
+            handler: () => this.pullAndUp(item)
         },
       {
 					content: '删除',
@@ -117,6 +118,19 @@ export default {
 					handler: () => this.handleDel(item,index) 
       }
       ]},
+    pullAndUp(item){
+      if(this.title==='下架'){
+        stopSale({product_id:item.product_id}).then(res=>{
+          console.log('下架',res.data)
+          this.title='上架'
+        })
+      }else{
+        startSale({product_id:item.product_id}).then(res=>{
+          console.log('上架',res.data)
+          this.title='下架'
+        })
+      }
+    },
     handleDetail(item,val){
       this.$router.push({name:'createGoods',params:{item,val,image:item.image}})
     },
@@ -185,13 +199,13 @@ export default {
     }
   },
   beforeCreate(){
-    HomeData().then(res=>{
-      if(res.data.success===1){
-        localStorage.setItem('merchantid',res.data.data.merchant_id)
-      }else{
-        this.$router.push('/register')
-      }
-    })
+    // HomeData().then(res=>{
+    //   if(res.data.success===1){
+    //     localStorage.setItem('merchantid',res.data.data.merchant_id)
+    //   }else{
+    //     this.$router.push('/register')
+    //   }
+    // })
   },
    beforeMount () {
     this.$store.state.showTab = false
@@ -226,6 +240,9 @@ export default {
     //     click: true // 滚动区域可触发点击事件
     //   })
     // })
+  },
+  destroyed(){
+    Indicator.close()
   }
 }
 </script>

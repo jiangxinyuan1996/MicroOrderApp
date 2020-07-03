@@ -21,7 +21,7 @@
                 placeholder="请输入名称"
                 right-icon="warning-o"
                 :rules="[{ required: true, message: '请填写名称' }]"
-                @click-right-icon="handleTips('名称')"
+                @click-right-icon="handleTips('名称(必填)')"
               />
               </van-form>
         </template>
@@ -48,24 +48,24 @@
                 type="number"
                 placeholder="请输入单价"
                 right-icon="warning-o"
-                @click-right-icon="handleTips('单价')"
+                @click-right-icon="handleTips('单价(必填)')"
                 @blur="change"
                 :rules="[{ required: true, message: '请填写单价' }]"
               />
               </van-form>
             </van-cell-group>
         </template>
-      <van-checkbox v-model="formData.num_flag" checked-color="#07c160">可购买多个</van-checkbox>
+      <van-checkbox v-model="formData.num_flag" checked-color="#7BACDC" style="paddingLeft:.16rem" icon-size="16">可购买多个</van-checkbox>
       </van-collapse-item>
-      <van-cell center title="更多选项">
+      <van-cell center title="更多选项" style="paddingLeft:.32rem">
         <template #right-icon>
-          <van-switch v-model="formData.checked" size="24" />
+          <van-switch v-model="formData.checked" size="18" @change="switchChoose"/>
         </template>
       </van-cell>
       <div v-if="formData.checked">
-      <van-radio-group  v-model="formData.address_flag" direction="horizontal" style="fontSize:.14rem">
-        <van-radio name="0">无需发货</van-radio>
-        <van-radio name="1">发货</van-radio>
+      <van-radio-group  v-model="formData.address_flag" direction="horizontal" checked-color="#7BACDC" style="fontSize:.14rem;paddingLeft:.32rem" @change="addressChange" >
+        <van-radio name="0" icon-size="16">无需发货</van-radio>
+        <van-radio name="1" icon-size="16">发货</van-radio>
       </van-radio-group>  
       <van-collapse-item  name="3" v-if="formData.address_flag==='1'">
       <template #title>
@@ -73,18 +73,18 @@
               <van-field
                 v-model="formData.fare"
                 label="固定运费(￥)"
-                :disabled="checked1"
+                :disabled="formData.checked1"
                 clearable
                 type="number"
                 placeholder="请输入运费"
               />
             </van-cell-group>
         </template>
-      <van-checkbox v-model="checked1" checked-color="#07c160" @change="setFare">运费自动计算</van-checkbox>
-       <van-cell-group style="margin-top:.2rem" v-if="checked1">
-            <van-dropdown-menu direction="up">
-              <van-dropdown-item v-model="value" :options="options" />
-              <van-dropdown-item :title="title" ref="item">
+      <van-checkbox v-model="formData.checked1" checked-color="#7BACDC" @change="setFare" style="paddingLeft:.15rem" icon-size="16">运费自动计算</van-checkbox>
+       <van-cell-group style="margin-top:.2rem" v-if="formData.checked1">
+            <van-dropdown-menu direction="up" acitve-color="#7BACDC">
+              <!-- <van-dropdown-item v-model="value" :options="options" /> -->
+              <van-dropdown-item :title="title" ref="item" >
                 <van-cell v-for="item in option2" :key="item.type_id" :title="item.name" @click="handleClick(item)"/>
                 <van-button block type="info" @click="onConfirm">新增</van-button>
               </van-dropdown-item>
@@ -158,7 +158,7 @@
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2" @click="handleTips('配图,上传图片尺寸比例为1:1显示效果最佳')" style="fontSize:.25rem;position:relative;bottom:-0.06rem" /></p>
+                            <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2" @click="handleTips('配图,上传图片尺寸比例为1:1显示效果最佳(非必填)')" style="fontSize:.25rem;position:relative;bottom:-0.06rem" /></p>
                             <div class="weui-uploader__info">{{formData.image.length}}/9</div>
 
                         </div>
@@ -204,7 +204,7 @@ export default {
         { text: '品类', value: 0 },
       ],
       option2: [],
-      title:'筛选',
+      title:'请选择品类运费表',
       value: 0,
       showPicker: false,
       columns: ['重量(元/kg)','件(元/件)'],
@@ -218,9 +218,8 @@ export default {
       addtext:'',
       src:'',
       index:'',
-      activeNames: [],
+      activeNames: ['3'],
       radio:'0',
-      checked1:false,
       address_flag:'',
       num_flag:'',
       images:[],
@@ -232,7 +231,9 @@ export default {
                 introduction:'',
                 image:[],
                 num_flag:false, 
+                checked1:false,
                 checked:true,
+                category_id:this.category_id,
                 total:0,
                 discount:10,
                 fare:0,
@@ -241,20 +242,26 @@ export default {
     }
   },
   beforeMount(){
+    //渲染页面之前隐藏底部tabbar
      this.$store.state.showTab = false
   },
   mounted(){
+    //获取品类列表
     getPackageTypeList().then(res=>{
       this.option2=res.data.data
     })
+    //判断路由跳转传参val值
     if(this.$route.params.val==='新增'){
+      //如果有item属性 赋值给formData
       if(this.$route.params.item){
         this.formData=this.$route.params.item
       }
+      //如果有options赋值给option2(品类列表)
       if(this.$route.params.options){
         console.log(this.$route.params.options)
         this.option2=this.$route.params.options
       }
+      //获取产品分类标签
       getProductCategoryInfo().then(res=>{
         this.categorylist=res.data.data
           this.category_id=res.data.data[0].category_id
@@ -265,7 +272,13 @@ export default {
     
       if(this.$route.params.val!=='新增'){
         this.formData=this.$route.params.item
+        if(this.formData.address_flag==='1'){
+          //当选择发货时，显示更多运费内容
+          this.formData.checked=true
+        }
+        console.log('编辑收款单',this.formData)
       this.category_id=this.$route.params.item.category_id
+      //判断传入的num_flag的值 0为false，1为true
       switch(this.$route.params.item.num_flag){
         case '0':
           this.formData.num_flag=false
@@ -277,18 +290,28 @@ export default {
       }
   },
   methods:{
+    addressChange(){
+      //如果选择无需发货，将运费内容状态初始化
+      console.log(this.formData.address_flag)
+      if(this.formData.address_flag==='0'){
+        this.formData.checked1=false
+      }
+    },
     setFare(){
-      console.log(this.checked1)
-      if(this.checked1){
+      //当选择了运费自动计算选项时，将固定运费初始化
+      console.log(this.formData.checked1)
+      if(this.formData.checked1){
         this.formData.fare='0.00'
       }
     },
     handleClick(item){
+      //品类标签函数
                 this.title=item.name
                 console.log(item.type_id)
                 this.$refs.item.toggle();
         },
     onConfirm() {
+      //点击品类新增选项，跳转到运费配置页面并保存状态
       this.$router.push({
         name:'logistics',
         params:{
@@ -301,6 +324,7 @@ export default {
       })
     },
     dataURLtoFile(dataurl) {
+      //将图片路径转化为文件
             var filename='weixin'
             var arr = dataurl.split(','),
             mime = arr[0].match(/:(.*?);/)[1],
@@ -313,6 +337,8 @@ export default {
             return new File([u8arr], filename, { type: mime });
         },
       upload(res){
+        //图片上传
+          //格式化图片路径
           var localData = res.localData;
              if (localData.indexOf('data:image') != 0) {                       
                      //判断是否有这样的头部                                               
@@ -354,7 +380,7 @@ export default {
       this.formData.fare=parseFloat(this.formData.fare).toFixed(2)
     },
     handleTips(name){
-       MessageBox.alert('收款单'+name+'(必填项)', '温馨提示')
+       MessageBox.alert('收款单'+name, '温馨提示')
     },
     handleShow(src,index){
           this.isShow=true
@@ -413,19 +439,24 @@ export default {
         }
       },
     handlePhoto(){
-          if(this.formData.product_name!=''&&this.formData.price!=''){
+        if(this.formData.product_name===''){
+          this.$toast('请填写名称')
+        }else if(parseFloat(this.formData.price)<=0){
+          this.$toast('单价需大于0')
+        }else if(this.formData.checked1===true&&this.title==='请选择品类运费表'){
+          this.$toast('请选择品类运费表')
+        }else{
             chooseMould().then(res=>{
               if(res.data.success===1){
                 this.dialog2Visible=true
                 this.mouldlist=res.data.data
               }
             })
-          }else{
-              this.$toast('请填写必要信息,名称必填,单价需大于0')
-        }
+          }
     },
     //创建海报
     createQr(mould_id){
+         
           this.$router.push({name:'createqr',params:{
                 item:this.formData,
                 image:this.images,

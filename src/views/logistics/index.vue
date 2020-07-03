@@ -6,7 +6,7 @@
        <div class="article" style="margin-top:.45rem;height:100%">
            <div class="article_header">
                 <van-dropdown-menu>
-                    <van-dropdown-item v-model="value1" :options="option1" />
+                    <!-- <van-dropdown-item v-model="value1" :options="option1" /> -->
                     <van-dropdown-item :title="value2" ref="item">
                         <van-cell v-for="item in option2" :key="item.type_id" :title="item.name" @click="handleClick(item)">
                        <!-- <van-button plain hairline icon="cross" size="mini" type="danger" @click="handleDelCa(index)"/> -->
@@ -24,7 +24,7 @@
                     </van-dropdown-item>
                 </van-dropdown-menu>
            </div>
-           <table border="1" style="width:99%;border-collapse:collapse" cellpadding='0' cellspacing='0' bgcolor="#fff" >
+           <table border="1" style="width:99%;border-collapse:collapse" cellpadding='0' cellspacing='0' bgcolor="#fff" v-if="id!==0">
            <thead>
                <tr align="center">
                     <td>地区(省)</td>
@@ -33,11 +33,11 @@
                </tr>
            </thead>
            <tbody>
-               <tr align="center" v-for="(item,index) in formData" :key="item" height="2">
-                   <td>{{item.name}}</td>
+               <tr align="center" v-for="item in formData" :key="item.id" height="2">
+                   <td>{{item.province}}</td>
                    <td>{{item.price}}</td>
                    <td>
-                       <van-button plain hairline icon="cross" size="mini" type="danger" @click="handleDel(index)"/>
+                       <van-button plain hairline icon="cross" size="mini" type="danger" @click="handleDel(item)"/>
                    </td>
                </tr>
                <tr align="center">
@@ -47,20 +47,20 @@
                </tr>
            </tbody>
        </table>
-
+        <div v-else style="width:100%;textAlign:center;color:#ccc;margin:.5rem 0 0 0">请选择品类标签</div>
        <el-dialog
             title="提示"
             :visible.sync="dialogVisible"
             width="80%"
             :before-close="handleClose">
             <el-form :model="ruleForm" ref="ruleForm" label-width=".5rem" class="demo-ruleForm">
-            <el-form-item label="地区" prop="name"
+            <el-form-item label="地区" prop="province"
             :rules="[
                 { required: true, message: '地区不能为空'}
                 ]"
             >
-                <el-select v-model="ruleForm.name" placeholder="请选择活动区域">
-                <el-option  v-for="item in area" :key="item" :label="item" :value="item"></el-option>
+                <el-select v-model="ruleForm.province" placeholder="请选择活动区域">
+                <el-option  v-for="item in area" :key="item.code" :label="item.name" :value="item.name"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item
@@ -89,19 +89,21 @@
 </template>
 <script>
 import { MessageBox,Toast } from 'mint-ui';
-import { getPackageTypeList } from  '@/api/index'
+import { getPackageTypeList,getPackageList,addPackage,delPackage } from  '@/api/index'
+import adcode from '@/constant/adcode'
 export default {
     data(){
         return {
             isdel:true,
             value:'',
             value1: 0,
-            value2: '筛选',
+            value2: '请选择品类标签',
             dialogVisible:false,
             addCategoryName:'',
+            id:0,
             area:['辽宁','吉林','黑龙江','北京','天津','四川','内蒙'],
             ruleForm:{
-                    name:'',
+                    province:'',
                     price:''
                 },
             option1: [
@@ -109,29 +111,29 @@ export default {
           
             ],
             option2: [],
-            formData:[
-                {
-                    name:'辽宁',
-                    price:100
-                },
-                {
-                    name:'吉林',
-                    price:100
-                }
-            ]
+            formData:[]
         }
     },
     beforeMount(){
         this.$store.state.showTab=false
     },
     mounted(){
-        console.log("kkk",this.$route.params.item)
+
+        console.log("kkk",adcode)
+        this.area=adcode
         this.option2=this.$route.params.options
         getPackageTypeList().then(res=>{
            this.option2=res.data.data
         })
+
     },
     methods:{
+        queryTableData(){
+            getPackageList({type_id:this.id}).then(res=>{
+                    console.log('获取运费地区价格',res)
+                    this.formData=res.data.data
+            })
+        },
         addName(){
             if(this.addCategoryName!==''){
                 this.option2.push({
@@ -142,15 +144,28 @@ export default {
             }
         },
         handleAdd(){
-            this.dialogVisible=true
+            if(this.id===0){
+                Toast({
+                    message: '请选择品类标签',
+                });
+                }else{
+                    this.dialogVisible=true
+                }
         },
          submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
               console.log(this.ruleForm)
-            this.formData.push(this.ruleForm)
+              addPackage({type_id:this.id,...this.ruleForm}).then(res=>{
+                  if(res.data.success===1){
+                      this.queryTableData()
+                      Toast({
+                          message:res.data.message
+                      })
+                  }
+              })
             this.ruleForm={
-                name:'',
+                province:'',
                 price:''
             }
             console.log(this.formData)
@@ -175,14 +190,19 @@ export default {
         handleClick(item){
                 this.value2=item.name
                 console.log('id----->',item.type_id)
+                this.id=item.type_id
                 this.$refs.item.toggle();
+                this.queryTableData()
         },
-        handleDel(index){
+        handleDel(item){
+            console.log(item)
             MessageBox.confirm('确定删除此地区配置?').then(action => {
-                this.formData.splice(index,1)
-                Toast({
-                    message: '删除成功',
-                });
+                delPackage([item.id]).then(res=>{
+                    Toast({
+                        message: res.data.message,
+                    });
+                    this.queryTableData()
+                })
             });
         },
         handleSave(){
@@ -211,6 +231,7 @@ export default {
 <style lang="scss" scoped>
 #logistics{
     height: 100%;
+    overflow: hidden;
     .header{
         position: fixed;
         top:0;

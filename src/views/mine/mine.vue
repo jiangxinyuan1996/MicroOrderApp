@@ -2,9 +2,9 @@
   <div id="center">
     <h2 class="center_header">个人中心</h2>
     <div class="center_container">
-      <div class="container_userinfo" @click="handleLogin">
+      <div class="container_userinfo">
         <div class="userinfo_image">
-          <img src="images/3.jpg" alt="" />
+          <img :src="src" alt="" />
         </div>
         <!-- <p v-if="false" class="username">小明</p>
         <p v-else class="username">未登录</p> -->
@@ -37,12 +37,13 @@
   </div>
 </template>
 <script>
-import { HomeData } from '@/api'
+import { HomeData,getUserAvatar } from '@/api'
 import { Indicator } from 'mint-ui'
 export default {
   data () {
     return {
       money:6.66,
+      src:'',
       centerList: [
         // {
         //   text: '会员',
@@ -89,12 +90,16 @@ export default {
         this.$router.push('/register')
       }
     })
+    getUserAvatar().then(res=>{
+      console.log('获取用户头像',res.data)
+      this.src=res.data
+    })
   },
   methods: {
 
-    handleLogin(){
-     window.location='http://dlallinpay.sinaapp.com/tlwdd/index.php?controller/index/index'
-    },
+    // handleLogin(){
+    //  window.location='http://dlallinpay.sinaapp.com/tlwdd/index.php?controller/index/index'
+    // },
     handleOrder(){
           this.$router.push('/order')
     },
@@ -155,7 +160,7 @@ export default {
     flex-direction: column;
     align-items: center;
     height: .8rem;
-    background: #fff;
+    background: #7BACDC;
     margin:0.1rem .08rem 0;
     border-radius: 0.05rem;
     padding:0.1rem 0;

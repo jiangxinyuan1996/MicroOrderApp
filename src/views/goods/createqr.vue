@@ -46,6 +46,7 @@ export default {
         }
     },
     mounted(){
+        console.log(this.$route.params.item)
         Indicator.open({
             text: '海报生成中...',
             spinnerType: 'fading-circle'
@@ -74,6 +75,8 @@ export default {
             data.append("value",this.$route.params.item.value)
             data.append("price",this.$route.params.item.price)
             data.append("introduction",this.$route.params.item.introduction)
+            data.append("category_id",this.$route.params.item.category_id)
+            data.append("product_id",this.$route.params.item.product_id)
             data.append('address_flag',this.address_flag)
             data.append('num_flag',this.num_flag)
             data.append('num',this.$route.params.item.num)
@@ -91,12 +94,15 @@ export default {
             console.log(err)
         })
     },
+    destroyed(){
+        Indicator.close()
+    },
     methods:{
         handleBack(){
             console.log(this.$route.params)
             let image=[]
             image=[...this.$route.params.image]
-            this.$router.push({name:'createGoods',params:{item:this.$route.params.item,val:'修改海报',image}})
+            this.$router.push({name:'createGoods',params:{item:this.$route.params.item,val:'修改',image}})
         },
        
     }

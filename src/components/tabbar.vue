@@ -1,9 +1,9 @@
 <template>
     <div id="tabbar">
-        <router-link to="/" tag="li" exactActiveClass="active"><i class="iconfont icon-wxbzhuye"/><span>首页</span></router-link>
-        <router-link to="/order" tag="li" activeClass="active"><i class="iconfont icon-cart"/><span>明细</span></router-link>
-        <!-- <router-link to="/goods" tag="li" exactActiveClass="active"><i class="iconfont icon-wxbmingxingdianpu"/><span>商品</span></router-link> -->
-        <router-link to="/mine" tag="li" exactActiveClass="active"><i class="iconfont icon-account"/><span>我的</span></router-link>
+        <!-- <i class="iconfont icon-wxbzhuye"/> -->
+        <router-link to="/" tag="li" exactActiveClass="active"><i class="iconfont icon-shouye"/><span>首页</span></router-link>
+        <router-link to="/order" tag="li" activeClass="active"><i class="iconfont icon-touzimingxi"/><span>明细</span></router-link>
+        <router-link to="/mine" tag="li" exactActiveClass="active"><i class="iconfont icon-ziyuan"/><span>我的</span></router-link>
     </div>
 </template>
 <script>
@@ -22,22 +22,22 @@ export default {
     display:flex;
     height: 0.45rem;
     font-size: 0.10rem;
-    color: #ccc;
+    color: #b7b7b7;
     font-weight: 550;
     font-family: '微软雅黑';
     background:#fff;
-    // border-top: 1px solid #fff;
+    border-top:1px dashed #ccc;
     li{
         flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: center;
         .iconfont{
-            font-size:.25rem;
+            font-size:.2rem;
         }
     }
     .active{
-        color: black;
+        color: #0079c2;
     }
 }
 </style>

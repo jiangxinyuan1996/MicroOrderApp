@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/home/Home.vue'
-import consumerRoutes from './consumer/consumer.js'
+import Home from '../views/home/newHome.vue'
 import templateRouter from './template/template'
 import walletRouter from './wallet/wallet'
 
@@ -97,7 +96,6 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/mine/mine.vue')
   },
-  consumerRoutes,
   templateRouter,
   walletRouter,
   {

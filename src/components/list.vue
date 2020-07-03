@@ -1,104 +1,39 @@
 <template>
   <div id="list">
-    <div class="header">
-      <div class="search">
-        <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAMAAADX9CSSAAAAM1BMVEUAAAC8vLy8vLy9vb27u7u8vLy/v7+9vb2/v7+8vLy8vLy8vLy7u7u9vb27u7u7u7u7u7uNEF5lAAAAEHRSTlMA89tTpH4wHwy9iprlyYdxyi6iUQAAAIZJREFUKM91kVkOwyAMBbFZszSd+5+2SHEVt8D7imbCA0y4E5OKaIrBYlSxqDc7LvsPllxaK1mciMBW7++6AValHT+dXej3d6kPr2ILEuTgkiFZTfG8WJFA87yBrPiqZ7Xv8pzjvV6gkzl0TJzPjWM2ZxPjuyQTwzua+IuJayYOOMMs1/n+ALRtCdMh8+jaAAAAAElFTkSuQmCC" alt=""> -->
-        <input type="text" placeholder="名称/订单号" v-model.trim="mytext" @keypress.13="handleSearch" />
-        <div class="cancel" @click="handleSearch">
-          <img
-            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAXCAMAAADX9CSSAAAAM1BMVEUAAAC8vLy8vLy9vb27u7u8vLy/v7+9vb2/v7+8vLy8vLy8vLy7u7u9vb27u7u7u7u7u7uNEF5lAAAAEHRSTlMA89tTpH4wHwy9iprlyYdxyi6iUQAAAIZJREFUKM91kVkOwyAMBbFZszSd+5+2SHEVt8D7imbCA0y4E5OKaIrBYlSxqDc7LvsPllxaK1mciMBW7++6AValHT+dXej3d6kPr2ILEuTgkiFZTfG8WJFA87yBrPiqZ7Xv8pzjvV6gkzl0TJzPjWM2ZxPjuyQTwzua+IuJayYOOMMs1/n+ALRtCdMh8+jaAAAAAElFTkSuQmCC"
-            alt
-          />
-        </div>
-      </div>
-    </div>
     <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="loading" ref="loadmore" :auto-fill="false">
-      <div class="list"
-      style="margin:0 .1rem"
+      <ul class="list"
       v-infinite-scroll="loadMore"
         infinite-scroll-disabled="loading"
         infinite-scroll-distance="50"
         infinite-scroll-immediate-check="false"
       >
-      <div 
-        v-for="(item,index) in orderList"
-        :key="index"
-        share="[object Object]"
-        time_stamp="1589958462070"
-        style="background-color:#fff;margin-bottom:.1rem;box-shadow:.05rem .05rem .05rem #ccc"
-      >
-        <div>
-          <div
-            createtime="1589958446000"
-            discount="0"
-            discounttype="-1"
-            priceid="2"
-            pricerange="12"
-            skusstr="默认"
-            class="f-flex f-vc f-sub-mr g8 weui_padding f14 wsxc_purchase_order_details custom_bury"
-            @click="handleClick(item)"
-          >
-            <div v-if="item.image!==''" style="margin-right:.2rem">
-              <div class="avatar img-rounded" style="width: .6rem; height: .6rem;">
-                <img
-                style="width:100%;height:100%"
-                  class="img-rounded"
-                  :src="item.image"
-                />
-              </div>
-            </div>
-            <div class="f-flex-1" style="flex:1;width:0">
-              <div class="word-break ellipsis-two" style="-webkit-line-clamp: 1;">{{item.product_name}}</div>
-              <div
-                class="word-break ellipsis-one"
-                style="margin-top: 8px; white-space: nowrap;"
-              >订单号：<span style="color:#1989fa">{{item.req_sn}}</span></div>
-            </div>
-            <div class="text-right">
-              <div class="warn-color">¥ {{item.price}}</div>
-              <div class="f12">x {{item.num}}</div>
-            </div>
+      <li class="list_item" v-for="item in orderList" :key="item.order_id">
+        <div class="title">
+          <div class="left_container">
+            <div class="left_box"></div>
+            <span class="left_category">水果生鲜</span>
+          </div>
+          <span class="right_status">{{currentStatus}}</span>
+        </div>
+        <div class="content">
+          <div class="left"><img :src="item.image" alt=""/></div>
+          <div class="right">
+            <p class="product_name">
+              <span>{{item.product_name}}</span>
+              <span><b style="fontSize:5px">￥</b>{{item.price}}</span>
+            </p>
+            <p class="order_number">订单号：<span style="color:#333">{{item.req_sn}}</span><span style="fontSize:.1rem;float:right">x {{item.num}}</span></p>
+            <p class="product_fare">运费(水果生鲜) <span style="fontSize:5px">￥</span>{{item.fare}}</p>
+            <p class="total">应收款 <span style="fontSize:5px">￥</span><span style="color:#0079c2;fontSize:.14rem">{{item.total}}</span></p>
           </div>
         </div>
-        <div class="f-flex f-vc f-flex-wrap f-flex-hr" style="padding: 0px 15px;"></div>
-        <div class="weui_cells wsxc_purchase_order_details custom_bury" style="margin-top: 0px;">
-          <div class="weui_cell f-sub-mr f-sub-mr f14 g8">
-            <div class="weui_cell_bd weui_cell_primary">
-              <div class="f-flex f-sb">
-                <div>快递/{{item.discount==='10.0'?'原价':item.discount+'折'}}<br><span v-if="currentStatus==='已发货'">快递单号: <span style="color:#1989fa">{{item.express_number}}</span></span></div>
-                <div class="text-right">
-                  <div>
-                    <div style="display: inline-block;">{{item.create_time}}</div>
-                    <!-- <span>【卖家收款】</span> -->
-                    <div style="display: inline-block; vertical-align: middle;"></div>
-                  </div>共 <span style="color:red">{{item.num}}</span> 件 合计：¥
-                  <span class="f16 g6" style="color:red">{{item.total}}</span>
-                  <span  v-if="item.fare==='0.00'?false:true" class="g6">(含运费<span style="color:red">{{item.fare}})</span></span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="bottom">
+          <div class="time">{{item.create_time}}</div>
+          <div v-if="currentStatus==='待发货'" class="send_button" @click="handleDelivery(item)" style="marginLeft:.1rem">卖家发货</div>
+          <div class="detail_button" @click="handleClick(item)" >订单详情</div>
         </div>
-        <div class="flex-nav cover-flex-nav" style="background-color: rgb(255, 255, 255);" v-if="currentStatus==='已付款'">
-          <div class="flex-tab" style="color: rgb(102, 102, 102);"></div>
-          <div class="flex-tab" style="color: rgb(102, 102, 102);"></div>
-          <div class="flex-tab" style="color: rgb(60, 197, 31);" @click="handleDelivery(item)">发货</div>
-        </div>
-      </div>
-      </div>
-      <!-- <ul class="navlist"  v-infinite-scroll="loadMore"
-        infinite-scroll-disabled="loading"
-        infinite-scroll-distance="50"
-        infinite-scroll-immediate-check="false">
-            <li v-for="(item,index) in orderList" :key="index" :class="'list_item '+(currentStatus==='待付款'?'red':'green')" @click="handleClick(item)">
-                <p>订单号:{{item.req_sn}}</p>
-                <p>收款单名称:{{item.product_name}}</p>
-                <p>日期:{{item.create_time}}</p>
-                <p>总价:{{item.total}}</p>
-                <p>买家:{{item.receiver_name}}</p>
-                <p>状态:{{currentStatus}}</p>
-            </li>
-      </ul>-->
+      </li>
+      </ul>
       <p slot="top" class="mint-loadmore-top"></p>
     </mt-loadmore>
   <i @click="backTop" class="iconfont icon-huidaodingbu" style="display:none;background:#fff;opacity:.8;fontSize:.3rem;position:fixed;right:.1rem;bottom:.6rem;zIndex:999;border:1px solid #ccc;borderRadius:50%" />
@@ -138,10 +73,10 @@ export default {
         this.currentStatus = "待付款";
         break;
       case "2":
-        this.currentStatus = "已付款";
+        this.currentStatus = "待发货";
         break
       case "3":
-        this.currentStatus = "已发货";
+        this.currentStatus = "已完成";
         break
     }
     getOrderList({ status: this.status }).then(res => {
@@ -154,6 +89,9 @@ export default {
         this.$toast("无数据");
       }
     });
+  },
+  destroyed(){
+    Indicator.close()
   },
   methods: {
     backTop(){
@@ -202,168 +140,147 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-body{
-    background-color: #efeff4;
-}
 #list {
+  background: rgba(239, 241, 243, 1);;
   width: 100%;
   margin-bottom: 0.45rem;
-  .header {
+  .list {
+    margin-top:.15rem;
     display: flex;
-    width: 100%;
-    height: 0.29rem;
-    padding: 0.09rem 0;
-    border-top: 0.5px solid #ebebeb;
-    border-bottom: 0.5px solid #ebebeb;
-    background: #fff;
-    .cancel {
-      background: #f1f1f1;
-      font-size: 0.16rem;
-      width: 0.7rem;
-      height: 0.3rem;
-      text-align: center;
-      line-height: 0.3rem;
-      color: rgb(38, 38, 247);
-      font-size: 0.14rem;
-    }
-    .search {
-      display: flex;
-      flex: 1;
-      height: 0.28rem;
-      border: none;
-      margin:0 .15rem;
-      background: #f8f8f8;
-      border-radius: 0.15rem;
-      overflow: hidden;
-      img {
-        margin: 0.09rem 0.09rem 0 0.12rem;
-        width: 0.11rem;
-        height: 0.11rem;
-      }
-      input {
-        outline: none;
-        border: none;
-        padding-left: 0.2rem;
-        flex: 1;
-        background: #f8f8f8;
-      }
-    }
-  }
-  .weui_cell {
-    padding: 10px 15px;
-    position: relative;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
+    flex-direction: column;
     align-items: center;
-}
-.flex-nav {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    background-color: #fff;
-    outline: 0;
-    -webkit-align-items: center;
-    align-items: center;
-    -ms-flex-align: center;
-}
-  .weui_padding{
-      padding: .1rem .15rem;
-  }
-  .flex-nav {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    background-color: #fff;
-    outline: 0;
-    -webkit-align-items: center;
-    align-items: center;
-    -ms-flex-align: center;
-}
-.flex-nav .flex-tab {
-    -webkit-box-flex: 1;
-    position: relative;
-    padding: .5em;
-    width: 0;
-    text-align: center;
-    color: #000;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-}
-.before-border-right:before, .flex-nav .flex-tab:not(:last-child):before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    border-right: 1px solid #d9d9d9;
-    width: 1px;
-    height: 100%;
-    -webkit-transform: scale(.5,.5);
-    transform: scale(.5,.5);
-    content: " ";
-}
-.text-right {
-    text-align: right;
-}
-  .f-vc{
-      align-items: center;
-  }
-  .f-flex{
-      display:flex;
-      .avatar{
-        border-radius: 5px;
-        overflow: hidden;
-      }
-  }
-  .weui_cell_primary {
-    -webkit-box-flex: 1;
-    -webkit-flex: 1;
-    flex: 1;
-}
-  .f-sb {
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
-    justify-content: space-between;
-}
-  .f14{
-      font-size: .14rem;
-  }
-  .f12{
-      font-size: .12rem;
-  }
-  .g8{
-      color: #888;
-  }
-  .deep-gray{
-      color: #888;
-  }
-  .warn-color {
-    color: #ffbe00;
-}
-  .navlist {
     .list_item {
       display: flex;
-      flex-direction: column;
-      // height: 0.5rem;
+      flex-direction: column;;
+      width:3.5rem;
+      border-radius: 7px;
       background: #fff;
-      margin: 0.06rem 0.08rem;
-      padding: 0 0.06rem;
-      border-radius: 5px;
-      p {
-        flex: 1;
+      margin-bottom: .1rem;
+      overflow: hidden;
+      box-shadow: 0px 2px 4px rgba(106, 110, 144, 0.63921568627451);
+      .title{
+        display:flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: .28rem;
+        line-height: .28rem;
+        font-size: .14rem;
+        border-bottom: 1px solid rgba(106, 110, 144, 0.3);
+        .left_container{
+          display:flex;
+          align-items: center;
+          .left_box{
+            width:.03rem;
+            height: .15rem;
+            background: rgba(0, 121, 194, 1);
+          }
+          .left_category{
+            float: left;
+            margin-left: .1rem;
+            font-weight: 600;
+            color: #333;
+          }
+        }
+        .right_status{
+          color: #0079c2;
+          margin-right: .1rem;
+        }
       }
-    }
-    .red {
-      border-bottom: 1px solid red;
-    }
-    .green {
-      border-bottom: 1px solid #04be02;
+      .content{
+        display: flex;
+        flex:1;
+        padding:6px;
+        box-sizing: border-box;
+        .left{
+          width:.8rem;
+          height: .8rem;
+          margin-right:.1rem;
+          img{
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .right{
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          p{
+            flex:1;
+            width: 100%;
+           
+          }
+          .product_name{
+             display:flex;
+            align-items: center;
+            justify-content: space-between;
+            span{
+              font-size: .12rem;
+              &:first-of-type{
+                width:1.5rem;
+                font-size: .13rem;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                color: #000000;
+              }
+              &:last-of-type{
+                font-weight: 600;
+                color: #333;
+              }
+            }
+          }
+          .order_number{
+            font-size: .12rem;
+            line-height: .2rem;
+            color: #000000;
+          }
+          .product_fare{
+             display:flex;
+            align-items: center;
+            font-size: .1rem;
+          }
+          .total{
+            text-align: right;
+            font-size: .12rem;
+          }
+        }
+      }
+      .bottom{
+        width: 100%;
+        height: .28rem;
+        line-height: .28rem;
+        font-size: .14rem;
+        padding:0 .1rem;
+        box-sizing: border-box;
+        .time{
+          float: left;
+          color: #a2a2a2;
+          font-size: .12rem;
+        }
+        .detail_button{
+          float: right;
+          width:.7rem;
+          text-align: center;
+          border-radius: .09rem;
+          height: .18rem;
+          line-height: .18rem;
+          font-size: .12rem;
+          color: #0079c2;
+          border: 1px solid rgba(50, 147, 206,.5);
+        }
+        .send_button{
+          float: right;
+          width:.7rem;
+          text-align: center;
+          border-radius: .09rem;
+          height: .18rem;
+          line-height: .18rem;
+          font-size: .12rem;
+          color: rgb(192, 221, 152);
+          border: 1px solid rgba(192, 221, 152,.5);
+        }
+      }
     }
   }
 }

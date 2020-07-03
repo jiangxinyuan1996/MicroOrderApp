@@ -140,3 +140,48 @@ export function getPackageTypeList(){
         url:'/tlwdd/index.php?controller/merchant/getPackageTypeList',
     })
 }
+//新增运费价目表
+export function addPackage(data){
+    return request({
+        url:'/tlwdd/index.php?controller/merchant/addPackage',
+        method:'POST',
+        data
+    })
+}
+//查询运费价目表
+export function getPackageList(data){
+    return request({
+        url:'/tlwdd/index.php?controller/merchant/getPackageList',
+        data
+    })
+}
+//删除运费价目
+export function delPackage(data){
+    return request({
+        url:'/tlwdd/index.php?controller/merchant/delPackage',
+        method:'POST',
+        data
+    })
+}
+//获取用户微信头像
+export function getUserAvatar(){
+    return request({
+        url:'/tlwdd/index.php?controller/user/getUserAvatar',
+    })
+}
+//商品下架
+export function stopSale(data){
+    return request({
+        url:'/tlwdd/index.php?controller/product/stopSale',
+        method:'POST',
+        data
+    })
+}
+//商品上架
+export function startSale(data){
+    return request({
+        url:'/tlwdd/index.php?controller/product/startSale',
+        method:'POST',
+        data
+    })
+}
