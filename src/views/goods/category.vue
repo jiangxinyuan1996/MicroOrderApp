@@ -110,7 +110,7 @@ export default {
         {
             content: this.title,
             style: { background: '#6fba2c', color: '#fff',lineHeight:'.8rem'},
-            handler: () => this.pullAndUp(item)
+            handler: () => this.pullAndUp(item,index)
         },
       {
 					content: '删除',
@@ -118,7 +118,7 @@ export default {
 					handler: () => this.handleDel(item,index) 
       }
       ]},
-    pullAndUp(item){
+    pullAndUp(item,index){
       if(this.title==='下架'){
         stopSale({product_id:item.product_id}).then(res=>{
           console.log('下架',res.data)

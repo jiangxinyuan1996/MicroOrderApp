@@ -18,9 +18,7 @@
                 label="名称"
                 clearable
                 required
-                placeholder="请输入名称"
                 right-icon="warning-o"
-                :rules="[{ required: true, message: '请填写名称' }]"
                 @click-right-icon="handleTips('名称(必填)')"
               />
               </van-form>
@@ -32,7 +30,7 @@
           autosize
           label="描述"
           type="textarea"
-          maxlength="20"
+          maxlength="50"
           placeholder="请输入描述"
         />
       </van-collapse-item>
@@ -45,12 +43,10 @@
                 label="单价(￥)"
                 required
                 clearable
-                type="number"
-                placeholder="请输入单价"
+                type="text"
                 right-icon="warning-o"
                 @click-right-icon="handleTips('单价(必填)')"
                 @blur="change"
-                :rules="[{ required: true, message: '请填写单价' }]"
               />
               </van-form>
             </van-cell-group>
@@ -59,34 +55,34 @@
       </van-collapse-item>
       <van-cell center title="更多选项" style="paddingLeft:.32rem">
         <template #right-icon>
-          <van-switch v-model="formData.checked" size="18" @change="switchChoose"/>
+          <van-switch v-model="formData.checked" size="18" />
         </template>
       </van-cell>
       <div v-if="formData.checked">
       <van-radio-group  v-model="formData.address_flag" direction="horizontal" checked-color="#7BACDC" style="fontSize:.14rem;paddingLeft:.32rem" @change="addressChange" >
         <van-radio name="0" icon-size="16">无需发货</van-radio>
         <van-radio name="1" icon-size="16">发货</van-radio>
-      </van-radio-group>  
+      </van-radio-group>
       <van-collapse-item  name="3" v-if="formData.address_flag==='1'">
       <template #title>
             <van-cell-group>
               <van-field
                 v-model="formData.fare"
                 label="固定运费(￥)"
-                :disabled="formData.checked1"
+                :disabled="checked1"
                 clearable
                 type="number"
                 placeholder="请输入运费"
               />
             </van-cell-group>
         </template>
-      <van-checkbox v-model="formData.checked1" checked-color="#7BACDC" @change="setFare" style="paddingLeft:.15rem" icon-size="16">运费自动计算</van-checkbox>
-       <van-cell-group style="margin-top:.2rem" v-if="formData.checked1">
+      <van-checkbox v-model="checked1" checked-color="#7BACDC" @change="setFare" style="paddingLeft:.15rem" icon-size="16">运费自动计算</van-checkbox>
+       <van-cell-group style="margin-top:.2rem" v-if="checked1">
             <van-dropdown-menu direction="up" acitve-color="#7BACDC">
               <!-- <van-dropdown-item v-model="value" :options="options" /> -->
               <van-dropdown-item :title="title" ref="item" >
                 <van-cell v-for="item in option2" :key="item.type_id" :title="item.name" @click="handleClick(item)"/>
-                <van-button block type="info" @click="onConfirm">新增</van-button>
+                <van-button block type="info" @click="onConfirm">配置</van-button>
               </van-dropdown-item>
             </van-dropdown-menu>
             </van-cell-group>
@@ -153,6 +149,15 @@
             </ul>
         </div>
         </el-dialog>
+         <!-- 图片幻灯片 -->
+                <div v-if="isShow" class="weui-gallery" style="display:block">
+                    <span class="weui-gallery__img" :style="'background-image: url('+src+');'" @click="()=>{this.isShow=false}"></span>
+                    <div class="weui-gallery__opr" @click="handleDel">
+                        <a href="javascript:" class="weui-gallery__del">
+                            <i class="weui-icon-delete weui-icon_gallery-delete"></i>
+                        </a>
+                    </div>
+                </div>
             <!-- 配图 -->
             <div class="weui-cell  weui-cell_uploader">
                 <div class="weui-cell__bd">
@@ -200,6 +205,7 @@ export default {
     },
   data () {
     return {
+      isShow:false,
       options: [
         { text: '品类', value: 0 },
       ],
@@ -213,6 +219,7 @@ export default {
       dialog2Visible:false,
       innerVisible:false,
       showAdd:true,
+      checked1:false,
       categorylist:[],
       mouldlist:[],
       addtext:'',
@@ -231,13 +238,14 @@ export default {
                 introduction:'',
                 image:[],
                 num_flag:false, 
-                checked1:false,
+                checked1:true,
                 checked:true,
                 category_id:this.category_id,
                 total:0,
                 discount:10,
                 fare:0,
-                type_id:''
+                type_id:'',
+                package_type:''
             }
     }
   },
@@ -247,6 +255,12 @@ export default {
   },
   mounted(){
     //获取品类列表
+    let url = location.href.split('#')[0]
+      console.log('url---:',url);
+      getConfig({url:url}).then(res=>{
+        let wxConfig = res.data.data.config
+        initWxconfig(wxConfig)
+      })
     getPackageTypeList().then(res=>{
       this.option2=res.data.data
     })
@@ -263,8 +277,12 @@ export default {
       }
       //获取产品分类标签
       getProductCategoryInfo().then(res=>{
+        if(res.data.data!==undefined){
         this.categorylist=res.data.data
           this.category_id=res.data.data[0].category_id
+        }else{
+          this.categorylist=[]
+        }
       })
           }else{
             this.category_id=this.$route.params.item.category_id
@@ -272,12 +290,26 @@ export default {
     
       if(this.$route.params.val!=='新增'){
         this.formData=this.$route.params.item
-        if(this.formData.address_flag==='1'){
-          //当选择发货时，显示更多运费内容
-          this.formData.checked=true
+        if(this.formData.package_type=='0'){
+          this.checked1=false
+        }else{
+          this.checked1=true
+        }
+        if(this.checked1){
+          getPackageTypeList().then(res=>{
+            this.option2=res.data.data
+            for(let i=0;i<this.option2.length;i++){
+                if(this.option2[i].type_id==this.$route.params.item.package_type){
+                  this.title=this.option2[i].name
+                  this.formData.package_type=this.$route.params.item.package_type
+                }
+            }
+          })
+        // this.$refs.item.toggle()
         }
         console.log('编辑收款单',this.formData)
       this.category_id=this.$route.params.item.category_id
+      this.images=[...this.$route.params.image]
       //判断传入的num_flag的值 0为false，1为true
       switch(this.$route.params.item.num_flag){
         case '0':
@@ -294,21 +326,22 @@ export default {
       //如果选择无需发货，将运费内容状态初始化
       console.log(this.formData.address_flag)
       if(this.formData.address_flag==='0'){
-        this.formData.checked1=false
+        this.checked1=false
       }
     },
     setFare(){
       //当选择了运费自动计算选项时，将固定运费初始化
-      console.log(this.formData.checked1)
-      if(this.formData.checked1){
+      console.log(this.checked1)
+      if(this.checked1){
         this.formData.fare='0.00'
       }
     },
     handleClick(item){
       //品类标签函数
                 this.title=item.name
-                console.log(item.type_id)
+                this.formData.package_type=item.type_id
                 this.$refs.item.toggle();
+                console.log(this.$refs)
         },
     onConfirm() {
       //点击品类新增选项，跳转到运费配置页面并保存状态
@@ -375,8 +408,18 @@ export default {
         },
         })
     },
+    handleDel(){
+          this.formData.image.splice(this.index,1)
+          this.images.splice(this.index,1)
+          if(this.formData.image.length<9){
+              this.showAdd=true
+          }
+          this.isShow=false
+      },
     change(){
-      this.formData.price=parseFloat(this.formData.price).toFixed(2)
+      if(this.formData.price!==''){
+        this.formData.price=parseFloat(this.formData.price).toFixed(2)
+      }
       this.formData.fare=parseFloat(this.formData.fare).toFixed(2)
     },
     handleTips(name){
@@ -424,26 +467,35 @@ export default {
     //保存收款单
       handleSave(){
         //   this.getlist()
-          if(this.formData.product_name!==''&&this.formData.price>0){
+          // if(this.formData.product_name!==''&&this.formData.price>0){
+            if(this.formData.product_name===''){
+          this.$toast('请填写名称')
+        }else if(parseFloat(this.formData.price)<=0||this.formData.price===''){
+          this.$toast('单价需大于0')
+        }else if(this.checked1===true&&this.title==='请选择品类运费表'){
+          this.$toast('请选择品类运费表')
+        }else{
             if(this.$route.params.val==='新增'){
+              console.log('从物流页保存',111)
               this.dialog1Visible=true
             }else{
               this.submit()
             }
-          }else{
-              this.error='error'
-              if(this.formData.num_flag===false){
-                  this.num_error='error'
-              }
-              this.$toast('请填写必要信息,名称必填,单价需大于0')
         }
+        //   }else{
+        //       this.error='error'
+        //       if(this.formData.num_flag===false){
+        //           this.num_error='error'
+        //       }
+        //       this.$toast('请填写必要信息,名称必填,单价需大于0')
+        // }
       },
     handlePhoto(){
         if(this.formData.product_name===''){
           this.$toast('请填写名称')
-        }else if(parseFloat(this.formData.price)<=0){
+        }else if(parseFloat(this.formData.price)<=0||this.formData.price===''){
           this.$toast('单价需大于0')
-        }else if(this.formData.checked1===true&&this.title==='请选择品类运费表'){
+        }else if(this.checked1===true&&this.title==='请选择品类运费表'){
           this.$toast('请选择品类运费表')
         }else{
             chooseMould().then(res=>{
@@ -509,8 +561,8 @@ export default {
             data.append("img"+i,this.formData.image[i])
                  }     
             data.append("product_name",this.formData.product_name)
-            data.append("value",this.formData.value)
             data.append("price",this.formData.price)
+            data.append('checked',this.formData.checked)
             data.append("introduction",this.formData.introduction)
             data.append("category_id",this.category_id)
             data.append("product_id",this.formData.product_id)
@@ -520,6 +572,7 @@ export default {
             data.append('total',this.formData.total)
             data.append('discount',this.formData.discount)
             data.append('fare',this.formData.fare)
+            data.append('package_type',this.formData.package_type)
             updateProduct(data).then(res=>{
                 if(res.data.success===1){
                     this.$router.push('/goods')
@@ -529,6 +582,8 @@ export default {
                       num:1,
                       address_flag:'1',
                       introduction:'',
+                      checked:false,
+                      checked1:false,
                       image:[],
                       num_flag:false, 
                       total:0,
@@ -543,8 +598,8 @@ export default {
             data.append("img"+i,this.formData.image[i])
                  }     
             data.append("product_name",this.formData.product_name)
-            data.append("value",this.formData.value)
             data.append("price",this.formData.price)
+            data.append('checked',this.formData.checked)
             data.append("introduction",this.formData.introduction)
             data.append("category_id",this.category_id)
             data.append('address_flag',this.formData.address_flag)
@@ -553,7 +608,7 @@ export default {
             data.append('total',this.formData.total)
             data.append('discount',this.formData.discount)
             data.append('fare',this.formData.fare)
-
+            data.append('package_type',this.formData.package_type)
             addProduct(data).then(res=>{
                  if(res.data.success===1){
                     this.$router.push('/goods')
@@ -563,6 +618,8 @@ export default {
                     num:1,
                     address_flag:'1',
                     introduction:'',
+                    checked:false,
+                    checked1:false,
                     image:[],
                     num_flag:false, 
                     total:0,

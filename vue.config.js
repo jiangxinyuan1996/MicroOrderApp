@@ -7,7 +7,8 @@ module.exports = {
         target:'http://dlallinpay.sinaapp.com',
         changeOrigin:true
       }
-    }
+    },
+    hot:true
   },
   configureWebpack:()=>{
       return {

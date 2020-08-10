@@ -63,15 +63,15 @@
                     <div class="bottom_right">
                         <p class="bottom_right_item">
                             <span>商品总价</span>
-                            <span><b class="smallSize">￥</b>{{detailData.price}} x{{detailData.num}}</span>
+                            <span style="marginRight:.05rem"><b class="smallSize">￥</b>{{detailData.price}} x{{detailData.num}}</span>
                         </p>
                         <p class="bottom_right_item">
                             <span>运费(水果生鲜)</span>
-                            <span><b class="smallSize">￥</b>{{detailData.fare}}</span>
+                            <span style="marginRight:.05rem"><b class="smallSize">￥</b>{{detailData.fare}}</span>
                         </p>
                         <p class="bottom_right_item bottom_right_item_last" style="opacity:1">
                             <span>实付款</span>
-                            <span><b class="smallSize">￥</b>{{detailData.total}}</span>
+                            <span style="marginRight:.05rem"><b class="smallSize">￥</b>{{detailData.total}}</span>
                         </p>
                     </div>
                 </div>
@@ -323,7 +323,7 @@ export default {
               color: #333;
               opacity: .7;
               .smallSize{
-                  font-size: 4px;
+                  font-size: .04rem;
               }
               .bottom_right_item_last{
                   font-size: .13rem;

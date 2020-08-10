@@ -39,6 +39,8 @@
 <script>
 import { HomeData,getUserAvatar } from '@/api'
 import { Indicator } from 'mint-ui'
+import { Toast } from 'vant';
+
 export default {
   data () {
     return {
@@ -61,13 +63,13 @@ export default {
           text: '货架',
           icon: '#icon-mobanxiazai-01'
         },
+          {
+            text: '物流',
+            icon: '#icon-wuliu'
+          },
         {
           text: '销售',
           icon: '#icon-xiaoshou'
-        },
-        {
-          text: '物流',
-          icon: '#icon-wuliu'
         },
         {
           text: '代理',
@@ -108,20 +110,30 @@ export default {
         case '货架':
           this.$router.push('/goods')
           break
-        case '商品':
-          this.$router.push('/goods')
-          break
         case '物流':
           this.$router.push('/logistics')
           break
         case '店铺':
           if(localStorage.getItem('merchantid')!=''&&localStorage.getItem('merchantid')){
-            this.$toast('已绑定店铺')
+          Toast.clear()
+          Toast('已绑定店铺')
             break
           }else{
             this.$router.push('/register')
             break
           }
+        case '销售':
+          Toast.clear()
+          Toast('该功能尚未开放')
+          break
+        case '代理':
+          Toast.clear()
+          Toast('该功能尚未开放')
+        break
+        case '更多':
+          Toast.clear()
+          Toast('该功能尚未开放')
+        break
       }
     },
     handleWallet(){

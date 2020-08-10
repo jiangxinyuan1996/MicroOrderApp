@@ -35,6 +35,9 @@ export default {
     //   }
     // })
   },
+  handleSearch() {
+      console.log("搜索");
+  },
   mounted(){
      Indicator.close()
   }

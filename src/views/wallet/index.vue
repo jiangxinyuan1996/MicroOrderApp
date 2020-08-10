@@ -1,138 +1,153 @@
 <template>
-    <div id="wallet">
-        <div class="wallet_header">
-            <i class="iconfont icon-huitui" @click="handleBack"/>
-            <p class="header_info">钱包<span style="float:right">账单</span></p>
+    <div id="test2">
+        <div class="wrap">
+            
         </div>
-        <div class="main">
-            <ul class="walletlist">
-                <li v-for="(item,index) in walletList" :key="index" class="list_item">
-                    <svg class="icon" aria-hidden="true">
-                        <use :xlink:href="item.icon"></use>
-                    </svg>
-                    <p :class="'item_info'+' '+ (index===2?'clearBorder':'')">
-                        <span>{{item.text}}</span>
-                        <span v-if="index===0">￥{{+money?money:'0.00'}} <i class="iconfont icon-qianjin"/></span>
-                        <span v-else-if="index===1">￥0.00 <i class="iconfont icon-qianjin"/></span>
-                        <span v-else> <i class="iconfont icon-qianjin"/></span>
-                    </p>
-                </li>
-            </ul>
-        </div>
-        <div class="wallet_footer">
-            <div class="footer_left footer_info">充值</div>
-            <div class="footer_right footer_info">提现</div>
-        </div>
+        <div class="addButton" @click="handleAdd">添加</div>
+        <div class="changeBgImg" @click="changeImg">换背景</div>
     </div>
 </template>
 <script>
 export default {
     data(){
-        return {
-            money:this.$route.params.money,
-            walletList:[
-                {
-                    text:'零钱',
-                    icon:'#icon-yingbi'
-                },
-                {
-                    text:'零钱通',
-                    icon:'#icon-iconzhengli-'
-                },
-                {
-                    text:'银行卡',
-                    icon:'#icon-icon-test'
-                }
-            ]
+        return{
+            left:50,
+            top:100,
+            oL:0,
+            oT:0
         }
     },
-    created () {
-        this.$store.state.showTab = false
+    mounted(){
+            let ground = document.querySelector('.wrap')
+            ground.style.background='url(/images/3.jpg) no-repeat'
+            ground.style.backgroundSize='100% 100%'
     },
-    beforeDestroy () {
-        this.$store.state.showTab = true
-    },
-    methods: {
-    handleBack () {
-      history.go(-1)
+    methods:{
+        changeImg(){
+            let ground = document.querySelector('.wrap')
+            ground.style.background='url(/images/background.png) no-repeat'
+        },
+        handleAdd(){
+            let ground = document.querySelector('.wrap')
+            let newBox = document.createElement('img')
+            
+            newBox.src="/images/3.jpg"
+            newBox.style.width='30px'
+            newBox.style.height='30px'
+            newBox.style.position='absolute'
+            newBox.style.left=this.left+'px'
+            newBox.style.top=this.top+'px'
+            newBox.style.boxSizing='border-box'
+            ground.appendChild(newBox)
+            console.log(ground.children)
+            var maxW = ground.clientWidth - newBox.offsetWidth;
+            var maxH = ground.clientHeight - newBox.offsetHeight;
+            //手指触摸开始，记录div的初始位置
+            newBox.addEventListener('touchstart', function(e) {
+                     for(let i=0;i<ground.children.length;i++){
+                    ground.children[i].style.border="none"
+                }
+            var ev = e || window.event;
+                ev.target.style.border="1px solid #fff"
+            var touch = ev.targetTouches[0];
+            this.oL = touch.clientX - newBox.offsetLeft;
+            this.oT = touch.clientY - newBox.offsetTop;
+
+            document.addEventListener("touchmove", e.preventDefault(), false);
+            });
+            //触摸中的，位置记录
+
+            newBox.addEventListener('touchmove', (e)=> {
+            var ev = e || window.event;
+            var touch = ev.targetTouches[0];
+            console.log(e)
+            var oLeft = touch.clientX - this.oL-e.target.offsetWidth/2-35;
+            var oTop = touch.clientY - this.oT-e.target.offsetHeight/2 -40;
+            if(oLeft < 0) {
+            oLeft = 0;
+            } else if(oLeft >= maxW) {
+            oLeft = maxW;
+            }
+            if(oTop < 0) {
+            oTop = 0;
+            } else if(oTop >= maxH) {
+            oTop = maxH;
+            }
+            newBox.style.left = oLeft + 'px';
+            newBox.style.top = oTop + 'px';
+            });
+            //触摸结束时的处理
+            newBox.addEventListener('touchend', function() {
+            document.removeEventListener("touchmove", (e)=>{
+                e.preventDefault()
+            });
+});
+
+               
+            // newBox.addEventListener('touchstart',(e)=>{
+            //     // console.log(e.target)
+                //  for(let i=0;i<ground.children.length;i++){
+                //     ground.children[i].style.border="none"
+                // }
+                // e.target.style.border="2px solid #fff"
+                
+            // newBox.addEventListener('touchmove',(e)=>{
+            //     console.log( e)
+            //     // console.log( e.clientY,ground.offsetTop)
+            //     e.preventDefault()
+            //     e.stopPropagation()
+            //     // e.target.style.left=e.clientX-ground.offsetLeft-e.offsetX+'px'
+            //     // e.target.style.top=e.clientY-ground.offsetTop-e.offsetY+'px'
+            //     // // console.log(e.clientX,ground.offsetLeft,e.offsetX)
+            //     // console.log(e.clientY,ground.offsetTop,e.offsetY)
+
+            //     })
+            // newBox.addEventListener('touchend',()=>{
+            //     e.target.removeEventListener('touchmove')
+            // })
+            // })
+                this.top+=10
+                this.left+=5
+        }
     }
-  }
 }
 </script>
-<style lang="scss" scoped>
-#wallet{
-    .wallet_header{
-            width:100%;
-            height: .45rem;
-            line-height: .45rem;
-            // background:#fff;
-            color:black;
-            position: fixed;
-            top: 0;
-            left: 0;
-            text-align: center;
-            .icon-huitui{
-                float: left;
-                font-size: .16rem;
-            }
-            .header_info{
-                font-size: .14rem;
-                padding-right: .1rem;
-                padding-left: .2rem;
-                text-align: left;
-            }
-        }
-        .walletlist{
-            display:flex;
-            margin-top:.45rem;
-            height: 1.5rem;
-            flex-direction: column;
-            background: #fff;
-            .list_item{
-                flex: 1;
-                align-items: center;
-                display:flex;
-                .icon{
-                    margin:0 .2rem;
-                    font-size:.28rem;
-                }
-                .item_info{
-                    flex: 1;
-                    display:flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding-right: .1rem;
-                    height: 100%;
-                    font-size: .14rem;
-                    border-bottom: 1px solid #ccc;
-                }
-                .clearBorder{
-                    border:none;
-                }
-            }
-        }
-        .wallet_footer{
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        background: #fff;
-        width:100%;
-        height: .45rem;
-        line-height: .45rem;
-        text-align: center;
-        display:flex;
-        .footer_info{
-            flex:1;
-        }
-        .footer_left{
-            background: #04BE02;
-            border-right: 1px solid #c0c0c0;
-            color: #fff;
-        }
-        .footer_right{
-            background: #fff;
-            color:#04BE02;
-        }
-    }
+<style lang="scss">
+#test2{
+    background: black;
 }
+.active{
+    border:2px solid #fff;
+}
+    .wrap{
+        position: relative;
+        margin-left:35px;
+        margin-top:40px;
+        width:300px;
+        height: 300px;
+        background: blanchedalmond;
+        border:1px solid red;
+    }
+    .addButton{
+        float: left;
+        width:50px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        border-radius: 50%;
+        background: #333;
+        color:#fff;
+        margin-left: 40px;
+    }
+    .changeBgImg{
+        float: left;
+        width:50px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        border-radius: 50%;
+        background: #333;
+        color:#fff;
+        margin-left: 90px;
+    }
 </style>

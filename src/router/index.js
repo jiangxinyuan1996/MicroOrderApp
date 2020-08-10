@@ -6,7 +6,7 @@ import walletRouter from './wallet/wallet'
 
 
 import Order from '../views/order'
-import Goods from '../views/goods/category'
+import Goods from '../views/goods/newCategory'
 Vue.use(VueRouter)
 
 const routes = [

@@ -8,8 +8,14 @@ export function HomeData(){
 //首页数据
 export function reqData(data){
     return request({
-        url:'/tlwdd/index.php?controller/index/getDetail',
+        url:'/tlwdd/index.php?controller/index/getTotal',
         data
+    })
+}
+//获取首页分类商品数量
+export function reqAmount(){
+    return request({
+        url:'/tlwdd/index.php?controller/index/getProductCount',
     })
 }
 //请求商品分类

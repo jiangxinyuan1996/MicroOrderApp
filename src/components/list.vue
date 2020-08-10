@@ -20,11 +20,11 @@
           <div class="right">
             <p class="product_name">
               <span>{{item.product_name}}</span>
-              <span><b style="fontSize:5px">￥</b>{{item.price}}</span>
+              <span style="marginRight:.05rem"><b style="fontSize:.05rem">￥</b>{{item.price}}</span>
             </p>
-            <p class="order_number">订单号：<span style="color:#333">{{item.req_sn}}</span><span style="fontSize:.1rem;float:right">x {{item.num}}</span></p>
-            <p class="product_fare">运费(水果生鲜) <span style="fontSize:5px">￥</span>{{item.fare}}</p>
-            <p class="total">应收款 <span style="fontSize:5px">￥</span><span style="color:#0079c2;fontSize:.14rem">{{item.total}}</span></p>
+            <p class="order_number">订单号：<span style="color:#333">{{item.req_sn}}</span><span style="fontSize:.1rem;float:right;marginRight:.05rem">x {{item.num}}</span></p>
+            <p class="product_fare">运费(水果生鲜) <span style="fontSize:.05rem">￥</span>{{item.fare}}</p>
+            <p class="total">应收款 <span style="fontSize:.05rem">￥</span><span style="color:#0079c2;fontSize:.14rem;marginRight:.05rem">{{item.total}}</span></p>
           </div>
         </div>
         <div class="bottom">

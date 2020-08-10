@@ -84,6 +84,7 @@ export default {
             data.append('discount',this.$route.params.item.discount)
             data.append('fare',this.$route.params.item.fare)
             data.append('mould_id',this.$route.params.mould_id)
+            data.append('package_type',this.$route.params.item.package_type)
         createqr(data).then(res=>{
             if(res.data.success===1){
                 Indicator.close()

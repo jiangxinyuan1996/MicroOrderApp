@@ -9,13 +9,13 @@
           <div class="title_info">
             <p>总收入</p>
             <p class="count">
-              <span>￥</span>4399.26
+              <span>￥</span>{{countData.amount}}
             </p>
           </div>
           <div class="title_info">
             <p>总成交</p>
             <p class="count count_right">
-              39
+              {{countData.pay_count}}
               <span>笔</span>
             </p>
           </div>
@@ -24,15 +24,37 @@
       </div>
       <div class="header_right">
         <ul class="date_list">
-          <li class="date_item">日</li>
-          <li class="date_item active">周</li>
-          <li class="date_item" style="border:none">月</li>
+          <li :class="'date_item'+(activeIndex===index?' active':'')" v-for="(item,index) in date" :key="index" @click="change(item,index)">{{item}}</li>
         </ul>
       </div>
     </div>
     <div class="manage">
       <div class="container">
-        <div class="manage_create" v-if="true"> 
+        <div class="manage_category" v-if="countData.category_count>0">
+            <div class="left">
+                <div class="left_item" style="background:url(images/u71.svg) no-repeat center right">
+                    <p>{{countData.category_count}}</p>
+                    <p class="item_bottom">货物标签</p>
+                </div>
+                <div class="left_item" >
+                    <p>{{countData.product_count}}</p>
+                    <p class="item_bottom">货物种类</p>
+                </div>
+                <!-- <div class="left_item">
+                    <p>2类</p>
+                    <p class="item_bottom">已售罄</p>
+                </div> -->
+            </div>
+            <div class="right" @click="handleClick">
+                <div class="image">
+                    <img src="images/category(opacity).png" alt="" />
+                </div>
+                <div class="info">
+                    <p>管理货架</p>
+                </div>
+            </div>
+        </div>
+        <div class="manage_create" v-else> 
             <div class="left">
                 <p class="left_top">您的货架还没有商品呢</p>
                 <p class="left_bottom">快来尝试添加商品吧</p>
@@ -46,33 +68,9 @@
                 </div>
             </div>
         </div>
-        <div class="manage_category" v-else>
-            <div class="left">
-                <div class="left_item" style="background:url(images/u71.svg) no-repeat center right">
-                    <p>3种</p>
-                    <p class="item_bottom">货物标签</p>
-                </div>
-                <div class="left_item" style="background:url(images/u71.svg) no-repeat center right">
-                    <p>7类</p>
-                    <p class="item_bottom">货物种类</p>
-                </div>
-                <div class="left_item">
-                    <p>2类</p>
-                    <p class="item_bottom">已售罄</p>
-                </div>
-            </div>
-            <div class="right" @click="handleClick">
-                <div class="image">
-                    <img src="images/category(opacity).png" alt="" />
-                </div>
-                <div class="info">
-                    <p>管理货架</p>
-                </div>
-            </div>
-        </div>
       </div>
     </div>
-    <div class="content" style="marginBottom:0">
+    <!-- <div class="content" style="marginBottom:0">
       <h3 class="title">我的收款模板</h3>
       <div class="content_info">
         <ul class="list">
@@ -81,13 +79,13 @@
             </li>
         </ul>
       </div>
-    </div>
+    </div> -->
     <div class="content">
       <h3 class="title">预设模板</h3>
       <div class="content_info">
         <ul class="list">
-            <li class="list_item" v-for="item in 5" :key="item">
-                <img src="images/category(opacity).png" alt="" />
+            <li class="list_item" v-for="item in mouldData" :key="item">
+                <img :src="item.example" alt="" />
             </li>
         </ul>
       </div>
@@ -97,9 +95,18 @@
 </template>
 <script>
 import echarts from 'echarts'
+import { reqData,chooseMould,reqAmount } from '@/api'
+import { Notify } from 'vant'
 export default {
     data(){
         return{
+            total:'0',
+            count:'0',
+            countData:{},
+            showData:{},
+            mouldData:[],
+            date:['日','周','月'],
+            activeIndex:0,
             echarts:{
                 color: ['#7BACDC'],
                 tooltip: {
@@ -117,7 +124,7 @@ export default {
                 xAxis: [
                     {
                         type: 'category',
-                        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        data: ['月','日'],
                         axisTick: {
                             alignWithLabel: true
                         }
@@ -133,7 +140,7 @@ export default {
                         name: '直接访问',
                         type: 'bar',
                         barWidth: '60%',
-                        data: [10, 52, 200, 334, 390, 330, 220]
+                        data: []
                     }
                 ]
             }
@@ -141,9 +148,64 @@ export default {
     },
     mounted(){
         var myChart = echarts.init(document.getElementById('echarts'))
-        myChart.setOption(this.echarts)
+        reqData().then(res=>{
+          console.log('首页数据',res.data)
+          this.showData=res.data.data
+          this.echarts.xAxis[0].data=this.showData.day.map(item=>{
+              return item.category_name
+          })
+          this.echarts.series[0].data=this.showData.day.map(item=>{
+              return item.amount
+          })
+          console.log(this.echarts.series[0].data,this.echarts.xAxis.data)
+          myChart.setOption(this.echarts)
+        })
+        reqAmount().then(res=>{
+            this.countData=res.data.data
+          console.log('数量',res)
+        })
+          chooseMould().then(res=>{
+            if(res.data.success===1){
+                this.mouldData=res.data.data
+            }else{
+              Notify({type:'danger',message:res.data.message,duration:2000})
+            }
+        })
     },
     methods:{
+      change(item,index){
+        this.activeIndex=index
+        var myChart = echarts.init(document.getElementById('echarts'))
+        switch(item){
+          case '日':
+            this.echarts.xAxis[0].data=this.showData.day.map(item=>{
+              return item.category_name
+          })
+          this.echarts.series[0].data=this.showData.day.map(item=>{
+              return item.amount
+          })
+            break
+          case '周':
+            this.echarts.xAxis[0].data=this.showData.week.map(item=>{
+              return item.category_name
+          })
+          this.echarts.series[0].data=this.showData.week.map(item=>{
+              return item.amount
+          })
+            break
+          case '月':
+            this.echarts.xAxis[0].data=this.showData.month.map(item=>{
+              return item.category_name
+          })
+          this.echarts.series[0].data=this.showData.month.map(item=>{
+              return item.amount
+          })
+            break
+          default:
+            break
+        }
+          myChart.setOption(this.echarts)
+      },
         handleClick(){
         this.$router.push('/goods')
         },
@@ -372,7 +434,8 @@ export default {
                 float: left;
                 margin-right: .1rem;
                 margin-bottom:.1rem;
-                background: #7BACDC;
+                border:1px solid red;
+                // background: #7BACDC;
                 img{
                     width:100%;
                     height: 100%;
