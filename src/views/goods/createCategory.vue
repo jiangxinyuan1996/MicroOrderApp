@@ -9,7 +9,7 @@
         </div>
         <div class="add">
              <div class="search">
-                    <input type="text" placeholder="请输入标签" v-model.trim="addtext" @keypress.13="handleAdd" >
+                    <input type="text" placeholder="请输入标签名" v-model.trim="addtext" @keypress.13="handleAdd" >
                     <div class="cancel" @click="handleAdd" style="fontSize:.3rem;fontWeight:300;color:rgb(238,120,0)">+</div>
             </div>
         </div>
@@ -112,23 +112,33 @@ export default {
           history.go(-1)
       },
       handleAdd(){
-          if(this.addtext!=''){
-            if(this.categoryList.length+1>5){
+          if(this.addtext.length>4){
+              this.$toast('标签名长度不可超过4个字')
+          }
+          else if(this.addtext!='')
+          {
+            if(this.categoryList.length+1>5)
+            {
                 this.$toast('您最多可以拥有五个标签')
                 this.addtext=''
-            }else{
-            addCategoryList({category_name:this.addtext}).then(res=>{
-              console.log(res)
-              if(res.data.success===1){
-                  this.$toast('新增标签成功,还可以添加'+(5-this.categoryList.length)+'个')
-              }
-            })
-              this.categoryList.push({
-                  category_name:this.addtext
-          })
-          this.addtext=''
             }
-          }else{
+            else
+            {
+                addCategoryList({category_name:this.addtext}).then(res=>{
+                    console.log(res)
+                    if(res.data.success===1)
+                    {
+                        this.$toast('新增标签成功,还可以添加'+(5-this.categoryList.length)+'个')
+                    }
+                })
+                this.categoryList.push({
+                    category_name:this.addtext
+                })
+                this.addtext=''
+            }
+          }
+          else
+          {
               this.$toast('请输入标签名')
           }
       },

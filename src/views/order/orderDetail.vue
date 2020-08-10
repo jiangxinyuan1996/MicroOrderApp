@@ -19,7 +19,7 @@
                 </div>
                 <div class="detail_title_content">
                     <div v-if="state==='待付款'" class="tips">
-                        卖家暂未填写收获信息
+                        买家暂未填写收货信息
                     </div>
                     <div v-else class="userinfo">
                         <div>

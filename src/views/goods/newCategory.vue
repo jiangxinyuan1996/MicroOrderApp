@@ -34,8 +34,8 @@
            </div>
                <div class="item_info" style="fontSize:.14rem">
               <p  class="info_title">{{item.product_name}}</p>
-              <p class="info_bottom">库存剩余: 12件</p>
-              <p class="info_bottom">商品单价:<span style="fontSize:.06rem;marginLeft:.05rem"> ￥</span><span>{{item.price}}</span></p>
+              <p class="info_bottom">库存剩余: {{item.num}}件</p>
+              <p class="info_bottom"><span>商品单价:<span style="fontSize:.06rem;marginLeft:.05rem;"> ￥</span><span>{{item.price}}</span></span><img src="images/quick.png" @click.stop="handleQuick(item)"/></p>
             </div>
 				 </div>
 			</mt-cell-swipe>
@@ -87,10 +87,14 @@ export default {
       text: '加载中...',
       spinnerType: 'fading-circle'
     });
+    setTimeout(()=>{
+      Indicator.close()
+    },1000*5)
      getProductCategoryInfo().then(res=>{
         Indicator.close()
       if(res.data.success===1){
         this.categoryList=res.data.data
+        this.currentItem=res.data.data[0]
         this.detailtext=res.data.data[this.$store.state.active].category_name
         this.currentId=res.data.data[this.$store.state.active].category_id
         getProductList({page:this.page,limit:this.limit,category_id:res.data.data[this.$store.state.active].category_id}).then(res=>{
@@ -114,8 +118,15 @@ export default {
   },
   destroyed(){
     Indicator.close()
+    Notify.clear()
   },
     methods: {
+      handleQuick(item){
+         this.$router.push({name:'createqr',params:{
+           item
+         }
+         })
+      },
     listClick (index, item) { // 显示隐藏分类详情
     Indicator.open({
       text: '加载中...',
@@ -163,6 +174,7 @@ export default {
             Notify({ type: 'danger', message: '商品下架失败',duration:2000 });
           }
           this.listClick(this.activeIndex,this.currentItem)
+          console.log(this.currentItem)
         })
       }else{
         startSale({product_id:item.product_id}).then(res=>{
@@ -173,7 +185,7 @@ export default {
             Notify({ type: 'danger', message: '商品上架失败',duration:2000 });
           }
           this.listClick(this.activeIndex,this.currentItem)
-
+          console.log(this.currentItem)
         })
       }
     },
@@ -393,10 +405,11 @@ export default {
                         }
                         .info_title{
                         display: flex;
-                        margin-top:.1rem;
-                        font-size: .16rem;
+                        margin-top:.05rem;
+                        font-size: .18rem;
                         color: #040404;
                         width: 1.95rem;
+                        padding-top:.05rem;
                         flex:3;
                         overflow: hidden;
                         text-overflow: ellipsis;
@@ -407,6 +420,11 @@ export default {
                             align-items: center;
                             color:#333;
                             opacity: .7;
+                            justify-content: space-between;
+                            img{
+                              width:.6rem;
+                              height: .15rem;
+                            }
                         }
                         }
                     }

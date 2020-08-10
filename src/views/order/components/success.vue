@@ -1,14 +1,15 @@
 <template>
     <div id="success">
-        <orderList status="3"></orderList>   
+        <orderList status="3" :keyword="keyword"></orderList>   
     </div>
 </template>
 <script>
 import orderList from '@/components/list'
 
 export default {
- components:{
-     orderList
- }   
+  props:['keyword','status'],
+    components:{
+        orderList
+    },
 }
 </script>

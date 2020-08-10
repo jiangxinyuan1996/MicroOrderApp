@@ -32,7 +32,7 @@
 
 </template>
 <script>
-import { createqr } from '@/api'
+import { createqr,getPoster } from '@/api'
 import { Indicator } from 'mint-ui'
 
 export default {
@@ -42,24 +42,34 @@ export default {
             address_flag:'',
             num_flag:'',
             isShow:false,
-            showInfo:false
+            showInfo:false,
+            sendData:{},
+            enterName:'',
+            dataNew:undefined
         }
     },
+    beforeRouteEnter(to,from,next){
+        console.log(from)
+        console.log(next)
+        next(vm => vm.setData(from.name))
+    },
     mounted(){
-        console.log(this.$route.params.item)
+        if(this.$route.params.item){
+            console.log('11111111111')
+            this.sendData=this.$route.params.item
+        }else{
+            Indicator.close()
+            this.$toast('海报生成失败，两秒后返回首页')
+            setTimeout(()=>{
+                this.$router.push('/')
+            },2000)
+        }
         Indicator.open({
             text: '海报生成中...',
             spinnerType: 'fading-circle'
         })
-        switch(this.$route.params.item.address_flag){
-            case true:
-                 this.address_flag='1'
-                break
-            case false:
-                 this.address_flag='0'
-                break
-        }
-        switch(this.$route.params.item.num_flag){
+        console.log(this.sendData)
+        switch(this.sendData.num_flag){
             case true:
                  this.num_flag='1'
                 break
@@ -68,42 +78,68 @@ export default {
                 break
         }
         let data = new FormData()
-             for(let i=0;i<this.$route.params.item.image.length;i++){
-                data.append("img"+i,this.$route.params.item.image[i])
+        
+             for(let i=0;i<this.sendData.image.length;i++){
+                data.append("img"+i,this.sendData.image[i])
                  }  
-            data.append("product_name",this.$route.params.item.product_name)
-            data.append("value",this.$route.params.item.value)
-            data.append("price",this.$route.params.item.price)
-            data.append("introduction",this.$route.params.item.introduction)
-            data.append("category_id",this.$route.params.item.category_id)
-            data.append("product_id",this.$route.params.item.product_id)
-            data.append('address_flag',this.address_flag)
+            data.append("product_name",this.sendData.product_name)
+            data.append("price",this.sendData.price)
+            data.append("introduction",this.sendData.introduction)
+            data.append("category_id",this.sendData.category_id)
+            data.append("product_id",this.sendData.product_id)
+            data.append('address_flag',this.sendData.address_flag)
             data.append('num_flag',this.num_flag)
-            data.append('num',this.$route.params.item.num)
-            data.append('total',this.$route.params.item.total)
-            data.append('discount',this.$route.params.item.discount)
-            data.append('fare',this.$route.params.item.fare)
+            // data.append('num',this.sendData.num)
+            data.append('total',this.sendData.total)
+            data.append('discount',this.sendData.discount)
+            data.append('fare',this.sendData.fare)
             data.append('mould_id',this.$route.params.mould_id)
-            data.append('package_type',this.$route.params.item.package_type)
-        createqr(data).then(res=>{
-            if(res.data.success===1){
-                Indicator.close()
-                this.src=res.data.data.url
-                this.showInfo=true
-            }
-        }).catch(err=>{
-            console.log(err)
-        })
+            data.append('package_type',this.sendData.package_type)
+            this.dataNew=data
+            console.log(this.enterName)
     },
     destroyed(){
         Indicator.close()
     },
     methods:{
+        setData(name){
+            this.enterName=name
+            if(this.enterName==='Goods'){
+             getPoster({product_id:this.sendData.product_id}).then(res=>{
+                    if(res.data.success===1){ 
+                        Indicator.close()
+                        this.src=res.data.data.url
+                        this.showInfo=true
+                    }else{
+                        Indicator.close()
+                        this.$toast('网络错误,海报生成失败')
+                    }
+                }).catch(err=>{
+                    console.log(err)
+                })
+            }else{
+                createqr(this.dataNew).then(res=>{
+                    if(res.data.success===1){ 
+                        Indicator.close()
+                        this.src=res.data.data.url
+                        this.showInfo=true
+                    }else{
+                        Indicator.close()
+                        this.$toast('网络错误,海报生成失败')
+                    }
+                }).catch(err=>{
+                    console.log(err)
+                })
+            }
+        },
         handleBack(){
-            console.log(this.$route.params)
-            let image=[]
-            image=[...this.$route.params.image]
-            this.$router.push({name:'createGoods',params:{item:this.$route.params.item,val:'修改',image}})
+            if(this.enterName==='Goods'){
+                window.history.go(-1)
+            }else{
+                let image=[]
+                image=[...this.$route.params.image]
+                this.$router.push({name:'createGoods',params:{item:this.sendData,val:'修改',image}})
+            }
         },
        
     }
@@ -177,7 +213,7 @@ export default {
         flex: 2;
     }
     .image{
-        height: 3rem;
+        // height: 3rem;
         width:3rem;
         img{
             width:100%;

@@ -85,16 +85,15 @@ export default {
   beforeCreate(){
     this.$store.state.showTab=true
      Indicator.close()
-    HomeData().then(res=>{
-      if(res.data.success===1){
-        localStorage.setItem('merchantid',res.data.data.merchant_id)
-      }else{
-        this.$router.push('/register')
-      }
-    })
+    // HomeData().then(res=>{
+    //   if(res.data.success===1){
+    //     localStorage.setItem('merchantid',res.data.data.merchant_id)
+    //   }else{
+    //     this.$router.push('/register')
+    //   }
+    // })
     getUserAvatar().then(res=>{
-      console.log('获取用户头像',res.data)
-      this.src=res.data
+      this.src=res.data.data
     })
   },
   methods: {
@@ -131,8 +130,9 @@ export default {
           Toast('该功能尚未开放')
         break
         case '更多':
+          this.$router.push('/wallet')
           Toast.clear()
-          Toast('该功能尚未开放')
+          // Toast('该功能尚未开放')
         break
       }
     },

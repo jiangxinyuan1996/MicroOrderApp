@@ -1,5 +1,6 @@
 <template>
   <div id="Home">
+    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
     <div class="background">
       <img class="image" src="images/background.png" alt style="width:100%;height:100%" />
     </div>
@@ -31,7 +32,7 @@
     <div class="manage">
       <div class="container">
         <div class="manage_category" v-if="countData.category_count>0">
-            <div class="left">
+            <div class="left" @click="handleClick">
                 <div class="left_item" style="background:url(images/u71.svg) no-repeat center right">
                     <p>{{countData.category_count}}</p>
                     <p class="item_bottom">货物标签</p>
@@ -45,26 +46,26 @@
                     <p class="item_bottom">已售罄</p>
                 </div> -->
             </div>
-            <div class="right" @click="handleClick">
-                <div class="image">
-                    <img src="images/category(opacity).png" alt="" />
-                </div>
-                <div class="info">
-                    <p>管理货架</p>
-                </div>
-            </div>
-        </div>
-        <div class="manage_create" v-else> 
-            <div class="left">
-                <p class="left_top">您的货架还没有商品呢</p>
-                <p class="left_bottom">快来尝试添加商品吧</p>
-            </div>
             <div class="right" @click="handleCreate">
                 <div class="image">
                     <img src="images/plus(white).png" alt="" />
                 </div>
                 <div class="info">
-                    <p>添加商品</p>
+                    <p>新建海报</p>
+                </div>
+            </div>
+        </div>
+        <div class="manage_create" v-else  @click="handleCreate"> 
+            <div class="left" >
+                <p class="left_top">您的货架还没有商品呢</p>
+                <p class="left_bottom">快来尝试添加商品吧</p>
+            </div>
+            <div class="right">
+                <div class="image">
+                    <img src="images/plus(white).png" alt="" />
+                </div>
+                <div class="info">
+                    <p>新建海报</p>
                 </div>
             </div>
         </div>
@@ -80,26 +81,43 @@
         </ul>
       </div>
     </div> -->
+     <div v-if="isShow" class="weui-gallery" style="display:block">
+                    <span class="weui-gallery__img" :style="'background-image: url('+src+');'" @click="()=>{this.isShow=false}"></span>
+                    <!-- <div class="weui-gallery__opr" @click="handleDel">
+                        <a href="javascript:" class="weui-gallery__del">
+                            <i class="weui-icon-delete weui-icon_gallery-delete"></i>
+                        </a>
+                    </div> -->
+                </div>
     <div class="content">
       <h3 class="title">预设模板</h3>
       <div class="content_info">
         <ul class="list">
-            <li class="list_item" v-for="item in mouldData" :key="item">
+            <li class="list_item" v-for="item in mouldData" :key="item" @click="handleShow(item)">
                 <img :src="item.example" alt="" />
             </li>
         </ul>
       </div>
     </div>
-
+    </van-pull-refresh>
   </div>
 </template>
 <script>
 import echarts from 'echarts'
-import { reqData,chooseMould,reqAmount } from '@/api'
+import { reqData,chooseMould,reqAmount,HomeData } from '@/api'
 import { Notify } from 'vant'
+import { Indicator } from 'mint-ui'
+import { PullRefresh } from 'vant';
+
 export default {
+    components:{
+      PullRefresh
+    },
     data(){
         return{
+            src:'',
+            isShow:false,
+            isLoading:false,
             total:'0',
             count:'0',
             countData:{},
@@ -124,7 +142,7 @@ export default {
                 xAxis: [
                     {
                         type: 'category',
-                        data: ['月','日'],
+                        data: [],
                         axisTick: {
                             alignWithLabel: true
                         }
@@ -137,7 +155,7 @@ export default {
                 ],
                 series: [
                     {
-                        name: '直接访问',
+                        name: '收入',
                         type: 'bar',
                         barWidth: '60%',
                         data: []
@@ -146,33 +164,70 @@ export default {
             }
         }
     },
+     beforeCreate(){
+    this.$store.state.showTab=true
+     },
     mounted(){
+        this.init()
+        this.clear()
+        // HomeData().then(res=>{
+        // if(res.data.success===1){
+        //   localStorage.setItem('merchantid',res.data.data.merchant_id)
+        // }else{
+        //   this.$router.push('/register')
+        // }
+    // })
+    },
+    methods:{
+      clear(){
+        setTimeout(()=>{
+          Indicator.close()
+          this.isLoading=false
+        },1000*5)
+      },
+      onRefresh(){
+        this.init()
+        this.clear()
+      },
+      init(){
+        Indicator.open({
+            text: '加载中...',
+            spinnerType: 'fading-circle'
+        });
         var myChart = echarts.init(document.getElementById('echarts'))
         reqData().then(res=>{
-          console.log('首页数据',res.data)
           this.showData=res.data.data
           this.echarts.xAxis[0].data=this.showData.day.map(item=>{
               return item.category_name
           })
           this.echarts.series[0].data=this.showData.day.map(item=>{
-              return item.amount
+              return Number(item.amount)/100
           })
-          console.log(this.echarts.series[0].data,this.echarts.xAxis.data)
           myChart.setOption(this.echarts)
+          this.isLoading=false
+          Indicator.close()
+        }).catch(err=>{
+          Indicator.close()
         })
         reqAmount().then(res=>{
-            this.countData=res.data.data
-          console.log('数量',res)
+          this.countData=res.data.data
+          this.isLoading=false
+          Indicator.close()
+        }).catch(err=>{
+          Indicator.close()
         })
           chooseMould().then(res=>{
             if(res.data.success===1){
                 this.mouldData=res.data.data
             }else{
-              Notify({type:'danger',message:res.data.message,duration:2000})
+              // Notify({type:'danger',message:res.data.message,duration:2000})
             }
+          Indicator.close()
+          this.isLoading=false
+        }).catch(err=>{
+          Indicator.close()
         })
-    },
-    methods:{
+      },
       change(item,index){
         this.activeIndex=index
         var myChart = echarts.init(document.getElementById('echarts'))
@@ -182,7 +237,7 @@ export default {
               return item.category_name
           })
           this.echarts.series[0].data=this.showData.day.map(item=>{
-              return item.amount
+              return Number(item.amount)/100
           })
             break
           case '周':
@@ -190,7 +245,7 @@ export default {
               return item.category_name
           })
           this.echarts.series[0].data=this.showData.week.map(item=>{
-              return item.amount
+              return Number(item.amount)/100
           })
             break
           case '月':
@@ -198,13 +253,17 @@ export default {
               return item.category_name
           })
           this.echarts.series[0].data=this.showData.month.map(item=>{
-              return item.amount
+              return Number(item.amount)/100
           })
             break
           default:
             break
         }
           myChart.setOption(this.echarts)
+      },
+      handleShow(item){
+        this.isShow=true
+        this.src=item.example
       },
         handleClick(){
         this.$router.push('/goods')
@@ -222,10 +281,17 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+#Home{
+  height: 100%;
+  overflow: hidden;
+}
 #echarts{
     width: 100%;
     height: 3rem;
     margin-top:-.4rem;
+}
+.van-pull-refresh{
+  height: 100%;
 }
 // rgba(123, 172, 220, 1)
 .background {
@@ -266,7 +332,7 @@ export default {
           font-size: 0.21rem;
           font-weight: 700;
           text-align: left;
-          color: rgba(123, 172, 220, 1);
+          color: #3477bc;
           span {
             font-weight: 600;
             font-size: 0.18rem;
@@ -345,7 +411,7 @@ export default {
             .right{
                 width:1rem;
                 height: 100%;
-                background:rgba(123, 172, 220, 1);
+                background:#3477bc;
                 color: white;
                 display: flex;
                 flex-direction: column;
@@ -382,6 +448,7 @@ export default {
                     flex-direction: column;
                     justify-content: center;
                     text-align: center;
+                    font-size: .16rem;
                     .item_bottom{
                         margin-top:.1rem;
                         font-size: .14rem;
@@ -391,7 +458,7 @@ export default {
             .right{
                 width:.95rem;
                 height: 100%;
-                background:rgba(123, 172, 220, 1);
+                background:#3477bc;
                 color: white;
                 display: flex;
                 flex-direction: column;
@@ -434,8 +501,6 @@ export default {
                 float: left;
                 margin-right: .1rem;
                 margin-bottom:.1rem;
-                border:1px solid red;
-                // background: #7BACDC;
                 img{
                     width:100%;
                     height: 100%;

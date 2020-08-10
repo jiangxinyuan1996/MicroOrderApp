@@ -1,11 +1,18 @@
 <template>
   <div id="list">
-    <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="loading" ref="loadmore" :auto-fill="false">
-      <ul class="list"
+    <!-- <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="loading" ref="loadmore" :auto-fill="false"> -->
+      <!-- <ul class="list"
       v-infinite-scroll="loadMore"
         infinite-scroll-disabled="loading"
         infinite-scroll-distance="50"
         infinite-scroll-immediate-check="false"
+      > -->
+      <van-list
+      class="list"
+      v-model="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="loadMore"
       >
       <li class="list_item" v-for="item in orderList" :key="item.order_id">
         <div class="title">
@@ -33,28 +40,34 @@
           <div class="detail_button" @click="handleClick(item)" >订单详情</div>
         </div>
       </li>
-      </ul>
-      <p slot="top" class="mint-loadmore-top"></p>
-    </mt-loadmore>
+      </van-list>
+      <!-- </ul> -->
+      <!-- <p slot="top" class="mint-loadmore-top"></p> -->
+    <!-- </mt-loadmore> -->
   <i @click="backTop" class="iconfont icon-huidaodingbu" style="display:none;background:#fff;opacity:.8;fontSize:.3rem;position:fixed;right:.1rem;bottom:.6rem;zIndex:999;border:1px solid #ccc;borderRadius:50%" />
   </div>
 </template>
 <script>
 import { getOrderList } from "@/api";
 import { Indicator } from "mint-ui";
+import { List } from 'vant';
+
  window.onscroll=function(){
     if(document.documentElement.scrollTop>550||document.body.scrollTop>550){
       document.querySelector('.icon-huidaodingbu').style.display="block"
     }else{
       document.querySelector('.icon-huidaodingbu').style.display="none"
     }
-    console.log(this.backTop)
  }
 export default {
-  props: ["status"],
+  props: ["status","keyword"],
+  components:{
+    List
+  },
   data() {
     return {
       loading:false,
+      finished:false,
       total: 0,
       page: 1,
       limit: 10,
@@ -64,6 +77,7 @@ export default {
     };
   },
   mounted() {
+    this.clear()
     Indicator.open({
       text: "加载中...",
       spinnerType: "fading-circle"
@@ -79,7 +93,7 @@ export default {
         this.currentStatus = "已完成";
         break
     }
-    getOrderList({ status: this.status }).then(res => {
+    getOrderList({ status: this.status ,keyword:this.keyword}).then(res => {
       if (res.data.success === 1) {
         this.page++;
         Indicator.close();
@@ -94,6 +108,11 @@ export default {
     Indicator.close()
   },
   methods: {
+    clear(){
+      setTimeout(()=>{
+        Indicator.close()
+      },1000*5)
+    },
     backTop(){
       document.documentElement.scrollTop=0
       document.body.scrollTop=0
@@ -115,8 +134,9 @@ export default {
       });
     },
     loadMore() {
+      // this.finished=true
       if (this.orderList.length !== this.total) {
-        this.loading=false
+        this.loading=true
         getOrderList({
           status: this.status,
           page: this.page,
@@ -127,13 +147,14 @@ export default {
             this.total = parseInt(res.data.count);
             this.page++;
             this.orderList = [...this.orderList, ...res.data.data];
+            this.loading=false
           } else {
             this.$toast("无数据");
+            this.loading=false
           }
         });
       } else {
-        this.loading=true
-        this.$toast("到底了");
+        this.finished=true
       }
     }
   }
@@ -141,7 +162,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 #list {
-  background: rgba(239, 241, 243, 1);;
+  background: rgba(239, 241, 243, 1);
   width: 100%;
   margin-bottom: 0.45rem;
   .list {
@@ -277,8 +298,8 @@ export default {
           height: .18rem;
           line-height: .18rem;
           font-size: .12rem;
-          color: rgb(192, 221, 152);
-          border: 1px solid rgba(192, 221, 152,.5);
+          color: #F47922;
+          border: 1px solid #F47922;
         }
       }
     }

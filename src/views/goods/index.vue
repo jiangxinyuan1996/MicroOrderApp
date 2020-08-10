@@ -36,7 +36,6 @@
       </van-collapse-item>
       <van-collapse-item  name="2" >
         <template #title>
-        <van-cell-group>
               <van-form @submit="onSubmit">
               <van-field
                 v-model="formData.price"
@@ -49,7 +48,6 @@
                 @blur="change"
               />
               </van-form>
-            </van-cell-group>
         </template>
       <van-checkbox v-model="formData.num_flag" checked-color="#7BACDC" style="paddingLeft:.16rem" icon-size="16">可购买多个</van-checkbox>
       </van-collapse-item>
@@ -65,7 +63,6 @@
       </van-radio-group>
       <van-collapse-item  name="3" v-if="formData.address_flag==='1'">
       <template #title>
-            <van-cell-group>
               <van-field
                 v-model="formData.fare"
                 label="固定运费(￥)"
@@ -74,18 +71,17 @@
                 type="number"
                 placeholder="请输入运费"
               />
-            </van-cell-group>
         </template>
       <van-checkbox v-model="checked1" checked-color="#7BACDC" @change="setFare" style="paddingLeft:.15rem" icon-size="16">运费自动计算</van-checkbox>
-       <van-cell-group style="margin-top:.2rem" v-if="checked1">
-            <van-dropdown-menu direction="up" acitve-color="#7BACDC">
+       <!-- <van-cell-group > -->
+            <van-dropdown-menu direction="up" acitve-color="#7BACDC" style="margin-top:.2rem" v-if="checked1">
               <!-- <van-dropdown-item v-model="value" :options="options" /> -->
               <van-dropdown-item :title="title" ref="item" >
                 <van-cell v-for="item in option2" :key="item.type_id" :title="item.name" @click="handleClick(item)"/>
                 <van-button block type="info" @click="onConfirm">配置</van-button>
               </van-dropdown-item>
             </van-dropdown-menu>
-            </van-cell-group>
+            <!-- </van-cell-group> -->
       </van-collapse-item>
   </div>
     </van-collapse>
@@ -233,13 +229,13 @@ export default {
       formData:{
                 product_name:'',
                 price:0,
-                num:1,
+                // num:1,
                 address_flag:'0',
                 introduction:'',
                 image:[],
                 num_flag:false, 
                 checked1:true,
-                checked:true,
+                checked:false,
                 category_id:this.category_id,
                 total:0,
                 discount:10,
@@ -254,6 +250,7 @@ export default {
      this.$store.state.showTab = false
   },
   mounted(){
+    // this.formData.checked=true
     //获取品类列表
     let url = location.href.split('#')[0]
       console.log('url---:',url);
@@ -269,6 +266,11 @@ export default {
       //如果有item属性 赋值给formData
       if(this.$route.params.item){
         this.formData=this.$route.params.item
+        if(this.formData.package_type=='0'||this.formData.package_type==''){
+          this.checked1=false
+        }else{
+          this.checked1=true
+        }
       }
       //如果有options赋值给option2(品类列表)
       if(this.$route.params.options){
@@ -290,7 +292,17 @@ export default {
     
       if(this.$route.params.val!=='新增'){
         this.formData=this.$route.params.item
-        if(this.formData.package_type=='0'){
+         switch(this.$route.params.item.address_flag){
+        case '0':
+          this.formData={...this.formData,...{checked:false}}
+          break
+        case '1':
+          this.formData={...this.formData,...{checked:true}}
+          break
+      }
+        console.log('2151561456',this.formData)
+
+        if(this.formData.package_type=='0'||this.formData.package_type==''){
           this.checked1=false
         }else{
           this.checked1=true
@@ -322,6 +334,9 @@ export default {
       }
   },
   methods:{
+    // handleFareChange(){
+    //   if(this.checked1)
+    // },
     addressChange(){
       //如果选择无需发货，将运费内容状态初始化
       console.log(this.formData.address_flag)
@@ -334,6 +349,8 @@ export default {
       console.log(this.checked1)
       if(this.checked1){
         this.formData.fare='0.00'
+      }else{
+        this.formData.package_type='0'
       }
     },
     handleClick(item){
@@ -348,11 +365,13 @@ export default {
       this.$router.push({
         name:'logistics',
         params:{
+          image:this.images,
           item:this.formData,
           options:this.option2,
           category_id:this.category_id,
           val:this.$route.params.val,
-          checked:this.checked
+          checked:this.checked,
+          checked1:this.checked1
         }
       })
     },
@@ -508,7 +527,6 @@ export default {
     },
     //创建海报
     createQr(mould_id){
-         
           this.$router.push({name:'createqr',params:{
                 item:this.formData,
                 image:this.images,
@@ -529,7 +547,8 @@ export default {
                  this.address_flag='0'
                 break
         }
-        switch(this.$route.params.item.num_flag){
+        // this.num_flag=this.$route.params.item.num_flag
+        switch(this.formData.num_flag){
             case true:
                  this.num_flag='1'
                 break
@@ -568,7 +587,7 @@ export default {
             data.append("product_id",this.formData.product_id)
             data.append('address_flag',this.formData.address_flag)
             data.append('num_flag',this.num_flag)
-            data.append('num',this.formData.num)
+            // data.append('num',this.formData.num)
             data.append('total',this.formData.total)
             data.append('discount',this.formData.discount)
             data.append('fare',this.formData.fare)
@@ -579,7 +598,6 @@ export default {
                     this.formData={
                       product_name:'',
                       price:0,
-                      num:1,
                       address_flag:'1',
                       introduction:'',
                       checked:false,
@@ -604,7 +622,7 @@ export default {
             data.append("category_id",this.category_id)
             data.append('address_flag',this.formData.address_flag)
             data.append('num_flag',this.num_flag)
-            data.append('num',this.formData.num)
+            // data.append('num',this.formData.num)
             data.append('total',this.formData.total)
             data.append('discount',this.formData.discount)
             data.append('fare',this.formData.fare)
@@ -615,7 +633,6 @@ export default {
                 this.formData={
                     product_name:'',
                     price:0,
-                    num:1,
                     address_flag:'1',
                     introduction:'',
                     checked:false,
@@ -636,6 +653,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+#goods{
+  margin-bottom:.46rem;
+}
 .create_header{
             width:100%;
             height: .45rem;

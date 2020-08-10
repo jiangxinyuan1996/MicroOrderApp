@@ -1,14 +1,25 @@
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
 module.exports = {
-  publicPath: '/tlwdd/merchant/',
+  // publicPath: 'http://dlallinpay-source.stor.sinaapp.com/tlwdd/merchant',
+  publicPath:'/wddtest/merchant/',
   lintOnSave: false,
+  productionSourceMap: false,
   devServer:{
     proxy:{
-      '/tlwdd':{
+      '/wdd':{
         target:'http://dlallinpay.sinaapp.com',
         changeOrigin:true
       }
     },
-    hot:true
+    // proxy:{
+    //   '/wddtest':{
+    //     target:'http://dlallinpay.sinaapp.com',
+    //     changeOrigin:true
+    //   }
+    // },
+    compress:true,
+    open:true,
+    hot:true,
   },
   configureWebpack:()=>{
       return {
@@ -19,7 +30,14 @@ module.exports = {
             'axios': 'axios',
             'element-ui': 'ELEMENT',
             'echarts' : 'echarts'
-           }
+           },
+           plugins: [
+             new CompressionWebpackPlugin(
+               {
+                 test: /\.(js|css)(\?.*)?$/i,
+                threshold: 10240,
+                deleteOriginalAssets: false
+              })]
       }
     }
 }
