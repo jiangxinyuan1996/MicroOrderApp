@@ -132,6 +132,13 @@
       "unicode_decimal": 58923
     },
     {
+      "icon_id": "10025373",
+      "name": "重置",
+      "font_class": "refresh01",
+      "unicode": "e736",
+      "unicode_decimal": 59190
+    },
+    {
       "icon_id": "10202013",
       "name": "物流",
       "font_class": "wuliu",
@@ -158,6 +165,20 @@
       "font_class": "gengduo",
       "unicode": "e67a",
       "unicode_decimal": 59002
+    },
+    {
+      "icon_id": "12323764",
+      "name": "上移",
+      "font_class": "shangyi",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "12323774",
+      "name": "下移",
+      "font_class": "xiayi",
+      "unicode": "e658",
+      "unicode_decimal": 58968
     },
     {
       "icon_id": "14197373",

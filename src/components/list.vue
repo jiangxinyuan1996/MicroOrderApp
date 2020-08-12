@@ -1,12 +1,5 @@
 <template>
   <div id="list">
-    <!-- <mt-loadmore :bottom-method="loadMore" :bottom-all-loaded="loading" ref="loadmore" :auto-fill="false"> -->
-      <!-- <ul class="list"
-      v-infinite-scroll="loadMore"
-        infinite-scroll-disabled="loading"
-        infinite-scroll-distance="50"
-        infinite-scroll-immediate-check="false"
-      > -->
       <van-list
       class="list"
       v-model="loading"

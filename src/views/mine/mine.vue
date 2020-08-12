@@ -130,7 +130,6 @@ export default {
           Toast('该功能尚未开放')
         break
         case '更多':
-          this.$router.push('/wallet')
           Toast.clear()
           // Toast('该功能尚未开放')
         break

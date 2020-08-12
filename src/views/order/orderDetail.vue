@@ -81,6 +81,7 @@
 </template>
 <script>
 import { Indicator } from 'mint-ui'
+import { queryPackage } from '@/api'
 export default {
     data(){
         return{
@@ -98,6 +99,9 @@ export default {
     },
     mounted(){
      Indicator.close()
+     queryPackage({com:this.$route.params.item.express_company,num:this.$route.params.item.express_number}).then(res=>{
+        console.log(res)
+     })
         console.log(this.$route.params.item)
         if(this.$route.params.item){
         this.detailData=this.$route.params.item

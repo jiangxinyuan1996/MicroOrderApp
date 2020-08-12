@@ -99,9 +99,14 @@ const routes = [
   templateRouter,
   walletRouter,
   {
-    path:'/cropper',
-    component:()=>import('@/components/cropper'),
-    name:'cropper'
+    path:'/message',
+    component:()=>import('@/views/message'),
+    name:'message'
+  },
+  {
+    path:'/userDetail',
+    component:()=>import('@/views/message/detail'),
+    name:'userDetail'
   },
   {
     path:'/404',

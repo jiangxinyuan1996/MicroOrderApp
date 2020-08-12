@@ -19,6 +19,9 @@ export default {
     },
     mounted(){
         new Swiper('.swiper-container',this.options)
+    },
+    updated(){
+        new Swiper('.swiper-container',this.options)
     }
 }
 </script>

@@ -52,10 +52,9 @@
             <div style="height: env(safe-area-inset-bottom); background-color: rgba(239, 239, 244, 0.95);"></div>
         </div>
         </div>
-    </div>
 </template>
 <script>
-import { getConfig,send } from '@/api'
+import { getConfig,send,getPackageCom } from '@/api'
 import { initWxconfig } from '@/utils/initWxConfig.js'
 
 export default {
@@ -63,7 +62,7 @@ export default {
         return{
             value: '',
             showPicker: false,
-            columns: ['申通快递','顺丰速运','圆通速递','韵达快递','中通速递','百世快递','天天快递','宅急送','中国邮政快递/包裹/挂号信/小包','德邦快递','全峰快递','国通快递','UC优速快递','EWE全球快递','澳邮','新顺丰（NSF）','易达通快递','万庚国际','优邦速运','程光快递','其他'],
+            columns: [],
             reqlist:[],
             isShow:false,
             waybillID:'',
@@ -81,6 +80,11 @@ export default {
         let wxConfig = res.data.data.config
         initWxconfig(wxConfig)
       })
+      getPackageCom().then(res=>{
+         for(let value in res.data.data){
+             this.columns.push(value)
+         }
+     })
     },
     methods:{
         onChange(){

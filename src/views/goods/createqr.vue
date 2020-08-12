@@ -104,8 +104,23 @@ export default {
     methods:{
         setData(name){
             this.enterName=name
-            if(this.enterName==='Goods'){
-             getPoster({product_id:this.sendData.product_id}).then(res=>{
+            switch(this.enterName){
+                case 'Goods':
+                     getPoster({product_id:this.sendData.product_id}).then(res=>{
+                        if(res.data.success===1){ 
+                            Indicator.close()
+                            this.src=res.data.data.url
+                            this.showInfo=true
+                        }else{
+                            Indicator.close()
+                            this.$toast('网络错误,海报生成失败')
+                        }
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                    break
+                case 'createGoods' :
+                    createqr(this.dataNew).then(res=>{
                     if(res.data.success===1){ 
                         Indicator.close()
                         this.src=res.data.data.url
@@ -114,23 +129,38 @@ export default {
                         Indicator.close()
                         this.$toast('网络错误,海报生成失败')
                     }
-                }).catch(err=>{
-                    console.log(err)
-                })
-            }else{
-                createqr(this.dataNew).then(res=>{
-                    if(res.data.success===1){ 
-                        Indicator.close()
-                        this.src=res.data.data.url
-                        this.showInfo=true
-                    }else{
-                        Indicator.close()
-                        this.$toast('网络错误,海报生成失败')
-                    }
-                }).catch(err=>{
-                    console.log(err)
-                })
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                    break
             }
+            // if(this.enterName==='Goods'){
+            //  getPoster({product_id:this.sendData.product_id}).then(res=>{
+            //         if(res.data.success===1){ 
+            //             Indicator.close()
+            //             this.src=res.data.data.url
+            //             this.showInfo=true
+            //         }else{
+            //             Indicator.close()
+            //             this.$toast('网络错误,海报生成失败')
+            //         }
+            //     }).catch(err=>{
+            //         console.log(err)
+            //     })
+            // }else{
+            //     createqr(this.dataNew).then(res=>{
+            //         if(res.data.success===1){ 
+            //             Indicator.close()
+            //             this.src=res.data.data.url
+            //             this.showInfo=true
+            //         }else{
+            //             Indicator.close()
+            //             this.$toast('网络错误,海报生成失败')
+            //         }
+            //     }).catch(err=>{
+            //         console.log(err)
+            //     })
+            // }
         },
         handleBack(){
             if(this.enterName==='Goods'){

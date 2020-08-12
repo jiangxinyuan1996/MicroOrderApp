@@ -4,7 +4,11 @@
       <div class="back" @click="back">
         <img src="images/后退-icon.svg" alt="">
       </div>
-     
+      <div class="move" v-if="showMove">
+        <span @click="moveUp"><i class="iconfont icon-shangyi"></i>上移</span>
+        <span @click="moveDown" style="margin-left:.2rem"><i class="iconfont icon-xiayi"></i>下移</span>
+      </div>
+        <span class="clear" @click="clearAll" style="margin-left:.2rem"><i class="iconfont icon-refresh01"></i>重置</span>
       <!-- <div class="righticon" v-if="showDel">
         <i class="iconfont icon-lajitong" style="color:#fff" @click="handleDel"></i>
       </div> -->
@@ -13,7 +17,7 @@
     <div class="poster_loader" ref="creatGivePoster"> 
       <canvas id="canvas" width="300" height="500" @click="handleCanvas"></canvas>
     </div>
-    <div class="opera" v-if="false">
+    <!-- <div class="opera" v-if="false">
       <div class="addButton white f-box bg" @click="handleChooseBox">
         <div class="image">
           +
@@ -25,14 +29,14 @@
           %
         </div>
        <span>生成海报</span>
-      </div>
+      </div> -->
       <!-- <div class="loadButton white f-box bg" @click="loadLastData">
         <div class="image">
           %
         </div>
        <span>加载海报</span>
       </div> -->
-    </div>
+    <!-- </div> -->
     <div class="chooseBox" v-if="chooseShow">
       <div class="back" @click="handleBack">
         添加元素
@@ -63,13 +67,19 @@
         <div class="choose_image">
           <img  src="images/二维码-icon.svg" alt="图片" />
         </div>
-        <p class="item_info">二维码</p>
+        <p class="item_info">配图</p>
       </div>
     </div>
     <div class="opera bor_top" v-if="operaShow">
       <div class="choose_image" @click="show">
           <img  src="images/取消-icon.svg" alt="图片" />
       </div>
+      <van-tabs @click="changeImg" style="width:75%;margin-left:.4rem" v-model="active" :border="false" background="#333" title-active-color="#fff" line-width="0px" line-height="0px">
+        <van-tab title="文字框" title-style="fontSize:.12rem"></van-tab>
+        <van-tab title="气泡" title-style="fontSize:.12rem"></van-tab>
+        <van-tab title="贴纸" title-style="fontSize:.12rem"></van-tab>
+        <van-tab title="二维码样式" title-style="fontSize:.12rem"></van-tab>
+      </van-tabs>
       <div class="righticon" v-if="showDel"  @click="handleDel">
         <i class="iconfont icon-lajitong" ></i>
         <span class="delText">删除</span>
@@ -80,14 +90,44 @@
       <!-- <div class="swiperBox"> -->
         <swiper v-if="images.length"  class="banner" :options="{
             loop: false,
-            spaceBetween: 30,
-            slidesPerView: 3,
+            spaceBetween: 10,
+            slidesPerView: 6,
             freeMode:true
         }">
                 <div class="swiper-slide" v-for="item in images" :key="item" @click="handleAdd">
-                    <img style="width:100%;height:100%" :src="item" alt="">
+                    <img style="width:100%;height:100%" :src="item" alt="" >
                 </div>
         </swiper>
+        <!-- <swiper v-else-if="title=='气泡'"  class="banner" :options="{
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 6,
+            freeMode:true
+        }">
+                <div class="swiper-slide" v-for="item in images" :key="item" @click="handleAdd">
+                    <img style="width:100%;height:100%" :src="item" alt="" >
+                </div>
+        </swiper>
+        <swiper v-else-if="title=='贴纸'"  class="banner" :options="{
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 6,
+            freeMode:true
+        }">
+                <div class="swiper-slide" v-for="item in images" :key="item" @click="handleAdd">
+                    <img style="width:100%;height:100%" :src="item" alt="" >
+                </div>
+        </swiper>
+        <swiper v-else  class="banner" :options="{
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 6,
+            freeMode:true
+        }">
+                <div class="swiper-slide" v-for="item in images" :key="item" @click="handleAdd">
+                    <img style="width:100%;height:100%" :src="item" alt="" >
+                </div>
+        </swiper> -->
       <!-- </div> -->
     </div>
     <div class="opera bor_top" v-if="qrShow">
@@ -98,8 +138,18 @@
         <i class="iconfont icon-lajitong"></i>
         <span class="delText">删除</span>
       </div>
-      <div class="swiperBox">
-        <p class="swiper_item" @click="qrAdd"><img style="width:100%;height:100%" :src="qrcodeUrl" alt=""></p>
+      <!-- <div class="swiperBox"> -->
+        <!-- <p class="swiper_item" @click="qrAdd" v-for="(item,index) in this.$route.params.image" :key="index"><img style="width:100%;height:100%" :src="item" alt=""></p> -->
+        <swiper v-if="images.length"  class="banner" :options="{
+            loop: false,
+            spaceBetween: 10,
+            slidesPerView: 6,
+            freeMode:true
+        }">
+                <div class="swiper-slide" v-for="item in this.$route.params.image" :key="item" @click="qrAdd">
+                    <img style="width:100%;height:100%" :src="item" alt="">
+                </div>
+        </swiper>
         <!-- <p class="swiper_item" @click="qrAdd"><svg version="1.1" id="&#x56FE;&#x5C42;_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
 	 y="0px" viewBox="0 0 3543.307 3140.787" style="enable-background:new 0 0 3543.307 3140.787;" xml:space="preserve">
 <image style="overflow:visible;" width="3400" height="3400" :xlink:href="qrcodeUrl"  transform="matrix(1 0 0 1 0.6535 -0.1063)">
@@ -107,7 +157,7 @@
 </svg></p> -->
 
         
-      </div>
+      <!-- </div> -->
     </div>
     <div class="opera bor_top" v-if="backgroundShow">
        <div class="choose_image" @click="show">
@@ -120,18 +170,18 @@
       <!-- <div class="swiperBox">
         <p class="swiper_item" v-for="item in images" :key="item" @click="changeBg(item)"><img class="vueimg" style="width:100%;height:100%" :src="item" alt=""/></p>
       </div> -->
-      <swiper v-if="images.length"  class="banner" :options="{
+      <swiper v-if="bg.length"  class="banner" :options="{
             loop: false,
-            spaceBetween: 30,
-            slidesPerView: 3,
+            spaceBetween: 10,
+            slidesPerView: 6,
             freeMode:true
         }">
-                <div class="swiper-slide" v-for="item in images" :key="item" @click="changeBg(item)">
+                <div class="swiper-slide" v-for="item in bg" :key="item" @click="changeBg(item)">
                     <img style="width:100%;height:100%" :src="item" alt="">
                 </div>
         </swiper>
     </div>
-    <div class="opera bor_top" v-if="textShow">
+    <div class="textOpera opera bor_top" v-if="textShow">
       <div class="choose_image" @click="show">
           <img  src="images/取消-icon.svg" alt="图片" />
       </div>
@@ -176,27 +226,33 @@
         placeholder="请输入文字"
       />
     </van-dialog>
-    <van-dialog v-model="showPoster" title="" show-cancel-button @confirm="addText" confirmButtonText='保存海报' cancelButtonText='不保存'>
+    <van-dialog v-model="showPoster" title="" show-cancel-button @confirm="savePoster" confirmButtonText='保存海报' cancelButtonText='再改改'>
      <img class="poster" :src="imgUrl" alt=""/>
     </van-dialog>
   </div>
 </template>
 <script>
+import { addUserMould,getUserMould,getElement } from '@/api'
 import swiper from '@/components/swiper'
 import { fabric } from 'fabric'
 import html2canvas from 'html2canvas'
-import { Dialog ,Field,Slider  } from 'vant';
+import { Dialog ,Field,Slider, Toast,Tab,Tabs  } from 'vant';
 import QRCode from 'qrcode'
 export default {
   components:{
     [Dialog.Component.name]: Dialog.Component,
     vanField:Field,
     vanSlider:Slider,
-    swiper
+    swiper,
+    Tab,
+    Tabs
   },
   data(){
     return{
+      active:0,
+      title:'文字框',
       showUnderline:false,
+      showMove:false,
       showI:false,
       showB:false,
       size:24,
@@ -204,7 +260,8 @@ export default {
       color2:'#000',
       canvasData:{},
       qrcodeUrl:'',
-      images:['images/取消-icon.svg','images/photo2.png','images/photo3.png'],
+      images:[],
+      images1:[],
       chooseShow:true,
       showDel:true,
       textShow:false,
@@ -221,20 +278,37 @@ export default {
       imgUrl:'',
       left:0,
       top:0,
-      oL:0,
-      oT:0,
-      oX:0,
-      oY:0,
-      oW:0,
-      oH:0,
+      bg:['images/背景/1.png','images/背景/2.png','images/背景/3.png','images/背景/4.png','images/背景/5-1.png','images/背景/6.png','images/背景/7.png','images/背景/8.png'],
+      border:[],
+      qrcode:[],
+      tags:[],
+      text:[],
       obj:null,
       delbtn:null
+
     }
   },
   beforeMount(){
       this.$store.state.showTab=false
   },
-  mounted(){    
+  mounted(){
+      // getUserMould().then(res=>{
+      //   console.log(res)
+      // this.loadLastData(res.data.data[1].content)
+      // })
+      getElement().then(res=>{
+        //文字框
+        this.border=res.data.data.border
+        //二维码
+        this.qrcode=res.data.data.qrcode
+        //贴纸
+        this.tags=res.data.data.tags
+        //文本气泡
+        this.text=res.data.data.text
+        this.images=this.border
+        // this.images=['images/小图11.svg']
+      })
+    console.log(this.$route.params)   
     this.canvas = new fabric.Canvas('canvas');
     //  fabric.loadSVGFromURL('images/photo1.svg', (objects, options)=> {
     //     var obj = fabric.util.groupSVGElements(objects, options);
@@ -243,6 +317,8 @@ export default {
      this.canvas.selection=false
      this.canvas.on('selection:created', (e) => {
           // 选中图层事件触发时，动态更新赋值
+          this.showMove=true
+          this.canvas.preserveObjectStacking = true
           this.showDel=true
           this.selectElement = e.target
           this.selectElement.set({
@@ -285,6 +361,9 @@ export default {
       this.canvas.on('selection:updated', (e) => {
           // 选中图层事件触发时，动态更新赋值
           // this.showDel=true
+          this.showMove=true
+          this.canvas.preserveObjectStacking = true
+
           this.selectElement = e.target
           this.selectElement.set({
             borderColor: 'black',
@@ -324,6 +403,7 @@ export default {
       })
       this.canvas.on('selection:cleared', (e) => {
           // 选中图层事件触发时，动态更新赋值
+          this.showMove=false
           console.log('选中'+e)
           this.textShow=false
           this.chooseShow=true
@@ -336,8 +416,60 @@ export default {
       })
   },
   methods:{
+    moveUp(){
+      this.selectElement.bringForward()
+      console.log('上移',this.selectElement.zIndex)
+      this.canvas.renderAll()
+    },
+    moveDown(){
+      this.selectElement.sendBackwards()
+      console.log('下移',this.selectElement.zIndex)
+      this.canvas.renderAll()
+    },
+    clearAll(){
+      this.canvas.clear()
+
+    },
+    changeImg(name,title){
+      this.images=[]
+      switch(title){
+        case '文字框':
+          this.title='文字框'
+          this.images=this.border
+          console.log('文字框',this.border)
+          break
+        case '气泡':
+          this.title='气泡'
+          this.images=this.text
+          console.log('气泡',this.text)
+          break
+        case '贴纸':
+          this.title='贴纸'
+          this.images=this.tags
+          console.log('贴纸',this.tags)
+          break
+        case '二维码样式':
+          this.title='二维码样式'
+          this.images=this.qrcode
+          console.log('二维码样式',this.qrcode)
+          break
+      }
+      // this.bg=res.data.data.bg
+        // this.border=res.data.data.border
+        // this.qrcode=res.data.data.border
+        // this.tags=res.data.data.tags
+    },
     back(){
-      window.history.go(-1)
+      this.$router.push({
+                    name:'createGoods',
+                    params:{
+                        image:this.$route.params.image,
+                        val:this.$route.params.val,
+                        item:this.$route.params.item,
+                        options:this.option2,
+                        checked1:this.$route.params.checked1
+                    }
+                    })
     },
     onChange(value){
       this.selectElement.set({
@@ -411,7 +543,6 @@ export default {
         })
     },
     addText(){
-      console.log(this.message)
       const textbox = new fabric.Textbox(this.message, {
           left: 50,
           top: 50,
@@ -423,6 +554,7 @@ export default {
           borderColor: '#fff',
           scalex:0.5,
           scaley:0.5,
+          zIndex:1,
           fontStyle: 'normal', // 斜体
           fontFamily: '微软雅黑', // 设置字体
           underline:false,
@@ -445,6 +577,9 @@ export default {
           opacity:1,
           scalex:0.5,
           scaley:0.5,
+          scaleX:0.5,
+          scaleY:0.5,
+          zIndex:1,
           borderColor: 'black',
           cornerColor:'green',
           cornerSize:10,
@@ -458,10 +593,10 @@ export default {
     handleAdd(e){
         // var image = document.querySelector('img')
         console.log(e.target)
-        fabric.loadSVGFromURL('images/取消-icon.svg', (objects, options)=> {
+        fabric.loadSVGFromURL(e.target.src, (objects, options)=> {
         var shape = fabric.util.groupSVGElements(objects, options);
-        this.canvas.add(shape.scale(1));
-        shape.set({ left: 10, top: 10 }).setCoords();
+        this.canvas.add(shape.scale(0.2));
+        shape.set({ left: 10, top: 10,zIndex:1 }).setCoords();
         this.canvas.renderAll();
         })
         // const imgInstance = new fabric.Image(e.target,{
@@ -516,7 +651,7 @@ export default {
         context.webkitImageSmoothingEnabled = false
         context.msImageSmoothingEnabled = false
         context.imageSmoothingEnabled = false
-
+        console.log(this.bg)
         // 【重要】默认转化的格式为png,也可设置为其他格式
         let imgUrl = canvas.toDataURL('image/png')
         this.imgUrl = imgUrl
@@ -535,8 +670,11 @@ export default {
         //   }     
         console.log('画布信息',this.canvasData)  
     },
-    loadLastData(){
-      this.canvas.loadFromJSON(this.canvasData, () => {
+    loadLastData(data){
+      getUserMould().then(res=>{
+        console.log(res)
+      })
+      this.canvas.loadFromJSON(data, () => {
             this.canvas.renderAll();
           });
     },
@@ -622,6 +760,22 @@ export default {
       this.chooseShow=false
       this.operaShow=true
       console.log('hide',e)
+    },
+    savePoster(){
+      addUserMould({content:this.canvasData,url:this.imgUrl}).then(res=>{
+        if(res.data.success===1){
+          Toast(res.data.message)
+          this.$router.push({name:'createqr',params:{
+            image:this.$route.params.image,
+            val:this.$route.params.val,
+            item:this.$route.params.item,
+            options:this.option2,
+            checked1:this.$route.params.checked1
+          }})
+        }else{
+          Toast(res.data.message)
+        }
+      })
     }
   }
 }
@@ -648,6 +802,28 @@ export default {
       img{
         width: 100%;
         height: 100%;
+      }
+    }
+    .move{
+      position: absolute;
+      left:1rem;
+      top:0;
+      color: #fff;
+      font-size: .12rem;
+      i{
+        color: #fff;
+        font-size: .12rem;
+      }
+    }
+    .clear{
+      position: absolute;
+      left:1.9rem;
+      top:0;
+      color: #fff;
+      font-size: .12rem;
+      i{
+        color: #fff;
+        font-size: .14rem;
       }
     }
     .colorPicker{
@@ -693,11 +869,12 @@ export default {
       top: 0;
     }
   }
+  
   .opera{
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 1.5rem;
+    height: 1.03rem;
     background: #333;
     .colorWrap{
       position: absolute;
@@ -768,8 +945,8 @@ export default {
     }
     .righticon{
       position: absolute;
-      right: .2rem;
-      top:.15rem;
+      right: .15rem;
+      top:.13rem;
       // height: 100%;
       // width: .45rem;
       text-align: center;
@@ -789,13 +966,13 @@ export default {
         bottom:0;
         padding:0 5%;
         margin-bottom: 3%;
-        height: .93rem;
+        height: .48rem;
         width:100%;
         // background: #fff;
     }
     .swiperBox{
       width: 100%;
-      height:1.5rem;
+      height:1rem;
       // border-radius: 5px;
       // position: absolute;
       // bottom:0;
@@ -805,11 +982,16 @@ export default {
       // overflow: auto;
       .swiper_item{
         float: left;
-        margin:.4rem;
-        width:.8rem;
-        height: .8rem;
+        margin-top:.35rem;
+        margin-left: .4rem;
+        width:.6rem;
+        height: .6rem;
       }
     }
+  }
+  .textOpera{
+    height: 1.53rem;
+    opacity: .8;
   }
   .chooseBox{
     position: fixed;

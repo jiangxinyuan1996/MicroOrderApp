@@ -1,22 +1,21 @@
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 module.exports = {
   // publicPath: 'http://dlallinpay-source.stor.sinaapp.com/tlwdd/merchant',
-  publicPath:'/wddtest/merchant/',
+  publicPath: 'http://dlallinpay-source.stor.sinaapp.com/wddtest',
+  // publicPath:'/wddtest/merchant/',
   lintOnSave: false,
   productionSourceMap: false,
   devServer:{
     proxy:{
-      '/wdd':{
+      '/wddtest':{
         target:'http://dlallinpay.sinaapp.com',
+        changeOrigin:true
+      },
+      '/element':{
+        target:'http://dlallinpay-source.stor.sinaapp.com',
         changeOrigin:true
       }
     },
-    // proxy:{
-    //   '/wddtest':{
-    //     target:'http://dlallinpay.sinaapp.com',
-    //     changeOrigin:true
-    //   }
-    // },
     compress:true,
     open:true,
     hot:true,

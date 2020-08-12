@@ -133,15 +133,26 @@
             :close-on-click-modal="false"
             :before-close="handleClose">
             <div class="main">
+              <p style="margin-bottom:.1rem">系统模板</p>
             <ul class="list">
                 <li class="list_item" v-for="(item,index) in mouldlist" :key="index" @click="createQr(item.mould_id)">
                     <div class="item_image">
                         <img :src="item.example" alt="" />
                     </div>
-                    <div class="item_opera">
-                        海报模板{{index+1}}
-                    </div>
                 </li>
+            </ul>
+              <p style="margin-bottom:.1rem">自定义模板</p>
+            <ul class="list">
+              <li class="list_item" v-for="item in userMouldList" :key="item.id">
+                <div class="item_image">
+                    <img :src="item.img" alt="" />
+                </div>
+              </li>
+              <li class="list_item" @click="handleWallet">
+                    <div class="item_image">
+                          <img style="width:100%;height:100%" src="images/新建模板.svg" alt="" />
+                      </div>
+              </li>
             </ul>
         </div>
         </el-dialog>
@@ -161,7 +172,6 @@
                         <div class="weui-uploader__hd">
                             <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2" @click="handleTips('配图,上传图片尺寸比例为1:1显示效果最佳(非必填)')" style="fontSize:.25rem;position:relative;bottom:-0.06rem" /></p>
                             <div class="weui-uploader__info">{{formData.image.length}}/9</div>
-
                         </div>
                         <div class="weui-uploader__bd">
                             <ul class="weui-uploader__files" id="uploaderFiles" v-if="formData.image.length">
@@ -184,7 +194,7 @@
   </div>
 </template>
 <script>
-import { addProduct,updateProduct,getProductCategoryInfo,addCategoryList,getConfig,chooseMould,getPackageTypeList} from '@/api'
+import { addProduct,updateProduct,getProductCategoryInfo,addCategoryList,getConfig,chooseMould,getPackageTypeList,getUserMould} from '@/api'
 import { initWxconfig,getImage } from '@/utils/initWxConfig.js'
 import { MessageBox } from 'mint-ui'
 import  createForm from './components/createForm'
@@ -218,6 +228,7 @@ export default {
       checked1:false,
       categorylist:[],
       mouldlist:[],
+      userMouldList:[],
       addtext:'',
       src:'',
       index:'',
@@ -250,6 +261,10 @@ export default {
      this.$store.state.showTab = false
   },
   mounted(){
+    //获取自定义海报模板
+    getUserMould().then(res=>{
+      this.userMouldList=res.data.data
+    })
     // this.formData.checked=true
     //获取品类列表
     let url = location.href.split('#')[0]
@@ -442,6 +457,7 @@ export default {
       this.formData.fare=parseFloat(this.formData.fare).toFixed(2)
     },
     handleTips(name){
+
        MessageBox.alert('收款单'+name, '温馨提示')
     },
     handleShow(src,index){
@@ -533,6 +549,21 @@ export default {
                 val:this.$route.params.val,
                 mould_id    
               }
+          })
+        },
+        //自定义海报
+        handleWallet(){
+         this.$router.push({
+            name:'wallet',
+            params:{
+              image:this.images,
+              item:this.formData,
+              options:this.option2,
+              category_id:this.category_id,
+              val:this.$route.params.val,
+              checked:this.checked,
+              checked1:this.checked1
+            }
           })
         },
     //提交
@@ -695,14 +726,23 @@ export default {
   padding-left: .2rem;
 }
 .list{
-  display: flex;
+  // display: flex;
+  // flex-flow: wrap;
+  overflow: hidden;
+  width: 100%;
   .list_item{
-    flex: 1;
-    margin-right: .2rem;
-    width:50%;
+    // flex: 1;
+    float: left;
+    margin-right: .1rem;
+    width:45%;
+    height: 1.2rem;
+    margin-bottom: .1rem;
+    background: #fff;
     .item_image{
       width: 100%;
-      height: 80%;
+      height: 100%;
+      display: flex;
+      align-items: center;      
       img{
         width:100%;
         height: 100%;
@@ -711,8 +751,10 @@ export default {
     .item_opera{
       width: 100%;
       height: 20%;
+      line-height: .28rem;
       text-align: center;
-      background: chartreuse;
+      background: #3477bc;
+      color: #fff;
     }
   }
 }
