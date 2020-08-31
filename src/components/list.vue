@@ -23,7 +23,7 @@
               <span style="marginRight:.05rem"><b style="fontSize:.05rem">￥</b>{{item.price}}</span>
             </p>
             <p class="order_number">订单号：<span style="color:#333">{{item.req_sn}}</span><span style="fontSize:.1rem;float:right;marginRight:.05rem">x {{item.num}}</span></p>
-            <p class="product_fare">运费(水果生鲜) <span style="fontSize:.05rem">￥</span>{{item.fare}}</p>
+            <p class="product_fare">运费 <span style="fontSize:.05rem">￥</span>{{item.fare}}</p>
             <p class="total">应收款 <span style="fontSize:.05rem">￥</span><span style="color:#0079c2;fontSize:.14rem;marginRight:.05rem">{{item.total}}</span></p>
           </div>
         </div>
@@ -86,21 +86,28 @@ export default {
         this.currentStatus = "已完成";
         break
     }
-    getOrderList({ status: this.status ,keyword:this.keyword}).then(res => {
-      if (res.data.success === 1) {
-        this.page++;
-        Indicator.close();
-        this.orderList = res.data.data;
-      } else {
-        Indicator.close();
-        this.$toast("无数据");
-      }
-    });
+   this.init()
+  },
+  updated(){
+    // this.init()
   },
   destroyed(){
     Indicator.close()
   },
   methods: {
+    init(){
+      console.log('1111')
+      getOrderList({ status: this.status ,keyword:this.keyword}).then(res => {
+        if (res.data.success === 1) {
+            this.page++;
+              this.orderList = res.data.data;
+              Indicator.close();
+        } else {
+          Indicator.close();
+          this.$toast("无数据");
+        }
+      });
+    },
     clear(){
       setTimeout(()=>{
         Indicator.close()
@@ -171,7 +178,7 @@ export default {
       background: #fff;
       margin-bottom: .1rem;
       overflow: hidden;
-      box-shadow: 0px 2px 4px rgba(106, 110, 144, 0.63921568627451);
+      box-shadow: 0px 2px 4px rgba(106, 110, 144, 0.25);
       .title{
         display:flex;
         align-items: center;
@@ -271,6 +278,7 @@ export default {
           float: left;
           color: #a2a2a2;
           font-size: .12rem;
+          margin-top:-0.03rem
         }
         .detail_button{
           float: right;

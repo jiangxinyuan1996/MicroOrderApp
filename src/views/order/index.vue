@@ -6,13 +6,8 @@
         <input type="text" placeholder="搜索名称/订单号" v-model.trim="mytext" @keypress.enter="handleSearch" />
       </div>
     </div>
-    <!-- <van-tabs v-model="active" color="#0079c2">
-      <van-tab title="待付款" badge="1"><waitshipped :keyword="mytext"/></van-tab>
-      <van-tab title="待发货" badge="1"><shipped :keyword="mytext"/></van-tab>
-      <van-tab title="已完成"><success :keyword="mytext" /></van-tab>
-    </van-tabs> -->
     <navbar></navbar>
-    <router-view :keyword="mytext"/>
+    <router-view :keyword="mytext" ref="child"/>
   </div>
 </template>
 <script>
@@ -52,7 +47,7 @@ export default {
   methods:{
     handleSearch() {
       console.log(this.mytext)
-      console.log(this.active)
+      console.log(this.$route.name)
       switch(this.$route.name){
         case 'waitshipped':
         this.$router.push('/order/waitshipped')
@@ -64,6 +59,11 @@ export default {
         this.$router.push('/order/success')
         break
       }
+      Indicator.open({
+        text: "加载中...",
+        spinnerType: "fading-circle"
+      });
+      this.$refs.child.init()
     }
   },
   mounted(){

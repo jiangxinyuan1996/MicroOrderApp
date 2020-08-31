@@ -1,8 +1,8 @@
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 module.exports = {
-  // publicPath: 'http://dlallinpay-source.stor.sinaapp.com/tlwdd/merchant',
-  publicPath: 'http://dlallinpay-source.stor.sinaapp.com/wddtest',
-  // publicPath:'/wddtest/merchant/',
+  // publicPath: 'http://dlallinpay-source.stor.sinaapp.com/wdd/merchant',
+  // publicPath: 'http://dlallinpay-source.stor.sinaapp.com/wddtest',
+  publicPath:'/wddtest/merchant/',
   lintOnSave: false,
   productionSourceMap: false,
   devServer:{
@@ -36,7 +36,8 @@ module.exports = {
                  test: /\.(js|css)(\?.*)?$/i,
                 threshold: 10240,
                 deleteOriginalAssets: false
-              })]
+              }
+              )]
       }
     }
 }

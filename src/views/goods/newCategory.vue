@@ -5,37 +5,39 @@
             <i class="iconfont icon-huitui" />
             </div>
             <div class="header_title">货架</div>
-            <div class="header_image" style="padding-right:.08rem;font-size:.3rem;color:rgb(238,120,0);font-weight:300" @click="handleAddGoods" ><img src="images/u60.png" alt=""/></div>
+            <div class="header_image" style="font-size:.3rem;color:rgb(238,120,0);font-weight:300" @click="handleAddGoods" ><img src="images/icon-添加商品1.png" alt=""/></div>
         </div>
         <div class="main" >
             <div class="main_left">
                 <ul class="cate_list"
                 >
                     <li v-for="(item,index) in categoryList" :key="item.category_id" :class="'list_item '+(index===activeIndex?'active':'')" @click="listClick(index,item)"><span class="item_info">{{item.category_name}}</span></li>
-                    <li class="list_item" style="border:none" @click="handleAddCategory"><img src="images/u60.png" alt=""/></li>
+                    <li class="list_item" style="border:none" @click="handleAddCategory"><img src="images/icon-添加标签.png" alt=""/></li>
                 </ul>
             </div>
             <div class="main_right">
         <!-- <mt-loadmore :bottom-method="loadMore" ref="loadmore" :auto-fill="false"> -->
         <!-- 分类详情列表 -->
-        <ul class="detailList"
-       
-        >
+        <ul class="detailList">
           <!-- <li class="detail_title"><h4 style="fontSize:.14rem;color:#333">{{detailtext}}</h4></li> -->
           <!-- <li style="fontSize:.16rem;color:#ccc;lineHeight:.4rem;margin-bottom:0.1rem" @click="handleAddGoods">{{'添加'+ detailtext}}<span style="fontSize:.2rem">+</span></li> -->
-          
-          <li class="detail_item" v-for="(item,index) in detailList" :key="index" @click="handleDetail(item,'修改')">
+          <li class="detail_item"    v-for="(item,index) in detailList" :key="index" @click="status[item.sale_state]==='上架'?()=>{}:handleDetail(item,'修改')">
         <mt-cell-swipe   
             :right='rightDelete(item,index)'
           >
-				 <div slot="icon" class="item_wrap">
+				 <div slot="icon" class="item_wrap" :style="{'opacity':status[item.sale_state]=='上架'?'0.5':'1'}">
            <div class="item_image" >
               <img :src="item.image[0]" alt="">
            </div>
                <div class="item_info" style="fontSize:.14rem">
               <p  class="info_title">{{item.product_name}}</p>
               <p class="info_bottom">库存剩余: {{item.num}}件</p>
-              <p class="info_bottom"><span>商品单价:<span style="fontSize:.06rem;marginLeft:.05rem;"> ￥</span><span>{{item.price}}</span></span><img src="images/quick.png" @click.stop="handleQuick(item)"/></p>
+              <img style="position:absolute" v-if="status[item.sale_state]=='上架'" class="image2" src="images/icon-下架1.svg" />
+              <p class="info_bottom">
+                <span>商品单价:<span style="fontSize:.06rem;marginLeft:.05rem;"> ￥</span>
+                <span>{{item.price}}</span></span>
+                <img v-if="status[item.sale_state]=='下架'" class="image1" src="images/icon-快速生成.png" @click.stop="handleQuick(item)"/>
+              </p>
             </div>
 				 </div>
 			</mt-cell-swipe>
@@ -69,6 +71,7 @@ export default {
               '1':'下架',
               '-1':'上架'
             },
+            opacity:1,
             categoryList: [],
             detailList: [],
             active: this.$store.state.active,
@@ -327,8 +330,8 @@ export default {
                         opacity: .7;
                         border-bottom: 1px solid #ccc;
                         img{
-                            width:.2rem;
-                            height: .2rem;
+                            width:.3rem;
+                            height: .3rem;
                             margin-bottom:.1rem;
                             opacity: .7;
                         }
@@ -374,7 +377,7 @@ export default {
                     }
                     .detail_item{
                     display: flex;
-                    margin-bottom: .1rem;
+                    margin-bottom: .07rem;
                     .mint-cell{
                         height: .99rem;
                         display: flex;
@@ -406,7 +409,7 @@ export default {
                         .info_title{
                         display: flex;
                         margin-top:.05rem;
-                        font-size: .18rem;
+                        font-size: .17rem;
                         color: #040404;
                         width: 1.95rem;
                         padding-top:.05rem;
@@ -415,13 +418,19 @@ export default {
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         }
+                         .image2{
+                              width:.6rem;
+                              height: .6rem;
+                              right:.1rem;
+                              bottom:.2rem;
+                            }
                         .info_bottom{
                             display: flex;
                             align-items: center;
                             color:#333;
                             opacity: .7;
                             justify-content: space-between;
-                            img{
+                            .image1{
                               width:.6rem;
                               height: .15rem;
                             }

@@ -18,8 +18,9 @@
                 label="名称"
                 clearable
                 required
+                @click="(e)=>{e.stopPropagation()}"
                 right-icon="warning-o"
-                @click-right-icon="handleTips('名称(必填)')"
+                @click-right-icon="handleTips"
               />
               </van-form>
         </template>
@@ -44,7 +45,8 @@
                 clearable
                 type="text"
                 right-icon="warning-o"
-                @click-right-icon="handleTips('单价(必填)')"
+                @click="(e)=>{e.stopPropagation()}"
+                @click-right-icon="handleTips"
                 @blur="change"
               />
               </van-form>
@@ -135,7 +137,7 @@
             <div class="main">
               <p style="margin-bottom:.1rem">系统模板</p>
             <ul class="list">
-                <li class="list_item" v-for="(item,index) in mouldlist" :key="index" @click="createQr(item.mould_id)">
+                <li class="list_item" v-for="(item,index) in mouldlist" :key="index" @click="createQr('系统',item.mould_id)">
                     <div class="item_image">
                         <img :src="item.example" alt="" />
                     </div>
@@ -143,7 +145,7 @@
             </ul>
               <p style="margin-bottom:.1rem">自定义模板</p>
             <ul class="list">
-              <li class="list_item" v-for="item in userMouldList" :key="item.id">
+              <li class="list_item" v-for="item in userMouldList" :key="item.id" @click="createQr('自定义')">
                 <div class="item_image">
                     <img :src="item.img" alt="" />
                 </div>
@@ -170,7 +172,7 @@
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2" @click="handleTips('配图,上传图片尺寸比例为1:1显示效果最佳(非必填)')" style="fontSize:.25rem;position:relative;bottom:-0.06rem" /></p>
+                            <p class="weui-uploader__title">配图<i class="iconfont icon-weibiaoti2" @click="handleTips" style="fontSize:.25rem;position:relative;bottom:-0.06rem" /></p>
                             <div class="weui-uploader__info">{{formData.image.length}}/9</div>
                         </div>
                         <div class="weui-uploader__bd">
@@ -349,9 +351,6 @@ export default {
       }
   },
   methods:{
-    // handleFareChange(){
-    //   if(this.checked1)
-    // },
     addressChange(){
       //如果选择无需发货，将运费内容状态初始化
       console.log(this.formData.address_flag)
@@ -456,9 +455,16 @@ export default {
       }
       this.formData.fare=parseFloat(this.formData.fare).toFixed(2)
     },
-    handleTips(name){
-
-       MessageBox.alert('收款单'+name, '温馨提示')
+    handleTips(e){
+      console.log(e)
+      e.stopPropagation()
+      if(e.screenY<250){
+        MessageBox.alert('收款单名称', '温馨提示')
+      }else if(e.screenY>250&&e.screenY<300){
+        MessageBox.alert('收款单单价', '温馨提示')
+      }else{
+        MessageBox.alert('收款单配图,最多上传个数9,上传图片比例1:1效果最佳', '温馨提示')
+      }
     },
     handleShow(src,index){
           this.isShow=true
@@ -542,14 +548,25 @@ export default {
           }
     },
     //创建海报
-    createQr(mould_id){
+    createQr(title,mould_id){
+      if(title==='系统'){
           this.$router.push({name:'createqr',params:{
                 item:this.formData,
                 image:this.images,
                 val:this.$route.params.val,
-                mould_id    
+                mould_id,
+                title 
               }
           })
+      }else{
+        this.$router.push({name:'wallet',params:{
+                item:this.formData,
+                image:this.images,
+                val:this.$route.params.val,
+                title
+              }
+          })
+      }
         },
         //自定义海报
         handleWallet(){

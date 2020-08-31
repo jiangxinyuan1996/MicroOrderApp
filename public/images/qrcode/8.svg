@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 560 560" style="enable-background:new 0 0 560 560;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#7CA2ED;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
+	.st1{fill:#BDD8FF;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
+	.st2{fill:#F5DCBE;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
+	.st3{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10;}
+	.st4{opacity:0.1;}
+	.st5{opacity:0.43;}
+	.st6{font-family:'FZLTZHK--GBK1-0';}
+	.st7{font-size:35.0755px;}
+</style>
+<path class="st0" d="M524.3,553.2h-66c-5.3,0-9.7-4.4-9.7-9.7v-180c0-5.3,4.4-9.7,9.7-9.7h66c5.3,0,9.7,4.4,9.7,9.7v180
+	C534,548.8,529.6,553.2,524.3,553.2z"/>
+<path class="st1" d="M438.9,535.7h-23.3c-5.3,0-9.7-4.4-9.7-9.7V380.7c0-5.3,4.4-9.7,9.7-9.7h23.3c5.3,0,9.7,4.4,9.7,9.7V526
+	C448.6,531.6,444.2,535.7,438.9,535.7z"/>
+<path class="st2" d="M400.9,510.5l-104-5.8c-0.3,0-0.6,0-0.6,0l-150-28.6c-0.3,0-0.6-0.3-0.8-0.3L44,435.6c-0.3-0.3-0.8-0.3-1.1-0.6
+	c-16.9-11.9-30.8-41.9,8.3-50.2c0.6,0,1.1,0,1.9,0l91,15.5c2.2,0.3,4.4-0.8,5.3-3.1c2.2-5.3,8.6-14.7,25.5-14.1
+	c21.4,0.8,47.4,2.5,52.4,3.1c0.6,0,1.1,0,1.7-0.3c8-2.2,74.6-20.2,98.4-12.2c25.5,8.6,36,23.8,36.9,26.3c0.8,2.5,3.9,7.8,36,7.8
+	c2.5,0,4.7,1.9,5,4.7c0.6,18.3,1.1,76,1.4,93.2C405.9,508.3,403.7,510.5,400.9,510.5L400.9,510.5L400.9,510.5z"/>
+<path class="st3" d="M246.7,441.2c0,0-83.5,14.4-99.5-41.6"/>
+<g>
+	<rect x="44.1" y="25.2" class="st4" width="305.6" height="305.6"/>
+	<g class="st5">
+		<text transform="matrix(1 0 0 1 144.3365 165.398)" class="st6 st7">请添加</text>
+		<text transform="matrix(1 0 0 1 144.3365 212.0611)" class="st6 st7">二维码</text>
+	</g>
+</g>
+</svg>

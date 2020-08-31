@@ -9,6 +9,7 @@ export default new Vuex.Store({
     active:0,
     waybillID:'',
     req_sn:'',
+    lastData:[],
     formData:{
       product_name:'',
       price:'',

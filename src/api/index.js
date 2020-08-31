@@ -1,30 +1,30 @@
 import  request  from '@/utils/request'
-//本地存储数据
+//本地存储数据1
 export function HomeData(){
     return request({
         url:'/wddtest/index.php/home/index/getMerchantInfo',
     })
 }
-//首页数据
+//首页数据2
 export function reqData(data){
     return request({
         url:'/wddtest/index.php/home/index/getTotal',
         data
     })
 }
-//获取首页分类商品数量
+//获取首页分类商品数量3
 export function reqAmount(){
     return request({
         url:'/wddtest/index.php/home/index/getProductCount',
     })
 }
-//请求商品分类
+//请求商品分类4
 export function getProductCategoryInfo(){
     return request({
         url:'/wddtest/index.php/home/category/getProductCategoryList',
     })
 }
-//删除商品分类
+//删除商品分类5
 export function delProductCategoryInfo(data){
     return request({
         url:'/wddtest/index.php/home/category/delProductCategory',
@@ -32,14 +32,14 @@ export function delProductCategoryInfo(data){
         data
     })
 }
-//获取商品列表
+//获取商品列表6
 export function getProductList(data){
     return request({
         url:'/wddtest/index.php/home/product/getProductList',
         data
     })
 }
-//新建商品接口
+//新建商品接口7
 export function addProduct(data){
     return request({
         url:'/wddtest/index.php/home/product/addProduct',
@@ -50,7 +50,7 @@ export function addProduct(data){
         data
     })
 }
-//修改商品接口
+//修改商品接口8
 export function updateProduct(data){
     return request({
         url:'/wddtest/index.php/home/product/updateProduct',
@@ -61,7 +61,7 @@ export function updateProduct(data){
         data
     })
 }
-//删除商品接口
+//删除商品接口9
 export function delProductList(data){
     return request({
         url:'/wddtest/index.php/home/product/delProduct',
@@ -72,7 +72,7 @@ export function delProductList(data){
         data
     })
 }
-//新增分类
+//新增分类10
 export function addCategoryList(data){
     return request({
         url:'/wddtest/index.php/home/category/addProductCategory',
@@ -80,7 +80,7 @@ export function addCategoryList(data){
         data
     })
 }
-//修改分类
+//修改分类11
 export function updateCategoryList(data){
     return request({
         url:'/wddtest/index.php/home/category/updateProductCategory',
@@ -88,7 +88,7 @@ export function updateCategoryList(data){
         data
     })
 }
-//删除分类
+//删除分类12
 export function delCategoryList(data){
     return request({
         url:'/wddtest/index.php/home/category/delProductCategory',
@@ -96,14 +96,14 @@ export function delCategoryList(data){
         data
     })
 }
-//查询订单
+//查询订单13
 export function getOrderList(data){
     return request({
         url:'/wddtest/index.php/home/order/getOrderList',
         data
     })
 }
-//绑定商户
+//绑定商户14
 export function bindMerchant(data){
     return request({
         url:'/wddtest/index.php/home/merchant/bindMerchant',
@@ -111,7 +111,7 @@ export function bindMerchant(data){
         data
     })
 }
-//生成海报
+//生成海报15
 export function createqr(data){
     return request({
         url:'/wddtest/index.php/home/product/createTempQR',
@@ -119,21 +119,43 @@ export function createqr(data){
         data
     })
 }
-//快速生成海报
+//生成海报16
+export function savePoster(data){
+    return request({
+        url:'/wddtest/index.php/home/product/savePoster',
+        method:'POST',
+        data
+    })
+}
+//默认海报17
+export function getDefaultMould(){
+    return request({
+        url:'/wddtest/index.php/home/mould/getDefaultMould',
+    })
+}
+//编辑自定义模板18
+export function saveProduct(data){
+    return request({
+        url:'/wddtest/index.php/home/product/saveProduct',
+        method:'POST',
+        data
+    })
+}
+//快速生成海报19
 export function getPoster(data){
     return request({
         url:'/wddtest/index.php/home/product/getPoster',
         data
     })
 }
-//获取微信config配置
+//获取微信config配置20
 export function getConfig(data){
     return request({
         url:'/wddtest/index.php/api/wechat/getConfig',
         data
     })
 }
-//发货
+//发货21
 export function send(data){
     return request({
         url:'/wddtest/index.php/home/order/send',
@@ -141,19 +163,19 @@ export function send(data){
         data
     })
 }
-//选择海报模板
+//选择海报模板22
 export function chooseMould(){
     return request({
         url:'/wddtest/index.php/home/mould/getMouldList',
     })
 }
-//获取品类列表
+//获取品类列表23
 export function getPackageTypeList(){
     return request({
         url:'/wddtest/index.php/home/merchant/getPackageTypeList',
     })
 }
-//新增运费价目表
+//新增运费价目表24
 export function addPackage(data){
     return request({
         url:'/wddtest/index.php/home/merchant/addPackage',
@@ -161,7 +183,7 @@ export function addPackage(data){
         data
     })
 }
-//修改运费价目表
+//修改运费价目表25
 export function updatePackage(data){
     return request({
         url:'/wddtest/index.php/home/merchant/updatePackage',
@@ -169,14 +191,14 @@ export function updatePackage(data){
         data
     })
 }
-//查询运费价目表
+//查询运费价目表26
 export function getPackageList(data){
     return request({
         url:'/wddtest/index.php/home/merchant/getPackageList',
         data
     })
 }
-//删除运费价目
+//删除运费价目27
 export function delPackage(data){
     return request({
         url:'/wddtest/index.php/home/merchant/delPackage',
@@ -184,13 +206,13 @@ export function delPackage(data){
         data
     })
 }
-//获取用户微信头像
+//获取用户微信头像28
 export function getUserAvatar(){
     return request({
-        url:'/wddtest/index.php/home/user/getUserAvatar',
+        url:'/wddtest/index.php/home/user/getUserInfo',
     })
 }
-//商品下架
+//商品下架29
 export function stopSale(data){
     return request({
         url:'/wddtest/index.php/home/product/stopSale',
@@ -198,7 +220,7 @@ export function stopSale(data){
         data
     })
 }
-//商品上架
+//商品上架30
 export function startSale(data){
     return request({
         url:'/wddtest/index.php/home/product/startSale',
@@ -206,13 +228,13 @@ export function startSale(data){
         data
     })
 }
-//获取订单数量
+//获取订单数量31
 export function getOrderCount(){
     return request({
         url:'/wddtest/index.php/home/order/getOrderCount',
     })
 }
-//物流信息
+//物流信息32
 export function queryPackage(data){
     return request({
         url:'/wddtest/index.php/home/user/queryPackage',
@@ -220,13 +242,13 @@ export function queryPackage(data){
         data
     })
 }
-//获取快递公司列表
+//获取快递公司列表33
 export function getPackageCom(){
     return request({
         url:'/wddtest/index.php/api/index/getPackageCom',
     })
 }
-//自定义海报保存数据
+//自定义海报保存数据34
 export function addUserMould(data){
     return request({
         url:'/wddtest/index.php/home/mould/addUserMould',
@@ -234,19 +256,27 @@ export function addUserMould(data){
         data
     })
 }
-//获取自定义海报模板数据
+//获取自定义海报模板数据35
 export function getUserMould(){
     return request({
         url:'/wddtest/index.php/home/mould/getUserMould',
     })
 }
-//获取素材图
+//删除自定义海报模板36
+export function deleteUserMould(data){
+    return request({
+        url:'/wddtest/index.php/home/mould/deleteUserMould',
+        method:'POST',
+        data
+    })
+}
+//获取素材图37
 export function getElement(){
     return request({
         url:'/wddtest/index.php/home/mould/getElement',
     })
 }
-//获取买家端订单
+//获取买家端订单38
 export function getUserOrderList(data){
     return request({
         url:'/wddtest/index.php/home/user/getOrderList',

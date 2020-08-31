@@ -228,7 +228,8 @@ export default {
                 .icon_position{
                     width:.14rem;
                     height: .17rem;
-                    margin-right: .08rem;
+                    margin-right: .06rem;
+                    margin-left:.015rem;
                 }
                 .phoneNumber{
                     margin-left: .1rem;

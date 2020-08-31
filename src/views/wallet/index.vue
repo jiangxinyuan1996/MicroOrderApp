@@ -5,51 +5,30 @@
         <img src="images/后退-icon.svg" alt="">
       </div>
       <div class="move" v-if="showMove">
-        <span @click="moveUp"><i class="iconfont icon-shangyi"></i>上移</span>
-        <span @click="moveDown" style="margin-left:.2rem"><i class="iconfont icon-xiayi"></i>下移</span>
+        <span @click="handleDel"  style="margin-right:.15rem"><i class="iconfont icon-lajitong"></i>删除</span>
+        <span @click="moveUp" ><i class="iconfont icon-shangyi"></i>上移</span>
+        <span @click="backLast" v-if="backShow" style="margin-left:.15rem"><i class="iconfont icon-xiayi"></i>撤回</span>
+        <!-- <span @click="moveDown" v-if="!back" style="margin-left:.15rem"><i class="iconfont icon-xiayi"></i>下移</span> -->
       </div>
         <span class="clear" @click="clearAll" style="margin-left:.2rem"><i class="iconfont icon-refresh01"></i>重置</span>
-      <!-- <div class="righticon" v-if="showDel">
-        <i class="iconfont icon-lajitong" style="color:#fff" @click="handleDel"></i>
-      </div> -->
       <div class="getPoster" @click="getPoster">生成海报</div>
     </div>
     <div class="poster_loader" ref="creatGivePoster"> 
-      <canvas id="canvas" width="300" height="500" @click="handleCanvas"></canvas>
+      <canvas id="canvas"  @click="handleCanvas" width="367" height="500"></canvas>
     </div>
-    <!-- <div class="opera" v-if="false">
-      <div class="addButton white f-box bg" @click="handleChooseBox">
-        <div class="image">
-          +
-        </div>
-       <span>添加</span>
-        </div>
-      <div class="editButton white f-box bg" @click="getPoster">
-        <div class="image">
-          %
-        </div>
-       <span>生成海报</span>
-      </div> -->
-      <!-- <div class="loadButton white f-box bg" @click="loadLastData">
-        <div class="image">
-          %
-        </div>
-       <span>加载海报</span>
-      </div> -->
-    <!-- </div> -->
     <div class="chooseBox" v-if="chooseShow">
       <div class="back" @click="handleBack">
         添加元素
       </div>
-      <div class="righticon" v-if="showDel" @click="handleDel">
+      <!-- <div class="righticon" v-if="showDel" @click="handleDel">
         <i class="iconfont icon-lajitong" ></i>
         <span class="delText">删除</span>
-      </div>
-      <div class="item chooseImg" @click="hide">
+      </div> -->
+      <div class="item chooseBack" @click="setBackground">
         <div class="choose_image">
-          <img  src="images/图片-icon.svg" alt="图片" />
+          <img  src="images/背景-icon.svg" alt="图片" />
         </div>
-        <p class="item_info">素材</p>
+        <p class="item_info">布局</p>
       </div>
       <div class="item chooseText" @click="showText">
         <div class="choose_image">
@@ -57,11 +36,11 @@
         </div>
         <p class="item_info">文字</p>
       </div>
-      <div class="item chooseBack" @click="setBackground">
+      <div class="item chooseImg" @click="hide">
         <div class="choose_image">
-          <img  src="images/背景-icon.svg" alt="图片" />
+          <img  src="images/图片-icon.svg" alt="图片" />
         </div>
-        <p class="item_info">布局</p>
+        <p class="item_info">素材</p>
       </div>
       <div class="item chooseQrCode" @click="QrCode">
         <div class="choose_image">
@@ -72,22 +51,15 @@
     </div>
     <div class="opera bor_top" v-if="operaShow">
       <div class="choose_image" @click="show">
-          <img  src="images/取消-icon.svg" alt="图片" />
+          <img  src="images/取消.png" alt="图片" />
       </div>
-      <van-tabs @click="changeImg" style="width:75%;margin-left:.4rem" v-model="active" :border="false" background="#333" title-active-color="#fff" line-width="0px" line-height="0px">
+      <van-tabs @click="changeImg" style="width:90%;margin-left:.4rem" :ellipsis="false" v-model="active" :border="false" background="#333" title-active-color="#fff" line-width="0px" line-height="0px">
         <van-tab title="文字框" title-style="fontSize:.12rem"></van-tab>
         <van-tab title="气泡" title-style="fontSize:.12rem"></van-tab>
         <van-tab title="贴纸" title-style="fontSize:.12rem"></van-tab>
         <van-tab title="二维码样式" title-style="fontSize:.12rem"></van-tab>
+        <van-tab title="二维码" title-style="fontSize:.12rem"></van-tab>
       </van-tabs>
-      <div class="righticon" v-if="showDel"  @click="handleDel">
-        <i class="iconfont icon-lajitong" ></i>
-        <span class="delText">删除</span>
-      </div>
-      <!-- <div class="swiperBox">
-        <p class="swiper_item" v-for="item in images" :key="item" @click="handleAdd"><img style="width:100%;height:100%" :src="item" alt=""></p>
-      </div> -->
-      <!-- <div class="swiperBox"> -->
         <swiper v-if="images.length"  class="banner" :options="{
             loop: false,
             spaceBetween: 10,
@@ -98,49 +70,13 @@
                     <img style="width:100%;height:100%" :src="item" alt="" >
                 </div>
         </swiper>
-        <!-- <swiper v-else-if="title=='气泡'"  class="banner" :options="{
-            loop: false,
-            spaceBetween: 10,
-            slidesPerView: 6,
-            freeMode:true
-        }">
-                <div class="swiper-slide" v-for="item in images" :key="item" @click="handleAdd">
-                    <img style="width:100%;height:100%" :src="item" alt="" >
-                </div>
-        </swiper>
-        <swiper v-else-if="title=='贴纸'"  class="banner" :options="{
-            loop: false,
-            spaceBetween: 10,
-            slidesPerView: 6,
-            freeMode:true
-        }">
-                <div class="swiper-slide" v-for="item in images" :key="item" @click="handleAdd">
-                    <img style="width:100%;height:100%" :src="item" alt="" >
-                </div>
-        </swiper>
-        <swiper v-else  class="banner" :options="{
-            loop: false,
-            spaceBetween: 10,
-            slidesPerView: 6,
-            freeMode:true
-        }">
-                <div class="swiper-slide" v-for="item in images" :key="item" @click="handleAdd">
-                    <img style="width:100%;height:100%" :src="item" alt="" >
-                </div>
-        </swiper> -->
-      <!-- </div> -->
+       
     </div>
     <div class="opera bor_top" v-if="qrShow">
        <div class="choose_image" @click="show">
-          <img  src="images/取消-icon.svg" alt="图片" />
+          <img  src="images/取消.png" alt="图片" />
       </div>
-      <div class="righticon" v-if="showDel" @click="handleDel">
-        <i class="iconfont icon-lajitong"></i>
-        <span class="delText">删除</span>
-      </div>
-      <!-- <div class="swiperBox"> -->
-        <!-- <p class="swiper_item" @click="qrAdd" v-for="(item,index) in this.$route.params.image" :key="index"><img style="width:100%;height:100%" :src="item" alt=""></p> -->
-        <swiper v-if="images.length"  class="banner" :options="{
+        <swiper v-if="this.$route.params.image.length"  class="banner" :options="{
             loop: false,
             spaceBetween: 10,
             slidesPerView: 6,
@@ -150,26 +86,11 @@
                     <img style="width:100%;height:100%" :src="item" alt="">
                 </div>
         </swiper>
-        <!-- <p class="swiper_item" @click="qrAdd"><svg version="1.1" id="&#x56FE;&#x5C42;_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-	 y="0px" viewBox="0 0 3543.307 3140.787" style="enable-background:new 0 0 3543.307 3140.787;" xml:space="preserve">
-<image style="overflow:visible;" width="3400" height="3400" :xlink:href="qrcodeUrl"  transform="matrix(1 0 0 1 0.6535 -0.1063)">
-</image>
-</svg></p> -->
-
-        
-      <!-- </div> -->
     </div>
     <div class="opera bor_top" v-if="backgroundShow">
        <div class="choose_image" @click="show">
-          <img  src="images/取消-icon.svg" alt="图片" />
+          <img  src="images/取消.png" alt="图片" />
       </div>
-      <div class="righticon" v-if="showDel" @click="handleDel">
-        <i class="iconfont icon-lajitong"></i>
-        <span class="delText">删除</span>
-      </div>
-      <!-- <div class="swiperBox">
-        <p class="swiper_item" v-for="item in images" :key="item" @click="changeBg(item)"><img class="vueimg" style="width:100%;height:100%" :src="item" alt=""/></p>
-      </div> -->
       <swiper v-if="bg.length"  class="banner" :options="{
             loop: false,
             spaceBetween: 10,
@@ -182,17 +103,10 @@
         </swiper>
     </div>
     <div class="textOpera opera bor_top" v-if="textShow">
-      <div class="choose_image" @click="show">
-          <img  src="images/取消-icon.svg" alt="图片" />
-      </div>
-      <div class="righticon" v-if="showDel" @click="handleDel">
-        <i class="iconfont icon-lajitong"></i>
-        <span class="delText">删除</span>
-      </div>
       <div class="colorWrap">
         <div class="baseColor" v-for="item in colorArr" :style="'background:'+item" :key="item" @click="changeBaseColor(item)"></div>
         <div class="colorPicker">
-          <el-color-picker v-model="color2" size="mini" @change="changeColor"></el-color-picker>
+          <el-color-picker v-model="color2" size="mini" :show-alpha="true" :predefine="predefineColors" @change="changeColor"></el-color-picker>
         </div>
         <div class="colorBottom">
           <div class="biu">
@@ -232,11 +146,12 @@
   </div>
 </template>
 <script>
-import { addUserMould,getUserMould,getElement } from '@/api'
+import { addUserMould,getUserMould,getElement,saveProduct,getDefaultMould } from '@/api'
 import swiper from '@/components/swiper'
 import { fabric } from 'fabric'
 import html2canvas from 'html2canvas'
 import { Dialog ,Field,Slider, Toast,Tab,Tabs  } from 'vant';
+import { Indicator } from 'mint-ui'
 import QRCode from 'qrcode'
 export default {
   components:{
@@ -250,13 +165,51 @@ export default {
   data(){
     return{
       active:0,
+      initNum:1,
+      stateNum:1,
+      predefineColors: [
+          '#ff4500',
+          '#ff8c00',
+          '#ffd700',
+          '#90ee90',
+          '#00ced1',
+          '#1e90ff',
+          '#c71585',
+          'rgba(255, 69, 0, 0.68)',
+          'rgb(255, 120, 0)',
+          'hsv(51, 100, 98)',
+          'hsva(120, 40, 94, 0.5)',
+          'hsl(181, 100%, 37%)',
+          'hsla(209, 100%, 56%, 0.73)',
+          '#c7158577'
+        ],
       title:'文字框',
+      token:'',
+      backShow:false,
+      num:2,
       showUnderline:false,
       showMove:false,
       showI:false,
       showB:false,
       size:24,
-      colorArr:['#000','#ccc','#ff0000','#00ff00','#0dccf2','#000','#ccc','#ff0000','#00ff00','#0dccf2','#fff','#000','#ccc','#ff0000','#00ff00','#0dccf2','#fff','#0dccf2'],
+      colorArr:[
+        '#000',
+        '#fff',
+        '#ccc',
+      'rgba(255, 69, 0, 1)',
+      'rgba(255, 140, 0, 1)',
+      'rgba(255, 215, 0, 1)',
+      'rgba(144, 238, 144, 1)',
+      'rgba(0, 206, 209, 1)',
+      'rgba(30, 144, 255, 1)',
+      'rgba(199, 21, 133, 1)',
+      'rgba(255, 69, 0, 0.68)',
+      'rgba(255, 120, 0, 1)',
+      'rgba(250, 212, 0, 1)',
+      'rgba(144, 240, 144, 0.5)',
+      'rgba(0, 186, 189, 1)',
+      'rgba(31, 147, 255, 0.73)',
+      'rgba(199, 21, 133, 0.46)'],
       color2:'#000',
       canvasData:{},
       qrcodeUrl:'',
@@ -278,11 +231,11 @@ export default {
       imgUrl:'',
       left:0,
       top:0,
-      bg:['images/背景/1.png','images/背景/2.png','images/背景/3.png','images/背景/4.png','images/背景/5-1.png','images/背景/6.png','images/背景/7.png','images/背景/8.png'],
-      border:[],
-      qrcode:[],
-      tags:[],
-      text:[],
+      bg:['images/background/11.png','images/background/2.png','images/background/3.png','images/background/4.png','images/background/5.png','images/background/6.png','images/background/7.png','images/background/8.png','images/background/9.png','images/background/10.png'],
+      border:['images/border/1.svg','images/border/2.svg','images/border/3.svg','images/border/4.svg','images/border/5.svg','images/border/6.svg','images/border/7.svg','images/border/8.svg','images/border/9.svg','images/border/10.svg'],
+      qrcode:['images/qrcode/1.svg','images/qrcode/2.svg','images/qrcode/3.svg','images/qrcode/4.svg','images/qrcode/5.svg','images/qrcode/6.svg','images/qrcode/7.svg','images/qrcode/8.svg'],
+      tags:['images/tags/1.svg','images/tags/2.svg','images/tags/3.svg','images/tags/4.svg','images/tags/5.svg','images/tags/6.svg','images/tags/7.svg','images/tags/8.svg','images/tags/9.svg','images/tags/10.svg','images/tags/11.svg'],
+      text:['images/text/1.svg','images/text/2.svg','images/text/3.svg','images/text/4.svg','images/text/5.svg','images/text/6.svg'],
       obj:null,
       delbtn:null
 
@@ -292,11 +245,36 @@ export default {
       this.$store.state.showTab=false
   },
   mounted(){
+    Indicator.open({
+            text: '默认海报加载中...',
+            spinnerType: 'fading-circle'
+        });
+    getDefaultMould().then(res=>{
+      console.log('默认海报',res.data.data)
+      this.loadLastData(res.data.data)
+      var arr =[]
+      arr.push({obj:res.data.data})
+      this.$store.state.lastData.push(arr)
+      console.log('res',this.$store.state.lastData)
+      console.log('mounted',this.$store.state.lastData)
+      Indicator.close()
+    })
+    console.log('我从creategoods来',this.$route.params)
+    saveProduct(this.$route.params.item).then(res=>{
+     if(res.data.success===1){
+       this.token=res.data.data.token
+       this.creatQRCodeImg()
+     }else{
+       Toast('网络错误，请重试')
+     }
+    })
       // getUserMould().then(res=>{
       //   console.log(res)
       // this.loadLastData(res.data.data[1].content)
       // })
       getElement().then(res=>{
+        //背景图
+        this.bg=res.data.data.bg
         //文字框
         this.border=res.data.data.border
         //二维码
@@ -306,25 +284,26 @@ export default {
         //文本气泡
         this.text=res.data.data.text
         this.images=this.border
-        // this.images=['images/小图11.svg']
+      //   // this.images=['images/小图11.svg']
       })
     console.log(this.$route.params)   
     this.canvas = new fabric.Canvas('canvas');
-    //  fabric.loadSVGFromURL('images/photo1.svg', (objects, options)=> {
-    //     var obj = fabric.util.groupSVGElements(objects, options);
-    //     this.canvas.add(obj).renderAll();
-    //   })
-     this.canvas.selection=false
      this.canvas.on('selection:created', (e) => {
           // 选中图层事件触发时，动态更新赋值
           this.showMove=true
+          if(this.$store.state.lastData.length!==1){
+            this.backShow=true
+          }else{
+            this.backShow=false
+          }
           this.canvas.preserveObjectStacking = true
           this.showDel=true
           this.selectElement = e.target
           this.selectElement.set({
             borderColor: 'black',
-            cornerColor:'green',
-            cornerSize:10,
+            cornerColor:'#fff',
+            cornerSize:8,
+            transparentCorners: false,
             cornerStyle:'circle',
             cornerStrokeColor:'#fff'
           })
@@ -338,7 +317,7 @@ export default {
             console.log('文字')
             this.textShow=true
             this.chooseShow=false
-            this.size=this.selectElement.fontSize
+            this.size=Math.floor(this.selectElement.fontSize*this.selectElement.scaleY)
             this.color2=this.selectElement.fill
             if(this.selectElement.fontStyle=='italic'){
               this.showI=true
@@ -358,18 +337,26 @@ export default {
           }
           this.canvas.renderAll()
           })
+          //  this.canvas.on('object:scaling', (e) => {
+          //    console.log(e.target)
+          //  })
       this.canvas.on('selection:updated', (e) => {
           // 选中图层事件触发时，动态更新赋值
           // this.showDel=true
+          if(this.$store.state.lastData.length!==1){
+            this.backShow=true
+          }else{
+            this.backShow=false
+          }
           this.showMove=true
           this.canvas.preserveObjectStacking = true
-
           this.selectElement = e.target
           this.selectElement.set({
             borderColor: 'black',
-            cornerColor:'green',
-            cornerSize:10,
+            cornerColor:'#fff',
+            cornerSize:8,
             cornerStyle:'circle',
+            transparentCorners: false,
             cornerStrokeColor:'#fff'
           })
           if(this.selectElement.text==undefined){
@@ -380,7 +367,7 @@ export default {
             console.log('文字',this.selectElement)
             this.textShow=true
             this.chooseShow=false
-            this.size=this.selectElement.fontSize
+            this.size=Math.floor(this.selectElement.fontSize*this.selectElement.scaleY)
             this.color2=this.selectElement.fill
             if(this.selectElement.fontStyle=='italic'){
               this.showI=true
@@ -401,6 +388,52 @@ export default {
           
           this.canvas.renderAll()
       })
+      this.canvas.on('object:added',(e)=>{
+        console.log('added',this.canvas.toJSON())
+        this.backShow=true
+        var arr1 =[]
+        arr1.push(this.canvas.toJSON())
+        this.$store.state.lastData.push(arr1)
+          if(this.stateNum===1){
+            if(this.initNum<19){
+            this.initNum++
+              this.$store.state.lastData.splice(1,17)
+            if(this.initNum===18){
+              this.stateNum=-1
+            }
+          }
+        }
+      })
+      this.canvas.on('object:removed',(e)=>{
+        console.log('removed')
+        this.backShow=true
+        var arr2 =[]
+        arr2.push({obj:this.canvas.toJSON()})
+        this.$store.state.lastData.push(arr2)
+      })
+      this.canvas.on('object:modified',(e)=>{
+        console.log('modified')
+        this.backShow=true
+        var arr3 =[]
+        arr3.push({obj:this.canvas.toJSON()})
+        this.$store.state.lastData.push(arr3)
+        console.log(this.$store.state.lastData)
+      })
+      // this.canvas.on('object:rotating',(e)=>{
+      //   console.log('rotating')
+      //   this.$store.state.lastData.push(this.canvas.toJSON())
+
+      // })
+      // this.canvas.on('object:scaling',(e)=>{
+      //   console.log('scaling')
+      //   this.$store.state.lastData.push(this.canvas.toJSON())
+
+      // })
+      // this.canvas.on('object:moving',(e)=>{
+      //   console.log('moving')
+      //   this.$store.state.lastData.push(this.canvas.toJSON())
+
+      // })
       this.canvas.on('selection:cleared', (e) => {
           // 选中图层事件触发时，动态更新赋值
           this.showMove=false
@@ -416,6 +449,89 @@ export default {
       })
   },
   methods:{
+    backLast(){
+      console.log(this.$store.state.lastData)
+      if(this.$store.state.lastData.length>1){
+          this.loadLastData(this.$store.state.lastData[this.$store.state.lastData.length-2][0].obj)
+          this.$store.state.lastData.pop()
+          this.$store.state.lastData.pop()
+          console.log(this.$store.state.lastData)
+      }else{
+        this.backShow=false
+      }
+    },
+    default(){
+       fabric.Image.fromURL('images/background/7.png',(img)=>{
+          img.set({
+            scaleX: this.canvas.width / img.width,
+            scaleY: this.canvas.height / img.height
+          })
+          this.canvas.setBackgroundImage(img,this.canvas.renderAll.bind(this.canvas))
+          this.canvas.toSVG()
+        })
+          //模块1
+          fabric.loadSVGFromURL('images/pre/mode1.svg', (objects, options)=> {
+            var shape = fabric.util.groupSVGElements(objects, options);
+            this.canvas.add(shape.scale(0.55));
+            shape.set({ left: 30, top: -50}).setCoords();
+          })
+          //模块2
+           fabric.loadSVGFromURL('images/pre/mode2.svg', (objects, options)=> {
+            var shape = fabric.util.groupSVGElements(objects, options);
+            this.canvas.add(shape.scale(0.55));
+            shape.set({ left: 30, top: 140}).setCoords();
+          })
+          //绿色模块
+          fabric.loadSVGFromURL('images/pre/greenMode.svg', (objects, options)=> {
+            var shape = fabric.util.groupSVGElements(objects, options);
+            this.canvas.add(shape.scale(0.55));
+            shape.set({ left: 20, top: 10 }).setCoords();
+          })
+          //绿色模块
+          fabric.loadSVGFromURL('images/pre/greenMode.svg', (objects, options)=> {
+            var shape = fabric.util.groupSVGElements(objects, options);
+            this.canvas.add(shape.scale(0.55));
+            shape.set({ left: 270, top: 160 }).setCoords();
+          })
+          //红色模块
+          fabric.loadSVGFromURL('images/pre/redMode.svg', (objects, options)=> {
+            var shape = fabric.util.groupSVGElements(objects, options);
+            this.canvas.add(shape.scale(0.7));
+            shape.set({ left: 240, top: 115 }).setCoords();
+          })
+          //二维码
+          fabric.loadSVGFromURL('images/pre/qrcodeMode.svg', (objects, options)=> {
+            var shape = fabric.util.groupSVGElements(objects, options);
+            this.canvas.add(shape.scale(0.4));
+            shape.set({ left: 145, top: 400 }).setCoords();
+          })
+          
+          //商品介绍
+          //  const textbox1 = new fabric.Textbox('商品介绍', {
+          // left: 280,
+          // top: 160,
+          // width: 150,
+          // cursorWidth:1,
+          // fontSize: 18, // 字体大小
+          // fontWeight:400, // 字体粗细
+          // fill: '#fff', // 字体颜色
+          // borderColor: '#fff',
+          // scalex:0.5,
+          // scaley:0.5,
+          // fontStyle: 'normal', // 斜体
+          // fontFamily: '微软雅黑', // 设置字体
+          // underline:false,
+          // // stroke: 'green', // 描边颜色
+          // // strokeWidth: 3, // 描边宽度
+          // zIndex:999,
+          // hasControls: true,
+          // borderColor: 'black',
+          // editingBorderColor: 'skyBlue' // 点击文字进入编辑状态时的边框颜色
+          // });
+          // this.canvas.add(textbox1);
+          // textbox1.getSelectedText()
+          // this.canvas.renderAll()
+},
     moveUp(){
       this.selectElement.bringForward()
       console.log('上移',this.selectElement.zIndex)
@@ -453,11 +569,11 @@ export default {
           this.images=this.qrcode
           console.log('二维码样式',this.qrcode)
           break
+        case '二维码':
+          this.title='二维码'
+          this.images=[this.qrcodeUrl]
+          console.log('二维码样式',this.qrcodeUrl)
       }
-      // this.bg=res.data.data.bg
-        // this.border=res.data.data.border
-        // this.qrcode=res.data.data.border
-        // this.tags=res.data.data.tags
     },
     back(){
       this.$router.push({
@@ -480,18 +596,16 @@ export default {
     reduce(){
       this.size-=1
       this.selectElement.set({
-        fontSize:this.size
+        fontSize:Math.floor(this.size/this.selectElement.scaleY)
       })
       this.canvas.renderAll()
-
     },
     plus(){
       this.size+=1
       this.selectElement.set({
-        fontSize:this.size
+        fontSize:Math.floor(this.size/this.selectElement.scaleY)
       })
       this.canvas.renderAll()
-
     },
     changeColor(e){
       console.log(e)
@@ -511,8 +625,8 @@ export default {
       // 生成二维码
       // const state = Math.random()
       // this.state = state
-      const url =
-        'http://baidu.com'
+      const url ='http://dlallinpay.sinaapp.com/wdd/index.php/home/index/shopping?token='+this.token
+        
       const that = this
       QRCode.toDataURL(url, { type: 'image/png' }, function(error, gameurl) {
         if (error) {
@@ -543,10 +657,12 @@ export default {
         })
     },
     addText(){
+          this.color2='#000'
+
       const textbox = new fabric.Textbox(this.message, {
           left: 50,
           top: 50,
-          width: 150,
+          // width: 150,
           cursorWidth:1,
           fontSize: this.size, // 字体大小
           fontWeight:500, // 字体粗细
@@ -554,7 +670,8 @@ export default {
           borderColor: '#fff',
           scalex:0.5,
           scaley:0.5,
-          zIndex:1,
+          zIndex:10,
+          fontSize:12,
           fontStyle: 'normal', // 斜体
           fontFamily: '微软雅黑', // 设置字体
           underline:false,
@@ -593,29 +710,31 @@ export default {
     handleAdd(e){
         // var image = document.querySelector('img')
         console.log(e.target)
+        if(this.title!=='二维码'){
         fabric.loadSVGFromURL(e.target.src, (objects, options)=> {
         var shape = fabric.util.groupSVGElements(objects, options);
         this.canvas.add(shape.scale(0.2));
-        shape.set({ left: 10, top: 10,zIndex:1 }).setCoords();
+        shape.set({ left: 10, top: 10 }).setCoords();
         this.canvas.renderAll();
         })
-        // const imgInstance = new fabric.Image(e.target,{
-        //   left:0,
-        //   top:0,
-        //   angle:0,
-        //   opacity:1,
-        //   scalex:0.5,
-        //   scaley:0.5,
-        //   scaleX:0.2,
-        //   scaleY:0.2,
-        //   borderColor: 'black',
-        //   cornerColor:'green',
-        //   cornerSize:10,
-        //   cornerStyle:'circle',
-        //   cornerStrokeColor:'#fff'
-        // })
-        // this.canvas.add(imgInstance)
-        // console.log(imgInstance)
+        }else{
+        const imgInstance = new fabric.Image(e.target,{
+          left:0,
+          top:0,
+          angle:0,
+          opacity:1,
+          scalex:0.5,
+          scaley:0.5,
+          scaleX:0.5,
+          scaleY:0.5,
+          borderColor: 'black',
+          cornerColor:'green',
+          cornerSize:10,
+          cornerStyle:'circle',
+          cornerStrokeColor:'#fff'
+        })
+        this.canvas.add(imgInstance)
+        }
         this.canvas.toSVG()
     },
     handleDel(){
@@ -630,7 +749,7 @@ export default {
       let width = shareContent.offsetWidth //获取dom 宽度
       let height = shareContent.offsetHeight //获取dom 高度
       let canvas = document.createElement('canvas') //创建一个canvas节点
-      let scale = 1 //定义任意放大倍数 支持小数
+      let scale =1 //定义任意放大倍数 支持小数
       canvas.width = width * scale //定义canvas 宽度 * 缩放
       canvas.height = height * scale //定义canvas高度 *缩放
       canvas.getContext('2d').scale(scale, scale) //获取context,设置scale
@@ -660,15 +779,15 @@ export default {
       })
         this.canvasData = this.canvas.toJSON()
         //解决背景缩放问题
-        if(this.canvasData.backgroundImage!==undefined){
-          this.canvasData.backgroundImage.scaleX=this.canvas.width / this.canvasData.backgroundImage.width
-          this.canvasData.backgroundImage.scaleY=this.canvas.height / this.canvasData.backgroundImage.height
-          } 
+        // if(this.canvasData.backgroundImage!==undefined){
+        //   this.canvasData.backgroundImage.scaleX=this.canvas.width / this.canvasData.backgroundImage.width
+        //   this.canvasData.backgroundImage.scaleY=this.canvas.height / this.canvasData.backgroundImage.height
+        //   } 
         //   for(var i =0;i<this.canvasData.objects.length;i++){
         //     this.canvasData.objects[i].scaleX= this.canvasData.objects[i].width 
         //     this.canvasData.objects[i].scaleY=this.canvasData.objects[i].height
         //   }     
-        console.log('画布信息',this.canvasData)  
+        console.log('画布信息',JSON.stringify(this.canvasData))  
     },
     loadLastData(data){
       getUserMould().then(res=>{
@@ -762,20 +881,16 @@ export default {
       console.log('hide',e)
     },
     savePoster(){
-      addUserMould({content:this.canvasData,url:this.imgUrl}).then(res=>{
-        if(res.data.success===1){
-          Toast(res.data.message)
           this.$router.push({name:'createqr',params:{
             image:this.$route.params.image,
             val:this.$route.params.val,
             item:this.$route.params.item,
             options:this.option2,
-            checked1:this.$route.params.checked1
+            url:this.imgUrl,
+            checked1:this.$route.params.checked1,
+            token:this.token,
+            content:this.canvasData
           }})
-        }else{
-          Toast(res.data.message)
-        }
-      })
     }
   }
 }
@@ -806,7 +921,7 @@ export default {
     }
     .move{
       position: absolute;
-      left:1rem;
+      left:.5rem;
       top:0;
       color: #fff;
       font-size: .12rem;
@@ -854,8 +969,8 @@ export default {
     }
   }
   .poster_loader{
-    width:3rem;
-    height: 5rem;
+    width:365px;
+    height:500px;
     background: #fff;
     position: absolute;
     left: 0;
@@ -863,11 +978,6 @@ export default {
     right: 0;
     bottom: 0;
     margin:.5rem auto;
-    #canvas{
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
   }
   
   .opera{
@@ -940,8 +1050,12 @@ export default {
       position: absolute;
       top:.15rem;
       left: .2rem;
-      width:.14rem;
-      height:.14rem;
+      width:.18rem;
+      height:.18rem;
+      img{
+        width:100%;
+        height: 100%;
+      }
     }
     .righticon{
       position: absolute;
@@ -990,7 +1104,7 @@ export default {
     }
   }
   .textOpera{
-    height: 1.53rem;
+    height: 1.13rem;
     opacity: .8;
   }
   .chooseBox{
@@ -1058,16 +1172,16 @@ export default {
       }
     }
     .chooseImg{
-        bottom:.06rem;
-        left:.25rem;
+      bottom:.06rem;
+        left:2.1rem;
     }
     .chooseText{
         bottom:.06rem;
         left:1.2rem;
     }
     .chooseBack{
-        bottom:.06rem;
-        left:2.1rem;
+      bottom:.06rem;
+        left:.25rem;
     }
     .chooseQrCode{
         bottom:.06rem;
@@ -1131,8 +1245,11 @@ export default {
     background:skyblue;
   }
   .poster{
+    box-sizing: border-box;
+    margin:0 .1rem;
     margin-top:.1rem;
-    margin-left:.1rem;
+    width:94%;
+    height:100%;
   }
 }
 </style>

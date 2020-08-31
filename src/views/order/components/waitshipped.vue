@@ -1,15 +1,26 @@
 <template>
     <div id="waitshipped">
-        <orderList status="1" :keyword="keyword"></orderList>   
+        <orderList :status="status" :keyword="keyword" ref="child"></orderList>   
     </div>
 </template>
 <script>
 import orderList from '@/components/list'
 
 export default {
- props:['keyword','status'],
+    data(){
+        return{
+            status:'1'
+        }
+    },
+ props:['keyword'],
  components:{
      orderList
  },
+ methods:{
+     init(){
+         this.status='1'
+         this.$refs.child.init()
+     }
+ }
 }
 </script>

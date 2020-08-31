@@ -21,7 +21,7 @@
             </p>
           </div>
         </div>
-        <div id="echarts"></div>
+        <div id="echarts" ></div>
       </div>
       <div class="header_right">
         <ul class="date_list">
@@ -71,23 +71,23 @@
         </div>
       </div>
     </div>
-    <!-- <div class="content" style="marginBottom:0">
+    <div class="content" style="marginBottom:0" v-if="showUser">
       <h3 class="title">我的收款模板</h3>
       <div class="content_info">
         <ul class="list">
-            <li class="list_item" v-for="item in 2" :key="item">
-                <img src="images/category(opacity).png" alt="" />
+            <li class="list_item" v-for="item in userMould" :key="item.id" @click="handleShowUser(item)">
+                <img :src="item.img" alt="" />
             </li>
         </ul>
       </div>
-    </div> -->
+    </div>
      <div v-if="isShow" class="weui-gallery" style="display:block">
                     <span class="weui-gallery__img" :style="'background-image: url('+src+');'" @click="()=>{this.isShow=false}"></span>
-                    <!-- <div class="weui-gallery__opr" @click="handleDel">
+                    <div class="weui-gallery__opr" @click="handleDel" v-if="status==='自定义'">
                         <a href="javascript:" class="weui-gallery__del">
                             <i class="weui-icon-delete weui-icon_gallery-delete"></i>
                         </a>
-                    </div> -->
+                    </div>
                 </div>
     <div class="content">
       <h3 class="title">预设模板</h3>
@@ -104,7 +104,7 @@
 </template>
 <script>
 import echarts from 'echarts'
-import { reqData,chooseMould,reqAmount,HomeData } from '@/api'
+import { reqData,chooseMould,reqAmount,HomeData,getUserMould,deleteUserMould } from '@/api'
 import { Notify } from 'vant'
 import { Indicator } from 'mint-ui'
 import { PullRefresh } from 'vant';
@@ -115,11 +115,15 @@ export default {
     },
     data(){
         return{
+            userMould:[],
             src:'',
+            id:'',
+            showUser:true,
             isShow:false,
             isLoading:false,
             total:'0',
             count:'0',
+            status:'预设',
             countData:{},
             showData:{},
             mouldData:[],
@@ -194,6 +198,21 @@ export default {
             text: '加载中...',
             spinnerType: 'fading-circle'
         });
+        getUserMould().then(res=>{
+          if(res.data.data){
+            if(res.data.success===1){
+            this.userMould=res.data.data
+            }else{
+            this.showUser=false
+            }
+          }else{
+            this.userMould=[]
+          }
+          if(this.userMould.length===0){
+              this.showUser=false
+            }
+          
+        })
         var myChart = echarts.init(document.getElementById('echarts'))
         reqData().then(res=>{
           this.showData=res.data.data
@@ -262,8 +281,26 @@ export default {
           myChart.setOption(this.echarts)
       },
       handleShow(item){
+        this.status='预设'
         this.isShow=true
         this.src=item.example
+      },
+      handleShowUser(item){
+        this.status='自定义'
+        this.isShow=true
+        this.src=item.img
+        this.id=item.id
+      },
+      handleDel(){
+        deleteUserMould({id:this.id}).then(res=>{
+          console.log(res)
+          if(res.data.success===1){
+            this.isShow=false
+            this.init()
+          }else{
+            
+          }
+        })
       },
         handleClick(){
         this.$router.push('/goods')
@@ -283,7 +320,9 @@ export default {
 <style lang="scss" scoped>
 #Home{
   height: 100%;
-  overflow: hidden;
+  box-sizing: border-box;
+  overflow: auto;
+  padding-bottom:.46rem;
 }
 #echarts{
     width: 100%;
@@ -348,20 +387,20 @@ export default {
     }
   }
   .header_right {
-    width: 0.3rem;
+    width: 0.27rem;
     height: 100%;
     position: absolute;
     top: 0;
     right: 0.1rem;
     .date_list {
-      width: 80%;
+      width: .24rem;
       text-align: center;
-      border: 1.5px solid rgba(123, 172, 220, 1);
+      border: 1px solid rgba(123, 172, 220, 1);
       overflow: hidden;
       height: 60%;
       margin-top: 0.1rem;
       display: flex;
-      border-radius: 10px;
+      border-radius: .1rem;
       flex-direction: column;
       .date_item {
         display: flex;
